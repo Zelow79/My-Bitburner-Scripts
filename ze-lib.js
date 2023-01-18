@@ -113,3 +113,18 @@ export function colorPicker(x, color) { // x = what you want colored
 	}
 	return y;
 }
+
+export function dhms(t) {
+	var cd = 24 * 60 * 60 * 1000,
+		ch = 60 * 60 * 1000,
+		cm = 60 * 1000,
+		d = Math.floor(t / cd),
+		h = Math.floor((t - d * cd) / ch),
+		m = Math.floor((t - d * cd - h * ch) / cm),
+		s = Math.round((t - d * cd - h * ch - m * cm) / 1000),
+		pad = (n) => n < 10 ? '0' + n : n
+	if (s === 60) {	m++; s = 0 }
+	if (m === 60) {	h++; m = 0 }
+	if (h === 24) { d++; h = 0 }
+	return [d, pad(h), pad(m), pad(s)].join(':');
+}
