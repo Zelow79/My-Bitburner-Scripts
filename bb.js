@@ -1,4 +1,4 @@
-const [globalChaLimit, ass_target, width, height] = [1e6, 1e4, 550, 710] // value some int farming tools use for charisma limit && value for violence to farm assassinations up to
+const [globalChaLimit, ass_target, actionLogSize, skillLogSize, width, height] = [1e6, 1e4, 7, 30, 550, 710]
 const logs = {
 	skill: [],
 	action: []
@@ -7,8 +7,10 @@ const logs = {
 export async function main(ns) {
 	ns.disableLog('ALL'); ns.clearLog(); ns.tail();
 	const sleepTime = 500
-	logs.skill.length = 0
 	logs.action.length = 0
+	for (var i = 0; i < actionLogSize; i++) logs.action.push(" ");
+	logs.skill.length = 0
+	for (var i = 0; i < skillLogSize; i++) logs.skill.push(" ");
 	if (!ns.scriptRunning("ibb.js", ns.getHostname())) ns.exec("ibb.js", ns.getHostname());
 	while (1) {
 		printLog(ns);
@@ -386,7 +388,7 @@ function printLog(ns) {
 }
 
 function addLog(type, x) {
-	const maxLength = (type == "action") ? 7 : 30
+	const maxLength = (type == "action") ? actionLogSize : skillLogSize
 	if (logs[type].length < maxLength) {
 		logs[type].push(x);
 	} else {
