@@ -8,6 +8,8 @@ export function getAllServers(ns) {
 	return Array.from(x);
 }
 
+export const cities = ["Sector-12", "Aevum", "Volhaven", "Chongqing", "New Tokyo", "Ishima"]
+
 export function serverInfo(ns, serverName, threads = 1, cores = 1) { //lazy object with server info and other useful server information
 	const player = ns.getPlayer();
 	const server = ns.getServer(serverName);
@@ -40,6 +42,17 @@ export async function bdServer(ns, server) { //courtesy of Mughur from the disco
 
 export function fp(number, ns) { //number format for percent
 	return ns.nFormat(number, "0,0.[000]%");
+}
+
+export function format(value, maxFracDigits = 2, minFracDigits = 0) {
+	const locale = "en-US"
+	const notation = (value >= 1e15) ? "scientific" : "compact"
+	return Intl.NumberFormat(locale, {
+		notation: notation,
+		compactDisplay: "short",
+		maximumFractionDigits: maxFracDigits,
+		minimumFractionDigits: minFracDigits
+	}).format(value).toLocaleLowerCase();
 }
 
 export function round(value, precision) { //rounds accurately to the precision value, which determines decimal place IE, 1 = 0.0, 2 = 0.00
@@ -123,8 +136,8 @@ export function dhms(t) {
 		m = Math.floor((t - d * cd - h * ch) / cm),
 		s = Math.round((t - d * cd - h * ch - m * cm) / 1000),
 		pad = (n) => n < 10 ? '0' + n : n
-	if (s === 60) {	m++; s = 0 }
-	if (m === 60) {	h++; m = 0 }
+	if (s === 60) { m++; s = 0 }
+	if (m === 60) { h++; m = 0 }
 	if (h === 24) { d++; h = 0 }
 	return [d, pad(h), pad(m), pad(s)].join(':');
 }

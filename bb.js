@@ -1,3 +1,4 @@
+import { bar, format, cities } from "ze-lib.js";
 const [globalChaLimit, ass_target, actionLogSize, skillLogSize, width, height] = [1e6, 1e4, 7, 30, 550, 710]
 const logs = {
 	skill: [],
@@ -252,26 +253,6 @@ async function chaosEater(ns) {
 	}
 }
 
-async function getHyper(ns) {
-	const b = ns.bladeburner
-	const x = "Hyperdrive"
-	if (b.getSkillLevel(x) < 1e3) return; //we only wanna act after normal skill buyer is done, at 1e3 hyperdrives
-	while (1) {
-		if (b.getSkillUpgradeCost(x, 1) > b.getSkillPoints()) break;
-		let i = 1
-		while (b.getSkillUpgradeCost(x, i) < b.getSkillPoints()) {
-			await ns.sleep(0);
-			if (b.getSkillUpgradeCost(x, i * 2) > b.getSkillPoints()) break;
-			if (b.getSkillUpgradeCost(x, i) < b.getSkillPoints()) {
-				i *= 2;
-				continue;
-			}
-		}
-
-		if (ns.bladeburner.upgradeSkill(x, i)) addLog("skill", `Got ${format(ns, i)} ${x}${(i >= 2) ? "s" : ""} for ${format(ns, b.getSkillUpgradeCost(x, i))} sp`);
-	}
-}
-
 function mughurTime(ns) {
 	const b = ns.bladeburner
 	const x = "Hyperdrive"
@@ -281,12 +262,8 @@ function mughurTime(ns) {
 		if (b.getSkillUpgradeCost(x, n + i) < b.getSkillPoints()) n += i;
 	}
 	if (ns.bladeburner.getSkillLevel(x) + n > ns.bladeburner.getSkillLevel(x)) {
-		if (b.upgradeSkill(x, n)) addLog("skill", `Got ${format(ns, n)} ${x}${(n >= 2) ? "s" : ""} for ${format(ns, b.getSkillUpgradeCost(x, n))} sp`);
+		if (b.upgradeSkill(x, n)) addLog("skill", `Got ${format(n, 2, 2)} ${x}${(n >= 2) ? "s" : ""} for ${format(b.getSkillUpgradeCost(x, n), 2, 2)} sp`);
 	}
-}
-
-function format(ns, value) {
-	return (value >= 1e15) ? ns.nFormat(value, "0.[000]e+0") : ns.nFormat(value, "0.[000]a");
 }
 
 async function violence(ns) {
@@ -301,7 +278,7 @@ async function violence(ns) {
 			if (b.getCurrentAction().name == act) continue;
 			if (!ns.singularity.getOwnedAugmentations().includes("The Blade's Simulacrum")) ns.singularity.stopAction();
 			b.startAction("General", act);
-			addLog("action", `ACT: ${act} until ${format(ns, ass_target)} ass operations`);
+			addLog("action", `ACT: ${act} until ${format(ass_target)} ass operations`);
 		}
 		addLog("action", `Ass qty now ${assLevel()}. Violence protocol - Complete`);
 	}
@@ -310,7 +287,6 @@ async function violence(ns) {
 async function cleanUp(ns) {
 	const boarder = "------------------------------"
 	const b = ns.bladeburner
-	const cities = ["Sector-12", "Aevum", "Volhaven", "Chongqing", "New Tokyo", "Ishima"]
 	if (!cities.some(e => b.getCityChaos(e) > 1e50) || ns.getPlayer().skills.charisma < globalChaLimit) return;
 	b.stopBladeburnerAction();
 	let highestPop = {
@@ -322,19 +298,19 @@ async function cleanUp(ns) {
 	for (const c of cities) {
 		b.switchCity(c);
 		cleanUpMessage += `\nCity:        ${c}`
-		cleanUpMessage += `\nOld Chaos:   ${format(b.getCityChaos(c))}`
+		cleanUpMessage += `\nOld Chaos:   ${format(b.getCityChaos(c), 3)}`
 		if (b.getCityChaos(c) > 50) {
 			addLog("action", `Diplomatic Relations started in: ${c}`);
 			b.startAction("General", "Diplomacy");
 			while (b.getCityChaos(c) > 0) { await ns.sleep(0) }
-			cleanUpMessage += `\nNew Chaos:   ${format(b.getCityChaos(c))}`
+			cleanUpMessage += `\nNew Chaos:   ${format(b.getCityChaos(c), 3)}`
 		}
 		else {
 			addLog("action", "Chaos too low, skipping Diplomacy.");
 			cleanUpMessage += "\n***Diplomacy Skipped***"
 		}
 		const popStart = b.getCityEstimatedPopulation(c);
-		cleanUpMessage += `\nOld Est Pop: ${format(popStart)}`
+		cleanUpMessage += `\nOld Est Pop: ${format(popStart, 3)}`
 		const check1 = b.getCityChaos(c) === 0
 		const check2 = b.getActionTime("Operations", "Investigation") === 1000
 		const check3 = b.getActionEstimatedSuccessChance("Operations", "Investigation")[1] > 0.99
@@ -345,7 +321,7 @@ async function cleanUp(ns) {
 			b.stopBladeburnerAction();
 			addLog("action", `Investigations at ${c} complete.`);
 			const popEnd = b.getCityEstimatedPopulation(c);
-			cleanUpMessage += `\nNew Est Pop: ${format(popEnd)} (${(popEnd - popStart > 0) ? "+" + format(popEnd - popStart) : format(popEnd - popStart)})`
+			cleanUpMessage += `\nNew Est Pop: ${format(popEnd, 3)} (${(popEnd - popStart > 0) ? "+" + format(popEnd - popStart, 3) : format(popEnd - popStart, 3)})`
 		}
 		else {
 			addLog("action", `Investigations at ${c} were skipped.`);
@@ -360,12 +336,8 @@ async function cleanUp(ns) {
 	}
 	b.switchCity(highestPop.name);
 	const endTime = new Date();
-	cleanUpMessage += `\nMoving BBHQ to highest est pop: ${highestPop.name}\n${endTime.toLocaleString()} - clean up phase ended\n${(endTime - startTime > 60 * 1000) ? ns.nFormat((endTime - startTime) / 1000 / 60, "0,0.[00]") + " minutes" : (endTime - startTime > 1000) ? ns.nFormat((endTime - startTime) / 1000, "0,0.[00]") + " seconds" : ns.nFormat(endTime - startTime, "0,0") + "ms"} to finish clean up`
+	cleanUpMessage += `\nMoving BBHQ to highest est pop: ${highestPop.name}\n${endTime.toLocaleString()} - clean up phase ended\n${(endTime - startTime > 60 * 1000) ? format((endTime - startTime) / 1000 / 60) + " minutes" : (endTime - startTime > 1000) ? format((endTime - startTime) / 1000) + " seconds" : format(endTime - startTime, 0) + "ms"} to finish clean up`
 	ns.tprint(cleanUpMessage);
-
-	function format(i) {
-		return (i > 1e15) ? ns.nFormat(i, "0.[000]e+0") : ns.nFormat(i, "0,0.[000]a");
-	}
 }
 
 function printLog(ns) {
@@ -383,8 +355,7 @@ function printLog(ns) {
 			ns.print(report);
 		}
 	}
-	//ns.print('end');
-	ns.print(bar(b.getActionCountRemaining("Operations", "Assassination") / ass_target) + `${b.getActionCountRemaining("Operations", "Assassination")}/${ass_target} Assassinations`)
+	ns.print(bar(b.getActionCountRemaining("Operations", "Assassination") / ass_target, "⚡") + `${b.getActionCountRemaining("Operations", "Assassination")}/${ass_target} Assassinations`)
 }
 
 function addLog(type, x) {
@@ -395,53 +366,4 @@ function addLog(type, x) {
 		logs[type].shift();
 		logs[type].push(x);
 	}
-}
-
-function bar(progress, bar = true, length = 15) { //progress bar, orginal design came from NightElf from BB discord
-	if (bar == true) bar = "⚡"
-	const empty = " "
-	const progressValue = Math.min(progress, 1);
-	const barProgress = Math.floor(progressValue * length);
-
-	const colors = [196, 202, 226, 46, 33];
-	const fullColor = "white";
-
-	const categoryValue = Math.min(colors.length - 1, Math.floor(progressValue * colors.length));
-	const color = progressValue < 1 ? colors[categoryValue] : fullColor;
-
-	const array = new Array(barProgress).fill(bar).concat(new Array(length - barProgress).fill(empty));
-	return `[${colorPicker(array.join(""), color)}]`;
-}
-
-function colorPicker(x, color) { // x = what you want colored
-	let y;
-	switch (color) {
-		case "black":
-			y = `\u001b[30m${x}\u001b[0m`
-			break;
-		case "red":
-			y = `\u001b[31m${x}\u001b[0m`
-			break;
-		case "green":
-			y = `\u001b[32m${x}\u001b[0m`
-			break;
-		case "yellow":
-			y = `\u001b[33m${x}\u001b[0m`
-			break;
-		case "blue":
-			y = `\u001b[34m${x}\u001b[0m`
-			break;
-		case "magenta":
-			y = `\u001b[35m${x}\u001b[0m`
-			break;
-		case "cyan":
-			y = `\u001b[36m${x}\u001b[0m`
-			break;
-		case "white":
-			y = `\u001b[37m${x}\u001b[0m`
-			break;
-		default:
-			y = `\u001b[38;5;${color}m${x}\u001b[0m`
-	}
-	return y;
 }

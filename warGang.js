@@ -1,5 +1,4 @@
-import { diceBar, bar } from "ze-lib.js";
-
+import { diceBar, bar, format } from "ze-lib.js";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL");
@@ -203,9 +202,8 @@ function gangMemberStuff(ns) {
 }
 
 function printMemberStats(ns, memberInfo) {
-	ns.printf("%s %8s %s %8s\n", `┣STR:`, `${format(ns, memberInfo.str)}`, `┣DEF:`, `${format(ns, memberInfo.def)}`);
-	ns.printf("%s %8s %s %8s\n", `┗RES:`, `${format(ns, memberInfo.respectGain)}`, `┗MON:`, `${format(ns, memberInfo.moneyGain)}`);
-	//ns.printf("%s %8s %s %8s\n", `┗AGI:`, `${ns.nFormat(memberInfo.agi, "0.[000]a")}`, `┗CHA:`, `${ns.nFormat(memberInfo.cha, "0.[000]a")}`);
+	ns.printf("%s %8s %s %8s\n", `┣STR:`, `${format(memberInfo.str)}`, `┣DEF:`, `${format(memberInfo.def)}`);
+	ns.printf("%s %8s %s %8s\n", `┗RES:`, `${format(memberInfo.respectGain)}`, `┗MON:`, `${format(memberInfo.moneyGain)}`);
 }
 
 // Credit: Mysteyes. https://discord.com/channels/415207508303544321/415207923506216971/940379724214075442
@@ -231,16 +229,16 @@ function calculateAscendTreshold(ns, member, prop) {
 function printInfo(ns, myGang) {
 	//ns.print(`\n   *** GANG REPORT ***`);
 	ns.print(`\nFaction name    : ${myGang.faction}`);
-	ns.print(`Total Respect   : ${format(ns, myGang.respect)}`);
+	ns.print(`Total Respect   : ${format(myGang.respect)}`);
 	ns.print(`New Member at   : ${ns.nFormat(getRespectNeededToRecruitMember(ns, ns.gang.getMemberNames()), "0a")} resp.`);
-	ns.print(`Wanted Level    : ${format(ns, myGang.wantedLevel)}`);
+	ns.print(`Wanted Level    : ${format(myGang.wantedLevel)}`);
 	ns.print(`Wanted Penalty  : -${ns.nFormat(1 - myGang.wantedPenalty, "0.00%")}`);
-	ns.print(`Money gain rate : ${format(ns, myGang.moneyGainRate * 5)} / s`);
+	ns.print(`Money gain rate : ${format(myGang.moneyGainRate * 5)} / s`);
 	ns.print(`Is war allowed? : ${myGang.territoryWarfareEngaged}`);
 	ns.print(`Min Win Chance  : ${ns.nFormat(lowestClashChance(ns), '0[.]00%') + "\n" + diceBar(lowestClashChance(ns), 29)}`);
-	ns.print(`Territory Power : ${format(ns, myGang.power)}`);
+	ns.print(`Territory Power : ${format(myGang.power)}`);
 	ns.print(`Territory Owned : ${ns.nFormat(myGang.territory, "0.[00]%") + "\n" + bar(myGang.territory, "", 29)}`);
-	ns.print(`Faction Rep     : ${format(ns, ns.singularity.getFactionRep(myGang.faction))}`);
+	ns.print(`Faction Rep     : ${format(ns.singularity.getFactionRep(myGang.faction))}`);
 }
 
 function getRespectNeededToRecruitMember(ns, members) {
@@ -263,8 +261,4 @@ function lowestClashChance(ns) {
 		}
 	}
 	return lowestChance
-}
-
-function format(ns, value) {
-	return (value >= 1e15) ? ns.nFormat(value, "0.[00]e+0") : ns.nFormat(value, "0.[00]a");
 }
