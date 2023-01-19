@@ -141,3 +141,18 @@ export function dhms(t) {
 	if (h === 24) { d++; h = 0 }
 	return [d, pad(h), pad(m), pad(s)].join(':');
 }
+
+export function dhm(t) {
+	var ch = 60 * 60 * 1000,
+		cm = 60 * 1000,
+		h = Math.floor(t / ch),
+		m = Math.floor((t - h * ch) / cm),
+		s = Math.round((t - h * ch - m * cm) / 1000),
+		ms = Math.round(t - h * ch - m * cm - s * 1000),
+		pad = (n) => n < 10 ? '0' + n : n,
+		msPad = (n) => n.toString().length < 3 ? '0'.repeat(3 - n.toString().length) + n : n
+	if (ms === 1000) { s++; ms = 0 }
+	if (s === 60) { m++; s = 0 }
+	if (m === 60) { h++; m = 0 }
+	return [pad(h), pad(m), pad(s), msPad(ms)].join(':');
+}

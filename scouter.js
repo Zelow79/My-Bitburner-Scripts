@@ -1,3 +1,4 @@
+import { dhm, format } from "ze-lib.js";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.clearLog(); ns.disableLog("ALL"); //ns.enableLog("sleep");
@@ -41,9 +42,9 @@ export async function main(ns) {
 		ns.print("Security Level:     " + ns.nFormat(serverStats.hackDifficulty, '0.0[00]'));
 		ns.print(`Hack Time:          ${dhm(ns.getHackTime(getInput))}`)
 		ns.print("Required Ports:     " + ns.nFormat(serverStats.numOpenPortsRequired, '0.[00]'));
-		ns.print("Max Server Money:   $" + format(ns, serverStats.moneyMax));
+		ns.print("Max Server Money:   $" + format(serverStats.moneyMax));
 		if (serverStats.moneyMax > 0) {
-			ns.print("Current Money:      $" + format(ns, serverStats.moneyAvailable));
+			ns.print("Current Money:      $" + format(serverStats.moneyAvailable));
 			ns.print("Money Progress Bar");
 			ns.print(progressBar + "| " + progress + "%");
 		}
@@ -61,32 +62,4 @@ export async function main(ns) {
 		ns.print("╘═════╧═════╧═════╧═════╧═════╛");
 		await ns.sleep(sleepTime);
 	}
-}
-
-function format(ns, value) {
-	return (value >= 1e15) ? ns.nFormat(value, "0.[00]e+0") : ns.nFormat(value, "0.[00]a");
-}
-
-function dhm(t) {
-	var ch = 60 * 60 * 1000,
-		cm = 60 * 1000,
-		h = Math.floor(t / ch),
-		m = Math.floor((t - h * ch) / cm),
-		s = Math.round((t - h * ch - m * cm) / 1000),
-		ms = Math.round(t - h * ch - m * cm - s * 1000),
-		pad = function (n) { return n < 10 ? '0' + n : n; },
-		msPad = function (n) { return n.toString().length < 3 ? '0'.repeat(3 - n.toString().length) + n : n; };
-	if (ms === 1000) {
-		s++;
-		ms = 0;
-	}
-	if (s === 60) {
-		m++;
-		s = 0;
-	}
-	if (m === 60) {
-		h++;
-		m = 0;
-	}
-	return [pad(h), pad(m), pad(s), msPad(ms)].join(':');
 }
