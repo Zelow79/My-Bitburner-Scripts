@@ -1,4 +1,4 @@
-import { dhm, format } from "ze-lib.js";
+import { hmsms, format } from "ze-lib.js";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.clearLog(); ns.disableLog("ALL"); //ns.enableLog("sleep");
@@ -40,7 +40,7 @@ export async function main(ns) {
 		ns.print("Base Security:      " + ns.nFormat(serverStats.baseDifficulty, '0,0'));
 		ns.print("Min Security:       " + ns.nFormat(serverStats.minDifficulty, '0,0'));
 		ns.print("Security Level:     " + ns.nFormat(serverStats.hackDifficulty, '0.0[00]'));
-		ns.print(`Hack Time:          ${dhm(ns.getHackTime(getInput))}`)
+		ns.print(`Hack Time:          ${hmsms(ns.getHackTime(getInput))}`)
 		ns.print("Required Ports:     " + ns.nFormat(serverStats.numOpenPortsRequired, '0.[00]'));
 		ns.print("Max Server Money:   $" + format(serverStats.moneyMax));
 		if (serverStats.moneyMax > 0) {

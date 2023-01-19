@@ -142,7 +142,7 @@ export function dhms(t) {
 	return [d, pad(h), pad(m), pad(s)].join(':');
 }
 
-export function dhm(t) {
+export function hmsms(t) {
 	var ch = 60 * 60 * 1000,
 		cm = 60 * 1000,
 		h = Math.floor(t / ch),
