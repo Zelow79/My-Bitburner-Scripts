@@ -1,5 +1,5 @@
 import { dhms, colorPicker, bar, format } from "ze-lib.js"
-const [cycleLimit, width, height] = [100, 250, 670]
+const [cycleLimit, width, height] = [200, 250, 670]
 const contracts = ["Tracking", "Bounty Hunter", "Retirement"]
 let [intTracking, intBounty, intRetire, startTime] = [0, 0, 0, 0]
 /** @param {NS} ns */
