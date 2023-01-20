@@ -40,8 +40,13 @@ export async function bdServer(ns, server) { //courtesy of Mughur from the disco
 	ns.singularity.connect("home");
 }
 
-export function fp(number, ns) { //number format for percent
-	return ns.nFormat(number, "0,0.[000]%");
+export function formatPercent(value, maxFracDigits = 2, minFracDigits = 0) {
+	const locale = "en-US"
+	return Intl.NumberFormat(locale, {
+		style: "percent",
+		maximumFractionDigits: maxFracDigits,
+		minimumFractionDigits: minFracDigits
+	}).format(value);
 }
 
 export function format(value, maxFracDigits = 2, minFracDigits = 0) {
@@ -142,12 +147,24 @@ export function dhms(t) {
 	return [d, pad(h), pad(m), pad(s)].join(':');
 }
 
+export function hms(t) {
+	var ch = 60 * 60 * 1000,
+		cm = 60 * 1000,
+		h = Math.floor(t / ch),
+		m = Math.floor((t - h * ch) / cm),
+		s = Math.round(t - h * ch - m * cm),
+		pad = (n) => n < 10 ? '0' + n : n
+	if (s === 60) { m++; s = 0 }
+	if (m === 60) { h++; m = 0 }
+	return [pad(h), pad(m), pad(s)].join(':');
+}
+
 export function hmsms(t) {
 	var ch = 60 * 60 * 1000,
 		cm = 60 * 1000,
 		h = Math.floor(t / ch),
 		m = Math.floor((t - h * ch) / cm),
-		s = Math.round((t - h * ch - m * cm) / 1000),
+		s = Math.floor((t - h * ch - m * cm) / 1000),
 		ms = Math.round(t - h * ch - m * cm - s * 1000),
 		pad = (n) => n < 10 ? '0' + n : n,
 		msPad = (n) => n.toString().length < 3 ? '0'.repeat(3 - n.toString().length) + n : n
