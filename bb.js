@@ -84,14 +84,14 @@ function skillLimiter(ns, skill) {
 		{ name: "Hands of Midas", limit: 50 },     //Each level of this skill increases the amount of money you receive from Contracts by 10%
 		{ name: "Hyperdrive", limit: 1000 }        //Each level of this skill increases the experience earned from Contracts, Operations, and BlackOps by 10%
 	]
-	if (skillLimits.find(({ name }) => name === skill) != undefined) return skillLimits.find(({ name }) => name === skill).limit <= ns.bladeburner.getSkillLevel(skill);
+	if (skillLimits.find(({ name }) => name === skill) != undefined) return skillLimits.find(({ name }) => name === skill).limit <= b.getSkillLevel(skill);
 	else return false;
 }
 
 async function doAction(ns, aSuccessChance = 1) {
 	for (const act of b.getBlackOpNames()) {
-		if (act.countRemaining < 1) continue;
-		if (act.minSuccessChance < aSuccessChance || b.getBlackOpRank(act) > b.getRank()) break;
+		if (b.getActionCountRemaining("BlackOps", act) < 1) continue;
+		if (b.getActionEstimatedSuccessChance("BlackOps", act)[0] < aSuccessChance || b.getBlackOpRank(act) > b.getRank()) break;
 		if (b.getCurrentAction().name == act) return;
 		if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 		if (b.startAction("BlackOps", act)) {
@@ -102,7 +102,7 @@ async function doAction(ns, aSuccessChance = 1) {
 	}
 
 	for (const act of ["Assassination", "Sting Operation", "Undercover Operation", "Investigation"]) {
-		if (act.minSuccessChance < aSuccessChance || b.getActionCountRemaining("Operations", act) < 1) continue;
+		if (b.getActionEstimatedSuccessChance("Operations", act)[0] < aSuccessChance || b.getActionCountRemaining("Operations", act) < 1) continue;
 		if (b.getCurrentAction().name == act) return;
 		if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 		if (b.startAction("Operations", act)) {
@@ -113,7 +113,7 @@ async function doAction(ns, aSuccessChance = 1) {
 	}
 
 	for (const act of b.getContractNames()) {
-		if (act.minSuccessChance < aSuccessChance || b.getActionCountRemaining("Contracts", act) < 1) continue;
+		if (b.getActionEstimatedSuccessChance("Contracts", act)[0] < aSuccessChance || b.getActionCountRemaining("Contracts", act) < 1) continue;
 		if (b.getCurrentAction().name == act) return;
 		if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 		if (b.startAction("Contracts", act)) {
@@ -170,7 +170,7 @@ async function chaosEater(ns) {
 			printLog(ns);
 			await ns.sleep(500); //precautionary sleep incase it gets caught in returning below
 			if (b.getCurrentAction().name == act) continue;
-			if (!ns.singularity.getOwnedAugmentations().includes("The Blade's Simulacrum")) ns.singularity.stopAction();
+			if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 			const ms = b.getActionTime("General", act);
 			b.startAction("General", act);
 			addLog("action", `ACT: ${act} until city chaos is 0. ${act} ETA: ${ms / 1000} seconds`);
@@ -187,7 +187,7 @@ function mughurTime(ns) {
 	for (let i = n; i >= 1; i /= 2) {
 		if (b.getSkillUpgradeCost(x, n + i) < b.getSkillPoints()) n += i;
 	}
-	if (ns.bladeburner.getSkillLevel(x) + n > ns.bladeburner.getSkillLevel(x)) {
+	if (b.getSkillLevel(x) + n > b.getSkillLevel(x)) {
 		if (b.upgradeSkill(x, n)) addLog("skill", `Got ${format(n, 2, 2)} ${x}${(n >= 2) ? "s" : ""} for ${format(b.getSkillUpgradeCost(x, n), 2, 2)} sp`);
 	}
 }
@@ -201,7 +201,7 @@ async function violence(ns) {
 			printLog(ns);
 			await ns.sleep(500); //precautionary sleep when it gets caught in 'continue' below
 			if (b.getCurrentAction().name == act) continue;
-			if (!ns.singularity.getOwnedAugmentations().includes("The Blade's Simulacrum")) ns.singularity.stopAction();
+			if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 			b.startAction("General", act);
 			addLog("action", `ACT: ${act} until ${format(ass_target)} ass operations`);
 		}
@@ -266,7 +266,6 @@ async function cleanUp(ns) {
 
 function printLog(ns) {
 	ns.resizeTail(width, height); ns.clearLog();
-	const b = ns.bladeburner
 	if (logs.action.length > 0) {
 		ns.print(`--action report--`);
 		for (const report of logs.action) {
