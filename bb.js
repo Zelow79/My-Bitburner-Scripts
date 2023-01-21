@@ -1,5 +1,5 @@
 import { bar, format, cities } from "ze-lib.js";
-const [globalChaLimit, ass_target, actionLogSize, skillLogSize, width, height] = [1e6, 1e4, 7, 30, 550, 710]
+const [globalChaLimit, chaosLimit, ass_target, actionLogSize, skillLogSize, width, height] = [1e6, 50, 1e4, 7, 30, 550, 710]
 let [b, s] = ["", ""]
 const logs = {
 	skill: [],
@@ -12,9 +12,9 @@ export async function main(ns) {
 	s = ns.singularity
 	const sleepTime = 500
 	logs.action.length = 0
-	for (var i = 0; i < actionLogSize; i++) logs.action.push(" ");
+	for (let i = 0; i < actionLogSize; i++) logs.action.push(" ");
 	logs.skill.length = 0
-	for (var i = 0; i < skillLogSize; i++) logs.skill.push(" ");
+	for (let i = 0; i < skillLogSize; i++) logs.skill.push(" ");
 	if (!ns.scriptRunning("ibb.js", ns.getHostname())) ns.exec("ibb.js", ns.getHostname());
 	while (1) {
 		printLog(ns);
@@ -165,7 +165,7 @@ async function healthCheck(ns) {
 async function chaosEater(ns) {
 	const c = b.getCity();
 	const act = "Diplomacy"
-	if (b.getCityChaos(c) > 20) {
+	if (b.getCityChaos(c) > chaosLimit) {
 		while (b.getCityChaos(c) > 0) {
 			printLog(ns);
 			await ns.sleep(500); //precautionary sleep incase it gets caught in returning below
