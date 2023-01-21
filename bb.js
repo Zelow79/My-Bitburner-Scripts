@@ -1,5 +1,6 @@
 import { bar, format, cities } from "ze-lib.js";
 const [globalChaLimit, ass_target, actionLogSize, skillLogSize, width, height] = [1e6, 1e4, 7, 30, 550, 710]
+let [b, s] = ["", ""]
 const logs = {
 	skill: [],
 	action: []
@@ -7,6 +8,8 @@ const logs = {
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog('ALL'); ns.clearLog(); ns.tail();
+	b = ns.bladeburner
+	s = ns.singularity
 	const sleepTime = 500
 	logs.action.length = 0
 	for (var i = 0; i < actionLogSize; i++) logs.action.push(" ");
@@ -16,7 +19,7 @@ export async function main(ns) {
 	while (1) {
 		printLog(ns);
 		joiner(ns);
-		if (ns.bladeburner.inBladeburner()) {
+		if (b.inBladeburner()) {
 			await violence(ns);
 			await healthCheck(ns);
 			await skillBuyer(ns);
@@ -30,26 +33,26 @@ export async function main(ns) {
 }
 
 function joiner(ns) {
-	if (ns.bladeburner.joinBladeburnerDivision() && !ns.bladeburner.inBladeburner()) addLog("action", '-Joined Bladeburner Division'); //attempt to join bladeburners
-	else if (ns.bladeburner.joinBladeburnerFaction() && !ns.getPlayer().factions.includes('Bladeburners')) addLog("action", '-Joined Bladeburner Faction'); //attempt to join bladeburners faction
+	if (b.joinBladeburnerDivision() && !b.inBladeburner()) addLog("action", '-Joined Bladeburner Division'); //attempt to join bladeburners
+	else if (b.joinBladeburnerFaction() && !ns.getPlayer().factions.includes('Bladeburners')) addLog("action", '-Joined Bladeburner Faction'); //attempt to join bladeburners faction
 }
 
 function getBBSkill(ns) {
 	const bbSkills = []
-	if (ns.bladeburner.getSkillLevel('Overclock') < 33) {
+	if (b.getSkillLevel('Overclock') < 33) {
 		const x = {
 			name: 'Overclock',
-			upgradeCost: ns.bladeburner.getSkillUpgradeCost('Overclock')
+			upgradeCost: b.getSkillUpgradeCost('Overclock')
 		}
 		bbSkills.push(x);
 		return bbSkills
 	}
 
-	for (const skill of ns.bladeburner.getSkillNames()) {
+	for (const skill of b.getSkillNames()) {
 		if (skillLimiter(ns, skill)) continue;
 		const x = {
 			name: skill,
-			upgradeCost: ns.bladeburner.getSkillUpgradeCost(skill)
+			upgradeCost: b.getSkillUpgradeCost(skill)
 		}
 		bbSkills.push(x);
 	}
@@ -59,9 +62,9 @@ function getBBSkill(ns) {
 }
 
 async function skillBuyer(ns) {
-	while (getBBSkill(ns) !== false && getBBSkill(ns)[0].upgradeCost < ns.bladeburner.getSkillPoints()) {
+	while (getBBSkill(ns) !== false && getBBSkill(ns)[0].upgradeCost < b.getSkillPoints()) {
 		const cheapestSkill = getBBSkill(ns)[0]
-		if (ns.bladeburner.upgradeSkill(cheapestSkill.name)) addLog("skill", `${cheapestSkill.name} upgraded to level ${ns.bladeburner.getSkillLevel(cheapestSkill.name)} for ${cheapestSkill.upgradeCost} skill points.`);
+		if (b.upgradeSkill(cheapestSkill.name)) addLog("skill", `${cheapestSkill.name} upgraded to level ${b.getSkillLevel(cheapestSkill.name)} for ${cheapestSkill.upgradeCost} skill points.`);
 		await ns.sleep(20);
 	}
 }
@@ -85,107 +88,37 @@ function skillLimiter(ns, skill) {
 	else return false;
 }
 
-function action(ns, type = "general") {
-	const blackOps = []
-	const operations = []
-	const contracts = []
-	const general = []
-
-	for (const op of ns.bladeburner.getBlackOpNames()) {
-		const x = {
-			name: op,
-			time: ns.bladeburner.getActionTime("BlackOps", op),
-			countRemaining: ns.bladeburner.getActionCountRemaining("BlackOps", op),
-			minSuccessChance: ns.bladeburner.getActionEstimatedSuccessChance("BlackOps", op)[0],
-			maxSuccessChance: ns.bladeburner.getActionEstimatedSuccessChance("BlackOps", op)[1],
-			reqBlackOpRank: ns.bladeburner.getBlackOpRank(op)
-		}
-		blackOps.push(x);
-	}
-
-	for (const op of ["Assassination", "Undercover Operation", "Investigation"]) { //"Sting Operation", "Raid", "Stealth Retirement Operation", ,
-		const x = {
-			name: op,
-			time: ns.bladeburner.getActionTime("Operations", op),
-			countRemaining: ns.bladeburner.getActionCountRemaining("Operations", op),
-			minSuccessChance: ns.bladeburner.getActionEstimatedSuccessChance("Operations", op)[0],
-			maxSuccessChance: ns.bladeburner.getActionEstimatedSuccessChance("Operations", op)[1],
-		}
-		operations.push(x);
-	}
-
-	for (const op of ["Tracking"]) {
-		const x = {
-			name: op,
-			time: ns.bladeburner.getActionTime("Contracts", op),
-			countRemaining: ns.bladeburner.getActionCountRemaining("Contracts", op),
-			minSuccessChance: ns.bladeburner.getActionEstimatedSuccessChance("Contracts", op)[0],
-			maxSuccessChance: ns.bladeburner.getActionEstimatedSuccessChance("Contracts", op)[1],
-		}
-		contracts.push(x);
-	}
-
-	for (const op of ns.bladeburner.getGeneralActionNames()) {
-		const x = {
-			name: op,
-			time: ns.bladeburner.getActionTime("General", op),
-			minSuccessChance: ns.bladeburner.getActionEstimatedSuccessChance("General", op)[0],
-			maxSuccessChance: ns.bladeburner.getActionEstimatedSuccessChance("General", op)[1],
-		}
-		general.push(x);
-	}
-
-	switch (type) {
-		case "general":
-			return general;
-		case "contracts":
-			return contracts;
-		case "operations":
-			return operations;
-		case "blackops":
-			return blackOps;
-	}
-}
-
 async function doAction(ns, aSuccessChance = 1) {
-	const blackOps = action(ns, "blackops");
-	const operations = action(ns, "operations");
-	operations.sort((a, b) => (b.minSuccessChance - a.minSuccessChance));
-	const contracts = action(ns, "contracts");
-	contracts.sort((a, b) => (b.minSuccessChance - a.minSuccessChance));
-	const general = action(ns, "general");
-	general.sort((a, b) => (b.minSuccessChance - a.minSuccessChance));
-
-	for (const act of blackOps) {
+	for (const act of b.getBlackOpNames()) {
 		if (act.countRemaining < 1) continue;
-		if (act.minSuccessChance < aSuccessChance || ns.bladeburner.getBlackOpRank(act.name) > ns.bladeburner.getRank()) break;
-		if (ns.bladeburner.getCurrentAction().name == act.name) return;
-		if (!ns.singularity.getOwnedAugmentations().includes("The Blade's Simulacrum")) ns.singularity.stopAction();
-		if (ns.bladeburner.startAction("BlackOps", act.name)) {
-			addLog("action", `ACT: ${act.name}`);
-			await ns.sleep(ns.bladeburner.getActionTime("BlackOps", act.name));
+		if (act.minSuccessChance < aSuccessChance || b.getBlackOpRank(act) > b.getRank()) break;
+		if (b.getCurrentAction().name == act) return;
+		if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
+		if (b.startAction("BlackOps", act)) {
+			addLog("action", `ACT: ${act}`);
+			await ns.sleep(b.getActionTime("BlackOps", act));
 			return;
 		}
 	}
 
-	for (const act of operations) {
-		if (act.minSuccessChance < aSuccessChance || act.countRemaining < 1) continue;
-		if (ns.bladeburner.getCurrentAction().name == act.name) return;
-		if (!ns.singularity.getOwnedAugmentations().includes("The Blade's Simulacrum")) ns.singularity.stopAction();
-		if (ns.bladeburner.startAction("Operations", act.name)) {
-			addLog("action", `ACT: ${act.name}`);
-			await ns.sleep(ns.bladeburner.getActionTime("Operations", act.name));
+	for (const act of ["Assassination", "Sting Operation", "Undercover Operation", "Investigation"]) {
+		if (act.minSuccessChance < aSuccessChance || b.getActionCountRemaining("Operations", act) < 1) continue;
+		if (b.getCurrentAction().name == act) return;
+		if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
+		if (b.startAction("Operations", act)) {
+			addLog("action", `ACT: ${act}`);
+			await ns.sleep(b.getActionTime("Operations", act));
 			return;
 		}
 	}
 
-	for (const act of contracts) {
-		if (act.minSuccessChance < aSuccessChance || act.countRemaining < 1) continue;
-		if (ns.bladeburner.getCurrentAction().name == act.name) return;
-		if (!ns.singularity.getOwnedAugmentations().includes("The Blade's Simulacrum")) ns.singularity.stopAction();
-		if (ns.bladeburner.startAction("Contracts", act.name)) {
-			addLog("action", `ACT: ${act.name}`);
-			await ns.sleep(ns.bladeburner.getActionTime("Contracts", act.name));
+	for (const act of b.getContractNames()) {
+		if (act.minSuccessChance < aSuccessChance || b.getActionCountRemaining("Contracts", act) < 1) continue;
+		if (b.getCurrentAction().name == act) return;
+		if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
+		if (b.startAction("Contracts", act)) {
+			addLog("action", `ACT: ${act}`);
+			await ns.sleep(b.getActionTime("Contracts", act));
 			return;
 		}
 	}
@@ -193,12 +126,12 @@ async function doAction(ns, aSuccessChance = 1) {
 	const lastResort = [{ name: "Investigation", type: "Operations" }, { name: "Field Analysis", type: "General" }] // {name: "Diplomacy", type: "General"},
 
 	for (const act of lastResort) {
-		if (act.name == "Diplomacy" && ns.bladeburner.getCityChaos(ns.bladeburner.getCity()) < 5 || act.name == "Investigation" && ns.bladeburner.getActionCountRemaining("Operations", "Investigation") < 1) continue;
-		if (ns.bladeburner.getCurrentAction().name == act.name) return;
-		if (!ns.singularity.getOwnedAugmentations().includes("The Blade's Simulacrum")) ns.singularity.stopAction();
-		if (ns.bladeburner.startAction(act.type, act.name)) {
+		if (act.name == "Diplomacy" && b.getCityChaos(b.getCity()) < 5 || act.name == "Investigation" && b.getActionCountRemaining("Operations", "Investigation") < 1) continue;
+		if (b.getCurrentAction().name == act) return;
+		if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
+		if (b.startAction(act.type, act.name)) {
 			addLog("action", `ACT: ${act.name}`);
-			await ns.sleep(ns.bladeburner.getActionTime(act.type, act.name));
+			await ns.sleep(b.getActionTime(act.type, act.name));
 			return;
 		}
 	}
@@ -207,32 +140,29 @@ async function doAction(ns, aSuccessChance = 1) {
 async function healthCheck(ns) {
 	if (ns.getPlayer().hp.current / ns.getPlayer().hp.max < 0.5) {
 		while (ns.getPlayer().hp.current / ns.getPlayer().hp.max < 1) {
-			ns.singularity.stopAction(); //this mess is totally temp. Shouldn't even need to hospalize at all, but the HP gain is bugged for when def levels.
-			ns.singularity.hospitalize();
 			await ns.sleep(20);
 			if (ns.getPlayer().hp.current / ns.getPlayer().hp.max === 1) continue;
-			if (ns.bladeburner.getCurrentAction().name === "Hyperbolic Regeneration Chamber") continue;
-			if (!ns.singularity.getOwnedAugmentations().includes("The Blade's Simulacrum")) ns.singularity.stopAction();
-			if (ns.bladeburner.startAction('General', "Hyperbolic Regeneration Chamber")) addLog("action", 'ACT: Hyperbolic Regeneration Chamber');
+			if (b.getCurrentAction().name === "Hyperbolic Regeneration Chamber") continue;
+			if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
+			if (b.startAction('General', "Hyperbolic Regeneration Chamber")) addLog("action", 'ACT: Hyperbolic Regeneration Chamber');
 		}
 	}
-	if (ns.bladeburner.getStamina()[0] / ns.bladeburner.getStamina()[1] < 0.7) {
-		const initStam = ns.bladeburner.getStamina()[0];
+	if (b.getStamina()[0] / b.getStamina()[1] < 0.7) {
+		const initStam = b.getStamina()[0];
 		const startTime = new Date();
 		const possibleActions = ["Training", "Hyperbolic Regeneration Chamber"];
 		let action = possibleActions[0];
-		while (ns.bladeburner.getStamina()[0] / ns.bladeburner.getStamina()[1] < 1) {
-			if (startTime + 1000 * 60 * 2 <= Date.now() && initStam >= ns.bladeburner.getStamina()[0]) action = possibleActions[1];
+		while (b.getStamina()[0] / b.getStamina()[1] < 1) {
+			if (startTime + 1000 * 60 * 2 <= Date.now() && initStam >= b.getStamina()[0]) action = possibleActions[1];
 			await ns.sleep(20);
-			if (ns.bladeburner.getCurrentAction().name === action) continue;
-			if (!ns.singularity.getOwnedAugmentations().includes("The Blade's Simulacrum")) ns.singularity.stopAction();
-			if (ns.bladeburner.startAction('General', action)) addLog("action", `ACT: ${action}`);
+			if (b.getCurrentAction().name === action) continue;
+			if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
+			if (b.startAction('General', action)) addLog("action", `ACT: ${action}`);
 		}
 	}
 }
 
 async function chaosEater(ns) {
-	const b = ns.bladeburner
 	const c = b.getCity();
 	const act = "Diplomacy"
 	if (b.getCityChaos(c) > 20) {
@@ -251,7 +181,6 @@ async function chaosEater(ns) {
 }
 
 function mughurTime(ns) {
-	const b = ns.bladeburner
 	const x = "Hyperdrive"
 	let n = 1
 	while (b.getSkillUpgradeCost(x, n * 2) < b.getSkillPoints()) n *= 2;
@@ -264,7 +193,6 @@ function mughurTime(ns) {
 }
 
 async function violence(ns) {
-	const b = ns.bladeburner
 	const assLevel = () => b.getActionCountRemaining("Operations", "Assassination");
 	const act = "Incite Violence"
 	if (ns.getPlayer().skills.charisma < globalChaLimit) return; //we only wanna act after if we have the charisma to correct it. Testing 1e6 for 50 
@@ -283,7 +211,6 @@ async function violence(ns) {
 
 async function cleanUp(ns) {
 	const boarder = "------------------------------"
-	const b = ns.bladeburner
 	if (!cities.some(e => b.getCityChaos(e) > 1e50) || ns.getPlayer().skills.charisma < globalChaLimit) return;
 	b.stopBladeburnerAction();
 	let highestPop = {
