@@ -101,7 +101,7 @@ async function doAction(ns, aSuccessChance = 1) {
 		}
 	}
 
-	for (const act of ["Assassination", "Sting Operation", "Undercover Operation", "Investigation"]) {
+	for (const act of ["Assassination", "Undercover Operation", "Investigation"]) {
 		if (b.getActionEstimatedSuccessChance("Operations", act)[0] < aSuccessChance || b.getActionCountRemaining("Operations", act) < 1) continue;
 		if (b.getCurrentAction().name == act) return;
 		if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
