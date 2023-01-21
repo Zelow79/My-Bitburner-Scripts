@@ -16,17 +16,14 @@ export async function main(ns) {
 	while (1) {
 		printLog(ns);
 		joiner(ns);
-
 		if (ns.bladeburner.inBladeburner()) {
 			await violence(ns);
 			await healthCheck(ns);
 			await skillBuyer(ns);
 			await cleanUp(ns);
 			await chaosEater(ns);
-
 			await doAction(ns);
 			mughurTime(ns)
-			//await getHyper(ns);
 		}
 		await ns.sleep(sleepTime);
 	}
@@ -355,7 +352,7 @@ function printLog(ns) {
 			ns.print(report);
 		}
 	}
-	ns.print(bar(b.getActionCountRemaining("Operations", "Assassination") / ass_target, "⚡") + `${b.getActionCountRemaining("Operations", "Assassination")}/${ass_target} Assassinations`)
+	ns.print(bar(b.getActionCountRemaining("Operations", "Assassination") / ass_target, "⚡") + `${b.getActionCountRemaining("Operations", "Assassination")}/${ass_target} Assassinations`);
 }
 
 function addLog(type, x) {
