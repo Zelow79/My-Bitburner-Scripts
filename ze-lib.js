@@ -10,7 +10,7 @@ export function getAllServers(ns) {
 
 export const cities = ["Sector-12", "Aevum", "Volhaven", "Chongqing", "New Tokyo", "Ishima"]
 
-export function serverInfo(ns, serverName, threads = 1, cores = 1) { //lazy object with server info and other useful server information
+export function serverInfo(ns, serverName, threads = 1, cores = 1) { // lazy object with server info and other useful server information
 	const player = ns.getPlayer();
 	const server = ns.getServer(serverName);
 	const hf = ns.formulas.hacking
@@ -27,7 +27,7 @@ export function serverInfo(ns, serverName, threads = 1, cores = 1) { //lazy obje
 	};
 }
 
-export async function bdServer(ns, server) { //courtesy of Mughur from the discord. handy way to bd a target
+export async function bdServer(ns, server) { // courtesy of Mughur from the discord. handy way to bd a target
 	ns.singularity.connect("home");
 	let route = [server]
 	while (route[0] != "home") {
@@ -55,17 +55,18 @@ export function format(value, maxFracDigits = 2, minFracDigits = 0) {
 	return Intl.NumberFormat(locale, {
 		notation: notation,
 		compactDisplay: "short",
+		roundingMode: "trunc",
 		maximumFractionDigits: maxFracDigits,
 		minimumFractionDigits: minFracDigits
 	}).format(value).toLocaleLowerCase();
 }
 
-export function round(value, precision) { //rounds accurately to the precision value, which determines decimal place IE, 1 = 0.0, 2 = 0.00
+export function round(value, precision) { // rounds accurately to the precision value, which determines decimal place IE, 1 = 0.0, 2 = 0.00
 	var multiplier = Math.pow(10, precision || 0);
 	return Math.round(value * multiplier) / multiplier;
 }
 
-export function diceBar(progress, length = 15) { //progress bar with random dice as the bar, also color coded, orginal design came from NightElf from BB discord
+export function diceBar(progress, length = 15) { // progress bar with random dice as the bar, also color coded, orginal design came from NightElf from BB discord
 	const diceSet = ["", "", "", "", "", ""]
 	const empty = " "
 	const progressValue = Math.min(progress, 1);
@@ -83,7 +84,7 @@ export function diceBar(progress, length = 15) { //progress bar with random dice
 	return `[${colorPicker(array.join(""), color)}]`;
 }
 
-export function bar(progress, bar = true, length = 15) { //progress bar, orginal design came from NightElf from BB discord
+export function bar(progress, bar = true, length = 15) { // progress bar, orginal design came from NightElf from BB discord
 	if (bar == true) bar = "#"
 	const empty = " "
 	const progressValue = Math.min(progress, 1);
