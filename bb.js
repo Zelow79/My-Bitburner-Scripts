@@ -1,5 +1,5 @@
 import { bar, format, cities } from "ze-lib.js";
-const [globalChaLimit, chaosLimit, ass_target, actionLogSize, skillLogSize, width, height] = [1e6, 50, 1e4, 7, 30, 550, 710]
+const [globalChaLimit, chaosLimit, ass_target, actionLogSize, skillLogSize, width, height] = [1e6, 50, 1e4, 7, 30, 375, 710]
 let [b, s] = ["", ""]
 const logs = {
 	skill: [],
@@ -171,9 +171,8 @@ async function chaosEater(ns) {
 			await ns.sleep(500); //precautionary sleep incase it gets caught in returning below
 			if (b.getCurrentAction().name == act) continue;
 			if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
-			const ms = b.getActionTime("General", act);
 			b.startAction("General", act);
-			addLog("action", `ACT: ${act} until city chaos is 0. ${act} ETA: ${ms / 1000} seconds`);
+			addLog("action", `ACT: ${act}`);
 			await ns.sleep(0);
 		}
 		addLog("action", 'INFO: Chaos reduced to 0.');
@@ -203,9 +202,9 @@ async function violence(ns) {
 			if (b.getCurrentAction().name == act) continue;
 			if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 			b.startAction("General", act);
-			addLog("action", `ACT: ${act} until ${format(ass_target)} ass operations`);
+			addLog("action", `ACT: ${act}`);
 		}
-		addLog("action", `Ass qty now ${assLevel()}. Violence protocol - Complete`);
+		addLog("action", `Violence protocol - Complete`);
 	}
 }
 
@@ -224,13 +223,13 @@ async function cleanUp(ns) {
 		cleanUpMessage += `\nCity:        ${c}`
 		cleanUpMessage += `\nOld Chaos:   ${format(b.getCityChaos(c), 3)}`
 		if (b.getCityChaos(c) > 50) {
-			addLog("action", `Diplomatic Relations started in: ${c}`);
+			addLog("action", `${c}: Diplomacy`);
 			b.startAction("General", "Diplomacy");
 			while (b.getCityChaos(c) > 0) { await ns.sleep(0) }
 			cleanUpMessage += `\nNew Chaos:   ${format(b.getCityChaos(c), 3)}`
 		}
 		else {
-			addLog("action", "Chaos too low, skipping Diplomacy.");
+			addLog("action", "Diplomacy - Skipped");
 			cleanUpMessage += "\n***Diplomacy Skipped***"
 		}
 		const popStart = b.getCityEstimatedPopulation(c);
@@ -239,16 +238,16 @@ async function cleanUp(ns) {
 		const check2 = b.getActionTime("Operations", "Investigation") === 1000
 		const check3 = b.getActionEstimatedSuccessChance("Operations", "Investigation")[1] > 0.99
 		if (check1 && check2 && check3) {
-			addLog("action", `Running Investigations at ${c} to improve pop estimation.`);
+			addLog("action", `${c}: Investigations`);
 			b.startAction("Operations", "Investigation");
 			await ns.sleep(2000);
 			b.stopBladeburnerAction();
-			addLog("action", `Investigations at ${c} complete.`);
+			addLog("action", `${c} Investigations - complete.`);
 			const popEnd = b.getCityEstimatedPopulation(c);
 			cleanUpMessage += `\nNew Est Pop: ${format(popEnd, 3)} (${(popEnd - popStart > 0) ? "+" + format(popEnd - popStart, 3) : format(popEnd - popStart, 3)})`
 		}
 		else {
-			addLog("action", `Investigations at ${c} were skipped.`);
+			addLog("action", `${c} Investigations - skipped.`);
 			cleanUpMessage += "\n***Investigations Skipped***"
 		}
 		if (b.getCityEstimatedPopulation(c) > highestPop.pop) {
