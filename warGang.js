@@ -1,4 +1,4 @@
-import { diceBar, bar, format } from "ze-lib.js";
+import { bar, format, formatPercent, numPad } from "ze-lib.js";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL");
@@ -25,7 +25,7 @@ export async function main(ns) {
 			if (!territoryTime.tw) gangMemberStuff(ns);
 			printInfo(ns, myGang);
 		} else {
-			ns.print(`Current Karma: ${ns.nFormat(ns.heart.break(), '0,0.[00]a')}`)
+			ns.print(`Current Karma: ${format(ns.heart.break())}`)
 			ns.singularity.joinFaction(faction);
 			ns.gang.createGang(faction);
 		}
@@ -151,7 +151,7 @@ function gangMemberStuff(ns) {
 	const targetValue = 100 // amount each stat will be trained up to. Recently changed to work more like a weight to use against ascension multiplier
 	while (ns.gang.canRecruitMember()) {
 		const gangsterNames = ns.gang.getMemberNames();
-		const name = parseInt(gangsterNames[gangsterNames.length - 1], 10) >= 0 ? ns.nFormat(parseInt(gangsterNames[gangsterNames.length - 1], 10) + 1, "00") : "00" // recently attempted to add a 2 digit number padding. Hopefully names will be 00, 01, 02 etc.
+		const name = parseInt(gangsterNames[gangsterNames.length - 1], 10) >= 0 ? numPad(parseInt(gangsterNames[gangsterNames.length - 1], 10) + 1, 2) : "00" // recently attempted to add a 2 digit number padding. Hopefully names will be 00, 01, 02 etc.
 		ns.gang.recruitMember(name);
 		ns.print(`${name} has been recruited.`);
 	}
@@ -230,14 +230,14 @@ function printInfo(ns, myGang) {
 	//ns.print(`\n   *** GANG REPORT ***`);
 	ns.print(`\nFaction name    : ${myGang.faction}`);
 	ns.print(`Total Respect   : ${format(myGang.respect)}`);
-	ns.print(`New Member at   : ${ns.nFormat(getRespectNeededToRecruitMember(ns, ns.gang.getMemberNames()), "0a")} resp.`);
+	ns.print(`New Member at   : ${format(getRespectNeededToRecruitMember(ns, ns.gang.getMemberNames()))} resp.`);
 	ns.print(`Wanted Level    : ${format(myGang.wantedLevel)}`);
-	ns.print(`Wanted Penalty  : -${ns.nFormat(1 - myGang.wantedPenalty, "0.00%")}`);
+	ns.print(`Wanted Penalty  : -${formatPercent(1 - myGang.wantedPenalty)}`);
 	ns.print(`Money gain rate : ${format(myGang.moneyGainRate * 5)} / s`);
 	ns.print(`Is war allowed? : ${myGang.territoryWarfareEngaged}`);
-	ns.print(`Min Win Chance  : ${ns.nFormat(lowestClashChance(ns), '0[.]00%') + "\n" + diceBar(lowestClashChance(ns), 29)}`);
+	ns.print(`Min Win Chance  : ${formatPercent(lowestClashChance(ns)) + "\n" + bar(lowestClashChance(ns), "⚡", 29)}`);
 	ns.print(`Territory Power : ${format(myGang.power)}`);
-	ns.print(`Territory Owned : ${ns.nFormat(myGang.territory, "0.[00]%") + "\n" + bar(myGang.territory, "", 29)}`);
+	ns.print(`Territory Owned : ${formatPercent(myGang.territory) + "\n" + bar(myGang.territory, "⚡", 29)}`);
 	ns.print(`Faction Rep     : ${format(ns.singularity.getFactionRep(myGang.faction))}`);
 }
 
