@@ -55,10 +55,14 @@ export function format(value, maxFracDigits = 2, minFracDigits = 0) {
 	return Intl.NumberFormat(locale, {
 		notation: notation,
 		compactDisplay: "short",
-		roundingMode: "trunc",
+		//roundingMode: "trunc",
 		maximumFractionDigits: maxFracDigits,
 		minimumFractionDigits: minFracDigits
 	}).format(value).toLocaleLowerCase();
+}
+
+export function numPad(value, digits) {
+	return value.toString().length < digits ? '0'.repeat(digits - value.toString().length) + value : value
 }
 
 export function round(value, precision) { // rounds accurately to the precision value, which determines decimal place IE, 1 = 0.0, 2 = 0.00
