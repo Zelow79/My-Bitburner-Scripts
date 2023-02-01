@@ -49,6 +49,14 @@ export function formatPercent(value, maxFracDigits = 2, minFracDigits = 0) {
 	}).format(value);
 }
 
+export function formatGB(bytes, dm = 2) {
+	if (bytes == 0) return '0 Bytes';
+	var k = 1024,
+		sizes = [`${bytes <= 1 ? "Byte" : "Bytes"}`, 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+		i = Math.floor(Math.log(bytes) / Math.log(k));
+	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
+}
+
 export function format(value, maxFracDigits = 2, minFracDigits = 0) {
 	const locale = "en-US"
 	const notation = (value >= 1e15) ? "scientific" : "compact"
@@ -137,7 +145,7 @@ export function colorPicker(x, color) { // x = what you want colored
 	return y;
 }
 
-export function dhms(t) {
+export function dhms(t) { // t is in ms
 	var cd = 24 * 60 * 60 * 1000,
 		ch = 60 * 60 * 1000,
 		cm = 60 * 1000,
@@ -152,19 +160,19 @@ export function dhms(t) {
 	return [d, pad(h), pad(m), pad(s)].join(':');
 }
 
-export function hms(t) {
+export function hms(t) { // t is in ms
 	var ch = 60 * 60 * 1000,
 		cm = 60 * 1000,
 		h = Math.floor(t / ch),
 		m = Math.floor((t - h * ch) / cm),
-		s = Math.round(t - h * ch - m * cm),
+		s = Math.round((t - h * ch - m * cm) / 1000),
 		pad = (n) => n < 10 ? '0' + n : n
 	if (s === 60) { m++; s = 0 }
 	if (m === 60) { h++; m = 0 }
 	return [pad(h), pad(m), pad(s)].join(':');
 }
 
-export function hmsms(t) {
+export function hmsms(t) { // t is in ms
 	var ch = 60 * 60 * 1000,
 		cm = 60 * 1000,
 		h = Math.floor(t / ch),
