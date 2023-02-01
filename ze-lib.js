@@ -49,7 +49,7 @@ export function formatPercent(value, maxFracDigits = 2, minFracDigits = 0) {
 	}).format(value);
 }
 
-export function formatGB(bytes, dm = 2) {
+export function formatGB(bytes, dm = 0) {
 	if (bytes == 0) return '0 Bytes';
 	var k = 1024,
 		sizes = [`${bytes <= 1 ? "Byte" : "Bytes"}`, 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
