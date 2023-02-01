@@ -1,4 +1,4 @@
-import { hmsms, format } from "ze-lib.js";
+import { hmsms, format, formatGB } from "ze-lib.js";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.clearLog(); ns.disableLog("ALL"); //ns.enableLog("sleep");
@@ -37,20 +37,20 @@ export async function main(ns) {
 		ns.clearLog();
 		ns.print("Server Name:        " + serverStats.hostname);
 		ns.print("IP Adress:          " + serverStats.ip);
-		ns.print("Base Security:      " + ns.nFormat(serverStats.baseDifficulty, '0,0'));
-		ns.print("Min Security:       " + ns.nFormat(serverStats.minDifficulty, '0,0'));
-		ns.print("Security Level:     " + ns.nFormat(serverStats.hackDifficulty, '0.0[00]'));
+		ns.print("Base Security:      " + format(serverStats.baseDifficulty));
+		ns.print("Min Security:       " + format(serverStats.minDifficulty));
+		ns.print("Security Level:     " + format(serverStats.hackDifficulty));
 		ns.print(`Hack Time:          ${hmsms(ns.getHackTime(getInput))}`)
-		ns.print("Required Ports:     " + ns.nFormat(serverStats.numOpenPortsRequired, '0.[00]'));
+		ns.print("Required Ports:     " + format(serverStats.numOpenPortsRequired));
 		ns.print("Max Server Money:   $" + format(serverStats.moneyMax));
 		if (serverStats.moneyMax > 0) {
 			ns.print("Current Money:      $" + format(serverStats.moneyAvailable));
 			ns.print("Money Progress Bar");
 			ns.print(progressBar + "| " + progress + "%");
 		}
-		ns.print("Max Ram:            " + ns.nFormat(serverStats.maxRam * 1e9, '0b'));
+		ns.print("Max Ram:            " + formatGB(serverStats.maxRam * 1e9));
 		if (serverStats.maxRam > 0) {
-			ns.print("Used Ram:           " + ns.nFormat(serverStats.ramUsed * 1e9, '0b'));
+			ns.print("Used Ram:           " + formatGB(serverStats.ramUsed * 1e9));
 			ns.print("Free Ram Progress Bar");
 			ns.print(rProgressBar + "| " + rProgress + "%");
 		}
