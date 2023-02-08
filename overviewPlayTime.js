@@ -13,8 +13,8 @@ export async function main(ns) {
     const totalPlaytime = player.totalPlaytime
     const lastBitnode = player.playtimeSinceLastBitnode
     const lastAug = player.playtimeSinceLastAug
-    hook0.innerText = `Time Played\nSince Aug. install:\nSince BN clear:\nTotal:`
-    hook1.innerText = `(dd:hh:mm:ss)\n${dhms(lastAug)}\n${dhms(lastBitnode)}\n${dhms(totalPlaytime)}`
+    hook0.innerText = `Playtime\nLast Aug:\nBN clear:\nTotal:`
+    hook1.innerText = `\n${dhms(lastAug)}\n${dhms(lastBitnode)}\n${dhms(totalPlaytime)}`
     await ns.sleep(1000);
   }
 }
