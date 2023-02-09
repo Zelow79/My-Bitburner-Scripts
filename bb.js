@@ -223,13 +223,13 @@ async function cleanUp(ns) {
 		cleanUpMessage += `\nCity:        ${c}`
 		cleanUpMessage += `\nOld Chaos:   ${format(b.getCityChaos(c), 3)}`
 		if (b.getCityChaos(c) > 50) {
-			addLog("action", `${c}: Diplomacy`);
+			addLog("action", `Diplomacy: ${c}`);
 			b.startAction("General", "Diplomacy");
 			while (b.getCityChaos(c) > 0) { await ns.sleep(0) }
 			cleanUpMessage += `\nNew Chaos:   ${format(b.getCityChaos(c), 3)}`
 		}
 		else {
-			addLog("action", "Diplomacy - Skipped");
+			addLog("action", `Diplomacy: ${c} - Skipped`);
 			cleanUpMessage += "\n***Diplomacy Skipped***"
 		}
 		const popStart = b.getCityEstimatedPopulation(c);
@@ -238,16 +238,16 @@ async function cleanUp(ns) {
 		const check2 = b.getActionTime("Operations", "Investigation") === 1000
 		const check3 = b.getActionEstimatedSuccessChance("Operations", "Investigation")[1] > 0.99
 		if (check1 && check2 && check3) {
-			addLog("action", `${c}: Investigations`);
+			addLog("action", `Investigations: ${c}`);
 			b.startAction("Operations", "Investigation");
 			await ns.sleep(2000);
 			b.stopBladeburnerAction();
-			addLog("action", `${c} Investigations - complete.`);
+			addLog("action", `Investigations: ${c} - complete`);
 			const popEnd = b.getCityEstimatedPopulation(c);
 			cleanUpMessage += `\nNew Est Pop: ${format(popEnd, 3)} (${(popEnd - popStart > 0) ? "+" + format(popEnd - popStart, 3) : format(popEnd - popStart, 3)})`
 		}
 		else {
-			addLog("action", `${c} Investigations - skipped.`);
+			addLog("action", `Investigations: ${c} - skipped`);
 			cleanUpMessage += "\n***Investigations Skipped***"
 		}
 		if (b.getCityEstimatedPopulation(c) > highestPop.pop) {
