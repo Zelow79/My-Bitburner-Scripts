@@ -261,6 +261,9 @@ async function cleanUp(ns) {
 	const endTime = new Date();
 	cleanUpMessage += `\nMoving BBHQ to highest est pop: ${highestPop.name}\n${endTime.toLocaleString()} - clean up phase ended\n${(endTime - startTime > 60 * 1000) ? format((endTime - startTime) / 1000 / 60) + " minutes" : (endTime - startTime > 1000) ? format((endTime - startTime) / 1000) + " seconds" : format(endTime - startTime, 0) + "ms"} to finish clean up`
 	ns.tprint(cleanUpMessage);
+	const folder = "/bladeburner_reports/"
+	const fileName = "cleanup_" + (endTime.getMonth() + 1) + "-" + endTime.getDate() + "-" + endTime.getFullYear() + ".txt"
+	ns.write(folder + fileName, cleanUpMessage, "w");
 }
 
 function printLog(ns) {
