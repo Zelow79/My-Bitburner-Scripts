@@ -59,7 +59,7 @@ export function formatGB(bytes, dm = 0) {
 
 export function format(value, maxFracDigits = 2, minFracDigits = 0) {
 	const locale = "en-US"
-	const notation = (value >= 1e15) ? "scientific" : "compact"
+	const notation = (value >= 1e15 || value <= -1e15) ? "scientific" : "compact"
 	return Intl.NumberFormat(locale, {
 		notation: notation,
 		compactDisplay: "short",
