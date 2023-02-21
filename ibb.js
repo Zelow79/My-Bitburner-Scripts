@@ -9,7 +9,7 @@ export async function main(ns) {
 		await ns.sleep(500);
 	}
 }
-/** @param {NS} ns */
+
 function printInfo(ns) {
 	ns.resizeTail(250, 710); ns.clearLog();
 	const b = ns.bladeburner
