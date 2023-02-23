@@ -27,10 +27,11 @@ function printInfo(ns) {
 		lastKnownAssSpree = Date.now() // timestamp spree start time
 	}
 	const assLevel = b.getActionCurrentLevel("Operations", "Assassination");
+	const maxAssLevel = b.getActionMaxLevel("Operations", "Assassination");
 	ns.print(divider);
 	ns.print("Assassination Info");
 	ns.print(` ${colorPicker("┣", "white")}Current Count:  ${colorPicker(format(assCount), "white")}`);
-	ns.print(` ${colorPicker("┣", "white")}Current Level:  ${colorPicker(format(assLevel), "white")}`);
+	ns.print(` ${colorPicker("┣", "white")}Level:          ${colorPicker(format(assLevel), "white")}(${colorPicker(format(maxAssLevel), "white")})`);
 	const successes = b.getActionSuccesses("Operations", "Assassination");
 	ns.print(` ${colorPicker("┣", "white")}Lv Post-Spree:  ${colorPicker(format(levelAfter(successes, assCount)), "white")}`);
 	ns.print(` ${colorPicker("┣", "white")}Successes:      ${colorPicker(format(successes), "white")}`);
