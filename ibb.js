@@ -33,11 +33,11 @@ function printInfo(ns) {
 	ns.print(` ${colorPicker("┣", "white")}Current Count:  ${colorPicker(format(assCount), "white")}`);
 	ns.print(` ${colorPicker("┣", "white")}Level(Max):     ${colorPicker(format(assLevel), "white")}(${colorPicker(format(maxAssLevel), "white")})`);
 	const successes = b.getActionSuccesses("Operations", "Assassination");
-	ns.print(` ${colorPicker("┣", "white")}Lv Post-Spree:  ${colorPicker(format(levelAfter(successes, assCount)), "white")}`);
+	ns.print(` ${colorPicker("┣", "white")}Lv Post-Spree:  ${colorPicker(format(levelAfter(successes, assCount), 3), "white")}`);
 	ns.print(` ${colorPicker("┣", "white")}Successes:      ${colorPicker(format(successes), "white")}`);
-	const successesToLevel = Math.floor(0.5 * (assLevel) * (2 * 2.5 + (assLevel - 1))) - successes // number of additional successes needed for next level up
+	const successesToLevel = Math.floor(0.5 * (maxAssLevel) * (2 * 2.5 + (maxAssLevel - 1))) - successes // number of additional successes needed for next level up
 	const successesLeftToGet = successesToLevel - assCount // factor successes needed after subtracting current assassination count
-	ns.print(` ${colorPicker("┗", "white")}Succ to Lv up:  ${colorPicker(format(successesToLevel), "white")}${successesLeftToGet > 0 ? colorPicker("(" + format(successesLeftToGet) + ")", "green") : ""}`)
+	ns.print(` ${colorPicker("┗", "white")}Success to lv:  ${colorPicker(format(successesToLevel), "white")}${successesLeftToGet > 0 ? colorPicker("(" + format(successesLeftToGet) + ")", "green") : ""}`)
 	const assMs = (lastKnownAssSpree) ? `*${colorPicker(hms((Math.floor((Date.now() - lastKnownAssSpree))), '00:00:00'), "white")} since last spree` : ""
 	ns.print(assMs);
 	ns.print(divider);
