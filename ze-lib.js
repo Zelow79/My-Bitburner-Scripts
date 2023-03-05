@@ -63,10 +63,17 @@ export function format(value, maxFracDigits = 2, minFracDigits = 0) {
 	return Intl.NumberFormat(locale, {
 		notation: notation,
 		compactDisplay: "short",
-		//roundingMode: "trunc",
+		roundingMode: "trunc",
 		maximumFractionDigits: maxFracDigits,
 		minimumFractionDigits: minFracDigits
 	}).format(value).toLocaleLowerCase();
+}
+
+export function sillyNumbers(value, decimals = 3) { //bastardized xsinx's FormatMoney function
+    if (Math.abs(value) >= 1e69) return '$' + value.toExponential(0);
+    for (const pair of [[1e66, 'Uv'], [1e63, 'v'], [1e60, 'N'], [1e57, 'O'], [1e54, 'St'], [1e51, 'Sd'], [1e48, 'Qd'], [1e45, 'Qt'], [1e42, 'T'], [1e39, 'D'], [1e36, 'u'], [1e33, 'd'], [1e30, 'n'], [1e27, 'o'], [1e24, 'S'], [1e21, 's'], [1e18, 'Q'], [1e15, 'q'], [1e12, 't'], [1e9, 'b'], [1e6, 'm'], [1e3, 'k']])
+        if (Math.abs(value) >= pair[0]) return (Math.sign(value) < 0 ? "-" : "") + (Math.abs(value) / pair[0]).toFixed(decimals) + pair[1];
+    return '$' + (Math.sign(value) < 0 ? "-" : "") + Math.abs(value).toFixed(decimals);
 }
 
 export function numPad(value, digits) {
@@ -185,4 +192,77 @@ export function hmsms(t) { // t is in ms
 	if (s === 60) { m++; s = 0 }
 	if (m === 60) { h++; m = 0 }
 	return [pad(h), pad(m), pad(s), msPad(ms)].join(':');
+}
+
+export const names = [
+	"Negative Nancy",
+	"Debbie Downer",
+	"Nervous Nellie",
+	"Chatty Kathy",
+	"Average Joe",
+	"Handy Andy",
+	"Gloomy Gus",
+	"Good-Time Charlie",
+	"Joe Blow",
+	"Mary Sue",
+	"Peeping Tom",
+	"Plain Jane",
+	"Simple Simon",
+	"Ready Freddy",
+	"Nosy Nelly",
+	"Bummer Betsy",
+	"Pissy Chrissy",
+	"Melancholy Molly",
+	"Sad Susan",
+	"Awful Adam",
+	"Crabby Abby",
+	"Tricky Ricky",
+	"Nasty Nate",
+	"Loose Lucy",
+	"Sticky Nicki",
+	"Rude Jude",
+	"Freaky Frank",
+	"Feral Cheryl"
+]
+
+// experimental table, first take.
+export function createTable(width, columns, data) { // data is an array of strings and/or numbers going row, by row starting with header
+	const tablePad = (x, y, z = " ") => x.toString().padStart(y, z).substring(0, y);
+	const cellPad = Math.floor(width / columns - (columns - 1))
+	while (!Number.isInteger(data.length / columns)) {
+		data.push(" ");
+	}
+	let content = ""
+	let i = data.length
+	data.reverse();
+	let j = 0
+	const divider = "\n" + "├" + "─".repeat(cellPad * columns + (columns * 2 - 1)) + "┤" + "\n";
+	content += "\n" + "┌" + "─".repeat(cellPad * columns + (columns * 2 - 1)) + "┐" + "\n"
+	while (i--) {
+		if (j >= columns) break;
+		content += "|" + tablePad(data[i], cellPad) + " ";
+		data.splice(i, 1);
+		j++
+	}
+	content += "|"
+	content += divider
+	content += createRows(columns, data);
+	content += "\n" + "└" + "─".repeat(cellPad * columns + (columns * 2 - 1)) + "┘" + "\n"
+	return `${content}`
+
+	function createRows(columns, data) {
+		let content = ""
+		let i = data.length
+		let j = 0
+		while (i--) {
+			if (j >= columns) {
+				content += "|\n"; // create new row
+				j = 0; // reset column counter
+			}
+			content += "|" + tablePad(data[i], cellPad) + " ";
+			data.splice(i, 1);
+			j++
+		}
+		return `${content}|`
+	}
 }
