@@ -57,7 +57,7 @@ export function formatGB(bytes, dm = 0) {
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
 }
 
-export function format(value, maxFracDigits = 2, minFracDigits = 0) {
+export function format(value, maxFracDigits = 3, minFracDigits = 0) {
 	const locale = "en-US"
 	const notation = (value >= 1e15 || value <= -1e15) ? "scientific" : "compact"
 	return Intl.NumberFormat(locale, {
