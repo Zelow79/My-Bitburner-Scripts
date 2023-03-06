@@ -61,11 +61,11 @@ export async function main(ns) {
 		const currentRetire = bb.getActionCountRemaining("Contracts", "Retirement");
 		const totalCurrentValues = currentTracking + currentBounty + currentRetire
 		const totalIntValues = intTracking + intBounty + intRetire
-		ns.print(`Contracts completed: ${(totalCurrentValues - totalIntValues < 0) ? colorPicker(format((totalCurrentValues - totalIntValues) * -1), "white") : ""}`);
+		ns.print(`Contracts completed: ${(totalCurrentValues - totalIntValues < 0) ? colorPicker(format((totalCurrentValues - totalIntValues) * -1, 3), "white") : ""}`);
 		ns.print(`Remaining`);
-		ns.print(` ${colorPicker("┣", "white")}${(contracts[0] === "Tracking") ? colorPicker("Track", 46) : (contracts[2] === "Tracking") ? colorPicker("Track", 202) : "Track"}:  ${format(currentTracking, 2, 2)}${(currentTracking - intTracking < 0) ? colorPicker("(" + format(currentTracking - intTracking) + ")", 202) : ""}`);
-		ns.print(` ${colorPicker("┣", "white")}${(contracts[0] === "Bounty Hunter") ? colorPicker("Hunter", 46) : (contracts[2] === "Bounty Hunter") ? colorPicker("Hunter", 202) : "Hunter"}: ${format(currentBounty, 2, 2)}${(currentBounty - intBounty < 0) ? colorPicker("(" + format(currentBounty - intBounty) + ")", 202) : ""}`);
-		ns.print(` ${colorPicker("┗", "white")}${(contracts[0] === "Retirement") ? colorPicker("Retire", 46) : (contracts[2] === "Retirement") ? colorPicker("Retire", 202) : "Retire"}: ${format(currentRetire, 2, 2)}${(currentRetire - intRetire < 0) ? colorPicker("(" + format(currentRetire - intRetire) + ")", 202) : ""}`);
+		ns.print(` ${colorPicker("┣", "white")}${(contracts[0] === "Tracking") ? colorPicker("Track", 46) : (contracts[2] === "Tracking") ? colorPicker("Track", 202) : "Track"}:  ${format(currentTracking, 3, 3)}${(currentTracking - intTracking < 0) ? colorPicker("(" + format(currentTracking - intTracking, 3) + ")", 202) : ""}`);
+		ns.print(` ${colorPicker("┣", "white")}${(contracts[0] === "Bounty Hunter") ? colorPicker("Hunter", 46) : (contracts[2] === "Bounty Hunter") ? colorPicker("Hunter", 202) : "Hunter"}: ${format(currentBounty, 3, 3)}${(currentBounty - intBounty < 0) ? colorPicker("(" + format(currentBounty - intBounty, 3) + ")", 202) : ""}`);
+		ns.print(` ${colorPicker("┗", "white")}${(contracts[0] === "Retirement") ? colorPicker("Retire", 46) : (contracts[2] === "Retirement") ? colorPicker("Retire", 202) : "Retire"}: ${format(currentRetire, 3, 3)}${(currentRetire - intRetire < 0) ? colorPicker("(" + format(currentRetire - intRetire, 3) + ")", 202) : ""}`);
 		ns.print(`---Time-Elapsed-${dhms(Math.floor((performance.now() - startTime)))}----`);
 
 		const steves = []

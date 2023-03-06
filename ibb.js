@@ -31,14 +31,14 @@ export async function main(ns) {
 		const maxAssLevel = b.getActionMaxLevel("Operations", "Assassination");
 		ns.print(divider);
 		ns.print("Assassination Info");
-		ns.print(` ${colorPicker("┣", "white")}Current Count: ${colorPicker(format(assCount), "white")}`);
-		ns.print(` ${colorPicker("┣", "white")}Level(Max):    ${colorPicker(format(assLevel), "white")}(${colorPicker(format(maxAssLevel), "white")})`);
+		ns.print(` ${colorPicker("┣", "white")}Current Count: ${colorPicker(format(assCount,3), "white")}`);
+		ns.print(` ${colorPicker("┣", "white")}Level(Max):    ${colorPicker(format(assLevel,2), "white")}(${colorPicker(format(maxAssLevel,2), "white")})`);
 		const successes = b.getActionSuccesses("Operations", "Assassination");
 		ns.print(` ${colorPicker("┣", "white")}Lv Post-Spree: ${colorPicker(format(levelAfter(successes, assCount), 3), "white")}${levelAfter(successes, assCount) > maxAssLevel ? colorPicker("(+" + format(levelAfter(successes, assCount) - maxAssLevel, 3) + ")", "green") : ""}`);
-		ns.print(` ${colorPicker("┣", "white")}Successes:     ${colorPicker(format(successes), "white")}`);
+		ns.print(` ${colorPicker("┣", "white")}Successes:     ${colorPicker(format(successes,3), "white")}`);
 		const successesToLevel = Math.floor(0.5 * (maxAssLevel) * (2 * 2.5 + (maxAssLevel - 1))) - successes // number of additional successes needed for next level up
 		const successesLeftToGet = successesToLevel - assCount // factor successes needed after subtracting current assassination count
-		ns.print(` ${colorPicker("┗", "white")}Success to lv: ${colorPicker(format(successesToLevel), "white")}${successesLeftToGet > 0 ? colorPicker("(" + format(successesLeftToGet) + ")", "green") : ""}`)
+		ns.print(` ${colorPicker("┗", "white")}Success to lv: ${colorPicker(format(successesToLevel,3), "white")}${successesLeftToGet > 0 ? colorPicker("(" + format(successesLeftToGet) + ")", "green") : ""}`)
 		const assMs = (lastKnownAssSpree) ? `*${colorPicker(hms((Math.floor((Date.now() - lastKnownAssSpree))), '00:00:00'), "white")} since last spree` : ""
 		ns.print(assMs);
 		ns.print(divider);
@@ -46,20 +46,20 @@ export async function main(ns) {
 		const rank = b.getRank();
 		const skillLevel = x => b.getSkillLevel(x);
 		ns.print("Skill Info");
-		ns.print(` ${colorPicker("┣", "white")}BB Rank:        ${colorPicker(format(rank), "white")}`);
-		ns.print(` ${colorPicker("┣", "white")}Skill Points:   ${colorPicker(format(unspentPoints), "white")}`);
-		ns.print(` ${colorPicker("┣", "white")}Overclock:      ${colorPicker(format(skillLevel("Overclock")), "white")}`);
-		ns.print(` ${colorPicker("┣", "white")}Reaper:         ${colorPicker(format(skillLevel("Reaper")), "white")}`);
-		ns.print(` ${colorPicker("┣", "white")}Evasive System: ${colorPicker(format(skillLevel("Evasive System")), "white")}`);
-		ns.print(` ${colorPicker("┣", "white")}Hands of Midas: ${colorPicker(format(skillLevel("Hands of Midas")), "white")}`);
-		ns.print(` ${colorPicker("┗", "white")}Hyperdrive:     ${colorPicker(format(skillLevel("Hyperdrive")), "white")}`);
+		ns.print(` ${colorPicker("┣", "white")}BB Rank:        ${colorPicker(format(rank,3), "white")}`);
+		ns.print(` ${colorPicker("┣", "white")}Skill Points:   ${colorPicker(format(unspentPoints,3), "white")}`);
+		ns.print(` ${colorPicker("┣", "white")}Overclock:      ${colorPicker(format(skillLevel("Overclock"),3), "white")}`);
+		ns.print(` ${colorPicker("┣", "white")}Reaper:         ${colorPicker(format(skillLevel("Reaper"),3), "white")}`);
+		ns.print(` ${colorPicker("┣", "white")}Evasive System: ${colorPicker(format(skillLevel("Evasive System"),3), "white")}`);
+		ns.print(` ${colorPicker("┣", "white")}Hands of Midas: ${colorPicker(format(skillLevel("Hands of Midas"),3), "white")}`);
+		ns.print(` ${colorPicker("┗", "white")}Hyperdrive:     ${colorPicker(format(skillLevel("Hyperdrive"),3), "white")}`);
 		ns.print(divider);
 		for (const city of cities) {
 			const chaos = b.getCityChaos(city);
 			const estPop = b.getCityEstimatedPopulation(city);
 			ns.print(`${colorPicker(city, "white")} ${colorPicker(city === b.getCity() ? "--You are here--" : "", 81)}`);
-			ns.print(` ${colorPicker("┣", "white")}Est Population: ${colorPicker(format(estPop), "white")}`);
-			ns.print(` ${colorPicker("┗", "white")}Current Chaos:  ${colorPicker(format(chaos), "white")}`);
+			ns.print(` ${colorPicker("┣", "white")}Est Population: ${colorPicker(format(estPop,3), "white")}`);
+			ns.print(` ${colorPicker("┗", "white")}Current Chaos:  ${colorPicker(format(chaos,3), "white")}`);
 		}
 
 		function levelAfter(successes, count, operation = true, level = 0) {

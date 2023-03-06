@@ -45,7 +45,7 @@ export async function main(ns) {
 		ns.print(`Avg Gained Per hour: ${format(generatedOps / ((performance.now() - startTime) / (1000 * 60 * 60)), 3)}`);
 		ns.print(`Current Cycle Limit: ${format(cycleLimit, 3, 0)}\n `)
 		for (const steve of sleeves) {
-			ns.print(`Sleeve-${steve}     ${colorPicker("Int " + format(s.getSleeve(steve).skills.intelligence), 75)}`);
+			ns.print(`Sleeve-${steve}     ${colorPicker("Int " + format(s.getSleeve(steve).skills.intelligence, 3), 75)}`);
 			const task = (s.getTask(steve) !== null) ? colorPicker(s.getTask(steve).type.toLowerCase(), "white") : colorPicker("idle", 242);
 			ns.print(` ${colorPicker("┣", "white")}Task:     ${task}`);
 			ns.print(` ${colorPicker("┣", "white")}Cycles:   ${format(s.getSleeve(steve).storedCycles)}`);
