@@ -44,7 +44,7 @@ export async function main(ns) {
 				if (s.getTask(steve) !== null && s.getSleeve(steve).storedCycles < 10 && s.getTask(steve).type === "BLADEBURNER" && s.getTask(steve).actionName === task) {
 					for (const steve2 of sleeves) {
 						if (s.getTask(steve2) === null && s.getSleeve(steve2).storedCycles >= cycleLimit) {
-							s.setToSynchronize(steve);
+							s.setToIdle(steve);
 							s.setToBladeburnerAction(steve2, "Take on contracts", task);
 							return;
 						}
