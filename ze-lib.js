@@ -11,20 +11,42 @@ export function getAllServers(ns) {
 export const cities = ["Sector-12", "Aevum", "Volhaven", "Chongqing", "New Tokyo", "Ishima"]
 
 export function serverInfo(ns, serverName, threads = 1, cores = 1) { // lazy object with server info and other useful server information
-	const player = ns.getPlayer();
-	const server = ns.getServer(serverName);
-	const hf = ns.formulas.hacking
+	const [player, server, hf] = [ns.getPlayer(), ns.getServer(serverName), ns.formulas.hacking]
 	return {
-		...ns.getServer(serverName),
-		scripts: ns.ps(serverName),
-		growPercent: hf.growPercent(server, threads, player, cores),
-		hackTime: hf.hackTime(server, player),
-		growTime: hf.growTime(server, player),
-		weakenTime: hf.weakenTime(server, player),
-		hackChance: hf.hackChance(server, player),
-		hackPercent: hf.hackPercent(server, player),
-		hackExp: hf.hackExp(server, player)
+		...server,
+		scripts: () => ns.ps(serverName),
+		itsGrowPercent: () => hf.growPercent(server, threads, player, cores),
+		itsHackTime: () => hf.hackTime(server, player),
+		itsGrowTime: () => hf.growTime(server, player),
+		itsWeakTime: () => hf.weakenTime(server, player),
+		itsHackChance: () => hf.hackChance(server, player),
+		itsHackPercent: () => hf.hackPercent(server, player),
+		itsHackExp: () => hf.hackExp(server, player),
+		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName),
+		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t),
+		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t),
+		weakIt: (t = 1) => scriptLaunch(ns, "weak.js", serverName, t)
 	};
+}
+
+export function hgw(ns, serverName) {
+	return {
+		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName),
+		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t),
+		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t),
+		weakIt: (t = 1) => scriptLaunch(ns, "weak.js", serverName, t)
+	};
+}
+
+export function scriptLaunch(ns, scriptName, serverName, t = 1) {
+	const host = ns.getHostname();
+	const runningScripts = ns.ps(host);
+	const genSerial = () => numPad(Math.floor(Math.random() * (999999 - 1 + 1) + 1), 6);
+	let serial = genSerial();
+	while (runningScripts.some(script => script.filename === scriptName && script.args[0] === serverName && script.args[1] === serial)) {
+		serial = genSerial();
+	}
+	ns.exec(scriptName, host, t, serverName, serial);
 }
 
 export async function bdServer(ns, server) { // courtesy of Mughur from the discord. handy way to bd a target
@@ -77,7 +99,7 @@ export function sillyNumbers(value, decimals = 3) { //bastardized xsinx's Format
 }
 
 export function numPad(value, digits) {
-	return value.toString().length < digits ? '0'.repeat(digits - value.toString().length) + value : value
+	return value.toString().length < digits ? '0'.repeat(digits - value.toString().length) + value : value.toString()
 }
 
 export function round(value, precision) { // rounds accurately to the precision value, which determines decimal place IE, 1 = 0.0, 2 = 0.00
