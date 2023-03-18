@@ -10,7 +10,7 @@ export function getAllServers(ns) {
 
 export const cities = ["Sector-12", "Aevum", "Volhaven", "Chongqing", "New Tokyo", "Ishima"]
 
-export function serverInfo(ns, serverName, threads = 1, cores = 1) { // lazy object with server info and other useful server information
+export function serverInfo(ns, serverName, threads = 1, cores = 1, host = null) { // lazy object with server info and other useful server information
 	const [player, server, hf] = [ns.getPlayer(), ns.getServer(serverName), ns.formulas.hacking]
 	return {
 		...server,
@@ -23,30 +23,43 @@ export function serverInfo(ns, serverName, threads = 1, cores = 1) { // lazy obj
 		itsHackPercent: () => hf.hackPercent(server, player),
 		itsHackExp: () => hf.hackExp(server, player),
 		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName),
-		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t),
-		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t),
-		weakIt: (t = 1) => scriptLaunch(ns, "weak.js", serverName, t)
+		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t, host),
+		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t, host),
+		weakIt: (t = 1) => scriptLaunch(ns, "weaken.js", serverName, t, host)
 	};
 }
 
-export function hgw(ns, serverName) {
+export function hgw(ns, serverName, host = null) {
 	return {
 		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName),
-		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t),
-		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t),
-		weakIt: (t = 1) => scriptLaunch(ns, "weak.js", serverName, t)
+		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t, host),
+		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t, host),
+		weakIt: (t = 1) => scriptLaunch(ns, "weaken.js", serverName, t, host)
 	};
 }
 
-export function scriptLaunch(ns, scriptName, serverName, t = 1) {
-	const host = ns.getHostname();
-	const runningScripts = ns.ps(host);
-	const genSerial = () => numPad(Math.floor(Math.random() * (999999 - 1 + 1) + 1), 6);
+export function scriptLaunch(ns, scriptName, serverName, t = 1, host = null) {
+	host = host ?? ns.getHostname();
+	const [runningScripts, genSerial] = [ns.ps(host), () => numPad(Math.floor(Math.random() * (999999999 - 1 + 1) + 1), 9)];
 	let serial = genSerial();
 	while (runningScripts.some(script => script.filename === scriptName && script.args[0] === serverName && script.args[1] === serial)) {
 		serial = genSerial();
 	}
 	ns.exec(scriptName, host, t, serverName, serial);
+}
+
+export function makeHGW(ns, location = null) {
+	const maker = (func) => `export const main = async (ns) =>${func === "nuke" ? "" : " await"} ns.${func}(ns.args[0]);`
+	const tools = ["nuke", "hack", "grow", "weaken"]
+	location = location ?? "home"
+	tools.forEach(tool => {
+		const success = ns.write(tool + ".js", maker(tool), "w");
+		ns.tprint(`${tool + ".js"} creation: ${success}`);
+		if (success) {
+			ns.scp(tool + ".js", location);
+			ns.tprint(`${tool + ".js"} sent to ${location}`);
+		}
+	});
 }
 
 export async function bdServer(ns, server) { // courtesy of Mughur from the discord. handy way to bd a target
@@ -92,10 +105,10 @@ export function format(value, maxFracDigits = 3, minFracDigits = 0) {
 }
 
 export function sillyNumbers(value, decimals = 3) { //bastardized xsinx's FormatMoney function
-    if (Math.abs(value) >= 1e69) return '$' + value.toExponential(0);
-    for (const pair of [[1e66, 'Uv'], [1e63, 'v'], [1e60, 'N'], [1e57, 'O'], [1e54, 'St'], [1e51, 'Sd'], [1e48, 'Qd'], [1e45, 'Qt'], [1e42, 'T'], [1e39, 'D'], [1e36, 'u'], [1e33, 'd'], [1e30, 'n'], [1e27, 'o'], [1e24, 'S'], [1e21, 's'], [1e18, 'Q'], [1e15, 'q'], [1e12, 't'], [1e9, 'b'], [1e6, 'm'], [1e3, 'k']])
-        if (Math.abs(value) >= pair[0]) return (Math.sign(value) < 0 ? "-" : "") + (Math.abs(value) / pair[0]).toFixed(decimals) + pair[1];
-    return '$' + (Math.sign(value) < 0 ? "-" : "") + Math.abs(value).toFixed(decimals);
+	if (Math.abs(value) >= 1e69) return '$' + value.toExponential(0);
+	for (const pair of [[1e66, 'Uv'], [1e63, 'v'], [1e60, 'N'], [1e57, 'O'], [1e54, 'St'], [1e51, 'Sd'], [1e48, 'Qd'], [1e45, 'Qt'], [1e42, 'T'], [1e39, 'D'], [1e36, 'u'], [1e33, 'd'], [1e30, 'n'], [1e27, 'o'], [1e24, 'S'], [1e21, 's'], [1e18, 'Q'], [1e15, 'q'], [1e12, 't'], [1e9, 'b'], [1e6, 'm'], [1e3, 'k']])
+		if (Math.abs(value) >= pair[0]) return (Math.sign(value) < 0 ? "-" : "") + (Math.abs(value) / pair[0]).toFixed(decimals) + pair[1];
+	return '$' + (Math.sign(value) < 0 ? "-" : "") + Math.abs(value).toFixed(decimals);
 }
 
 export function numPad(value, digits) {
