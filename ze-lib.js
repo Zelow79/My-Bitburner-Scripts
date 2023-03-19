@@ -53,12 +53,8 @@ export function makeHGW(ns, location = null) {
 	const tools = ["nuke", "hack", "grow", "weaken"]
 	location = location ?? "home"
 	tools.forEach(tool => {
-		const success = ns.write(tool + ".js", maker(tool), "w");
-		ns.tprint(`${tool + ".js"} creation: ${success}`);
-		if (success) {
-			ns.scp(tool + ".js", location);
-			ns.tprint(`${tool + ".js"} sent to ${location}`);
-		}
+		ns.write(tool + ".js", maker(tool), "w");
+		if (ns.scp(tool + ".js", location)) ns.tprint(`${tool + ".js"} sent to ${location}`);
 	});
 }
 
