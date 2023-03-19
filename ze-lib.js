@@ -16,7 +16,7 @@ export function pathFinder(ns, server) {
 	return path;
 }
 
-export function serverInfo(ns, serverName, threads = 1, cores = 1, host = null) { // lazy object with server info and other useful server information
+export function serverInfo(ns, serverName, threads = 1, cores = 1, host = null, sleepTime = 0) { // lazy object with server info and other useful server information
 	const [player, server, hf] = [ns.getPlayer(), ns.getServer(serverName), ns.formulas.hacking]
 	return {
 		...server,
@@ -28,30 +28,30 @@ export function serverInfo(ns, serverName, threads = 1, cores = 1, host = null) 
 		itsHackChance: () => hf.hackChance(server, player),
 		itsHackPercent: () => hf.hackPercent(server, player),
 		itsHackExp: () => hf.hackExp(server, player),
-		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName),
-		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t, host),
-		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t, host),
-		weakIt: (t = 1) => scriptLaunch(ns, "weaken.js", serverName, t, host)
+		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName, 1, host, sleepTime),
+		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t, host, sleepTime),
+		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t, host, sleepTime),
+		weakIt: (t = 1) => scriptLaunch(ns, "weaken.js", serverName, t, host, sleepTime)
 	};
 }
 
-export function hgw(ns, serverName, host = null) {
+export function hgw(ns, serverName, host = null, sleepTime = 0) {
 	return {
-		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName),
-		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t, host),
-		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t, host),
-		weakIt: (t = 1) => scriptLaunch(ns, "weaken.js", serverName, t, host)
+		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName, 1, host, sleepTime),
+		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t, host, sleepTime),
+		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t, host, sleepTime),
+		weakIt: (t = 1) => scriptLaunch(ns, "weaken.js", serverName, t, host, sleepTime)
 	};
 }
 
-export function scriptLaunch(ns, scriptName, serverName, t = 1, host = null) {
+export function scriptLaunch(ns, scriptName, serverName, t = 1, host = null, sleepTime = 0) { // sleepTime in ms
 	host = host ?? ns.getHostname();
 	const [runningScripts, genSerial] = [ns.ps(host), () => numPad(Math.floor(Math.random() * (999999999 - 1 + 1) + 1), 9)];
 	let serial = genSerial();
-	while (runningScripts.some(script => script.filename === scriptName && script.args[0] === serverName && script.args[1] === serial)) {
+	while (runningScripts.some(script => script.filename === scriptName && script.args[0] === serverName && script.args[2] === serial)) {
 		serial = genSerial();
 	}
-	ns.exec(scriptName, host, t, serverName, serial);
+	ns.exec(scriptName, host, t, serverName, sleepTime, serial);
 }
 
 export function makeHGW(ns, location = null) {
