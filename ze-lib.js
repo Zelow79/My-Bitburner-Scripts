@@ -55,7 +55,7 @@ export function scriptLaunch(ns, scriptName, serverName, t = 1, host = null) {
 }
 
 export function makeHGW(ns, location = null) {
-	const maker = (func) => `export const main = async (ns) => {\n	await ns.sleep(isNaN(ns.args[1]) ? 0 : ns.args[1]);\n	${func === "nuke" ? "" : "await"} ns.${func}(ns.args[0]);\n}`
+	const maker = (func) => `export const main = async (ns) => {\n	await ns.sleep(isNaN(ns.args[1]) ? 0 : ns.args[1]);\n	${func === "nuke" ? "" : "await "}ns.${func}(ns.args[0]);\n}`
 	const tools = ["nuke", "hack", "grow", "weaken"]
 	location = location ?? "home"
 	tools.forEach(tool => {
