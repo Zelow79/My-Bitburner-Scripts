@@ -1,3 +1,5 @@
+export const cities = ["Sector-12", "Aevum", "Volhaven", "Chongqing", "New Tokyo", "Ishima"]
+
 export function getAllServers(ns) {
 	const x = new Set(["home"]);
 	for (const server of x) {
@@ -8,7 +10,11 @@ export function getAllServers(ns) {
 	return Array.from(x);
 }
 
-export const cities = ["Sector-12", "Aevum", "Volhaven", "Chongqing", "New Tokyo", "Ishima"]
+export function pathFinder(ns, server) {
+	const path = [server]
+	while (path[0] !== "home") path.unshift(ns.scan(path[0])[0]);
+	return path;
+}
 
 export function serverInfo(ns, serverName, threads = 1, cores = 1, host = null) { // lazy object with server info and other useful server information
 	const [player, server, hf] = [ns.getPlayer(), ns.getServer(serverName), ns.formulas.hacking]
@@ -49,7 +55,7 @@ export function scriptLaunch(ns, scriptName, serverName, t = 1, host = null) {
 }
 
 export function makeHGW(ns, location = null) {
-	const maker = (func) => `export const main = async (ns) =>${func === "nuke" ? "" : " await"} ns.${func}(ns.args[0]);`
+	const maker = (func) => `export const main = async (ns) => {\n	await ns.sleep(isNaN(ns.args[1]) ? 0 : ns.args[1]);\n	${func === "nuke" ? "" : "await"} ns.${func}(ns.args[0]);\n}`
 	const tools = ["nuke", "hack", "grow", "weaken"]
 	location = location ?? "home"
 	tools.forEach(tool => {
