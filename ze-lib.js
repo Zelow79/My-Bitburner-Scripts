@@ -28,7 +28,7 @@ export function serverInfo(ns, serverName, threads = 1, cores = 1, host = null, 
 		itsHackChance: () => hf.hackChance(server, player),
 		itsHackPercent: () => hf.hackPercent(server, player),
 		itsHackExp: () => hf.hackExp(server, player),
-		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName, 1, host, sleepTime),
+		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName),
 		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t, host, sleepTime),
 		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t, host, sleepTime),
 		weakIt: (t = 1) => scriptLaunch(ns, "weaken.js", serverName, t, host, sleepTime)
@@ -37,7 +37,7 @@ export function serverInfo(ns, serverName, threads = 1, cores = 1, host = null, 
 
 export function hgw(ns, serverName, host = null, sleepTime = 0) {
 	return {
-		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName, 1, host, sleepTime),
+		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName),
 		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t, host, sleepTime),
 		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t, host, sleepTime),
 		weakIt: (t = 1) => scriptLaunch(ns, "weaken.js", serverName, t, host, sleepTime)
@@ -55,12 +55,12 @@ export function scriptLaunch(ns, scriptName, serverName, t = 1, host = null, sle
 }
 
 export function makeHGW(ns, location = null) {
-	const maker = (func) => `export const main = async (ns) => {\n	await ns.sleep(isNaN(ns.args[1]) ? 0 : ns.args[1]);\n	${func === "nuke" ? "" : "await "}ns.${func}(ns.args[0]);\n}`
-	const tools = ["nuke", "hack", "grow", "weaken"]
+	const maker = (func) => `export const main = async (ns) => {\n	await ns.sleep(isNaN(ns.args[1]) ? 0 : ns.args[1]);\n	await ns.${func}(ns.args[0]);\n}`
+	const tools = ["hack", "grow", "weaken"]
 	location = location ?? "home"
 	tools.forEach(tool => {
 		ns.write(tool + ".js", maker(tool), "w");
-		if (ns.scp(tool + ".js", location)) ns.tprint(`${tool + ".js"} sent to ${location}`);
+		if (location !== "home" && ns.scp(tool + ".js", location)) ns.tprint(`${tool + ".js"} sent to ${location}`);
 	});
 }
 
