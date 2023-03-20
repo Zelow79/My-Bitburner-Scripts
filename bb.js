@@ -18,7 +18,7 @@ export async function main(ns) {
 			await cleanUp();
 			await chaosEater();
 			await doAction();
-			mughurTime()
+			mughurTime();
 		}
 		await ns.sleep(sleepTime);
 	}
@@ -48,7 +48,7 @@ export async function main(ns) {
 			bbSkills.push(x);
 		}
 		if (bbSkills.length == 0) return false;
-		bbSkills.sort((a, b) => (a.upgradeCost - b.upgradeCost))
+		bbSkills.sort((a, b) => (a.upgradeCost - b.upgradeCost));
 		return bbSkills
 	}
 
