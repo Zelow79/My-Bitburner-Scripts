@@ -7,7 +7,7 @@ export async function main(ns) {
 	let getInput = ns.args[0] ?? await ns.prompt("Select Server", { type: "select", choices: targets });
 	ns.tail();
 	while (true) {
-		ns.resizeTail(333, 410);
+		ns.resizeTail(333, 420);
 		const serverStats = ns.getServer(getInput);
 		const progress = serverStats.moneyAvailable / serverStats.moneyMax;
 		const freeRam = serverStats.maxRam - serverStats.ramUsed
@@ -22,6 +22,7 @@ export async function main(ns) {
 		ns.clearLog();
 		ns.print("Server Name:      " + serverStats.hostname.slice(0, 22));
 		ns.print("IP Adress:        " + serverStats.ip);
+		ns.print("Admin Rights:     " + serverStats.hasAdminRights);
 		ns.print("Base Security:    " + format(serverStats.baseDifficulty));
 		ns.print("Min Security:     " + format(serverStats.minDifficulty));
 		ns.print("Security:         " + format(serverStats.hackDifficulty));
