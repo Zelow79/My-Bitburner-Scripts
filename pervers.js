@@ -2,8 +2,7 @@ import { numPad, formatGB, format } from "ze-lib.js";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog('sleep'); ns.clearLog(); ns.tail(); await ns.sleep(50); ns.resizeTail(420, 550);
-	const [serverRamRange, maxAllowedServers] = [[], ns.getPurchasedServerLimit()]
-	for (let i = 2; i <= ns.getPurchasedServerMaxRam(); i *= 2) serverRamRange.push(i);
+	const maxAllowedServers = ns.getPurchasedServerLimit();
 
 	while (1) {
 		while (maxAllowedServers > ns.getPurchasedServers().length && ns.getPlayer().money > ns.getPurchasedServerCost(2)) {
