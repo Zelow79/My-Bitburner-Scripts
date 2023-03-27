@@ -1,14 +1,15 @@
 import { numPad, formatGB, format } from "ze-lib.js";
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog('sleep'); ns.clearLog(); ns.tail(); await ns.sleep(50); ns.resizeTail(420, 550);
+	ns.disableLog('sleep'); ns.clearLog();
+	if (ns.args[1] !== false) ns.tail(); await ns.sleep(50); ns.resizeTail(420, 550);
 	const maxAllowedServers = ns.getPurchasedServerLimit();
 	while (1) {
 		while (maxAllowedServers > ns.getPurchasedServers().length && ns.getPlayer().money > ns.getPurchasedServerCost(2)) {
 			ns.purchaseServer(`perver-${numPad(ns.getPurchasedServers().length, 2)}`, 2);
 		}
 		for (const perver of ns.getPurchasedServers()) {
-			const limit = isNaN(ns.args[0]) ? true : ns.getServer(perver).maxRam < ns.args[0]
+			const limit = isNaN(ns.args[0]) || ns.args[0] === true ? true : ns.getServer(perver).maxRam < ns.args[0]
 			const smallerExists = ns.getPurchasedServers().some(s => ns.getServer(s).maxRam < ns.getServer(perver).maxRam);
 			const canUpgrade = ns.getServer(perver).maxRam < ns.getPurchasedServerMaxRam();
 			const canAfford = ns.getPurchasedServerUpgradeCost(perver, ns.getServer(perver).maxRam * 2) <= ns.getPlayer().money;
