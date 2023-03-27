@@ -3,7 +3,6 @@ import { numPad, formatGB, format } from "ze-lib.js";
 export async function main(ns) {
 	ns.disableLog('sleep'); ns.clearLog(); ns.tail(); await ns.sleep(50); ns.resizeTail(420, 550);
 	const maxAllowedServers = ns.getPurchasedServerLimit();
-
 	while (1) {
 		while (maxAllowedServers > ns.getPurchasedServers().length && ns.getPlayer().money > ns.getPurchasedServerCost(2)) {
 			ns.purchaseServer(`perver-${numPad(ns.getPurchasedServers().length, 2)}`, 2);
@@ -15,12 +14,6 @@ export async function main(ns) {
 			const canAfford = ns.getPurchasedServerUpgradeCost(perver, ns.getServer(perver).maxRam * 2) <= ns.getPlayer().money;
 			if (limit && !smallerExists && canUpgrade && canAfford) ns.upgradePurchasedServer(perver, ns.getServer(perver).maxRam * 2);
 		}
-		printServerStatus();
-		selfDestruct();
-		await ns.sleep(10);
-	}
-
-	function printServerStatus() {
 		ns.clearLog();
 		ns.print(`Max Servers Allowed: ${maxAllowedServers}`);
 		ns.print(`Servers Owned:       ${ns.getPurchasedServers().length}`);
@@ -28,10 +21,8 @@ export async function main(ns) {
 			const cost = () => ns.getPurchasedServerUpgradeCost(perver, ns.getServer(perver).maxRam * 2);
 			ns.print(`${perver} RAM: ${formatGB(ns.getServer(perver).maxRam * 1073741824)} Upgrade Cost: ${format(cost())}`);
 		}
-	}
-
-	function selfDestruct() {
 		if (!isNaN(ns.args[0]) && ns.getPurchasedServers().every(s => ns.getServer(s).maxRam === ns.args[0])) ns.exit();
 		if (ns.getPurchasedServers().every(s => ns.getServer(s).maxRam === ns.getPurchasedServerMaxRam())) ns.exit();
+		await ns.sleep(10);
 	}
 }
