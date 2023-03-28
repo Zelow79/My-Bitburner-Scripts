@@ -14,9 +14,7 @@ export async function main(ns) {
 	});
 	ns.atExit(() => {
 		const terminated = []
-		pids.forEach(p => {
-			if (ns.kill(p)) terminated.push(p);
-		});
+		pids.forEach(p => ns.kill(p) ? terminated.push(p) : null);
 		ns.print(`Terminated PIDS: ${terminated.join(", ")}`);
 	});
 	while (1) {
