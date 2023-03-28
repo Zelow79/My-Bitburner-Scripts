@@ -64,6 +64,18 @@ export function makeHGW(ns, location = null) {
 	});
 }
 
+export function shareIt(ns, target) {
+	const shareScript = `export const main = async (ns) => { while (1) await ns.share(); }`
+	ns.write("share.js", shareScript, "w");
+	if (ns.scp("share.js", target)) {
+		ns.tprint(`share.js sent to ${target}`);
+		const freeRam = ns.getServerMaxRam(target) - ns.getServerUsedRam(target);
+		if (freeRam < 4) return null;
+		const threads = Math.max(Math.floor(freeRam / 4), 1);
+		return ns.exec("share.js", target, threads);
+	}
+}
+
 export async function bdServer(ns, server) { // courtesy of Mughur from the discord. handy way to bd a target
 	ns.singularity.connect("home");
 	let route = [server]
