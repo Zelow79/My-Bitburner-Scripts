@@ -3,9 +3,7 @@ import { shareIt, getAllServers, format, formatPercent } from "ze-lib"
 export async function main(ns) {
 	ns.clearLog(); ns.disableLog("ALL"); ns.tail();
 	const [pids, excludes, servers] = [[], [], getAllServers(ns)]
-	ns.args.forEach(a => {
-		if (ns.serverExists(a)) excludes.push(a);
-	});
+	ns.args.forEach(a => ns.serverExists(a) ? excludes.push(a) : null);
 	servers.forEach(server => {
 		if (!excludes.includes(server)) {
 			const p = shareIt(ns, server);
