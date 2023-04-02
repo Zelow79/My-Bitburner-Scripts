@@ -11,17 +11,14 @@ export async function main(ns) {
 		}
 	});
 	ns.atExit(() => {
-		const terminated = []
-		pids.forEach(p => ns.kill(p) ? terminated.push(p) : null);
+		const terminated = pids.filter(p => ns.kill(p));
 		ns.print(`Terminated PIDS: ${terminated.join(", ")}`);
 	});
 	while (1) {
 		ns.clearLog();
 		let threadCount = 0
-		pids.forEach(p => {
-			if (ns.getRunningScript(p) === null) pids.splice(pids.indexOf(p), 1);
-			else threadCount += ns.getRunningScript(p).threads
-		});
+		pids.forEach(p => ns.getRunningScript(p) === null ? pids.splice(pids.indexOf(p), 1) : null);
+		pids.forEach(p => threadCount += ns.getRunningScript(p).threads);
 		const message = [`Active share scripts: ${pids.length}`]
 		message.push(`Total threads:        ${format(threadCount)}`);
 		message.push(`Total share power:    ${formatPercent(ns.getSharePower() - 1)}`);
