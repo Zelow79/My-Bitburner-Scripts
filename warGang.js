@@ -278,7 +278,7 @@ export async function main(ns) {
 
 	function reportMetrics(data, start = false) { // data is expected to be a single line string
 		const file = "/gang_reports/metrics.txt"
-		ns.write(file, new Date().toLocaleString() + ": Milestone - " + data + "\n", start === true ? "w" : "a");
+		ns.write(file, new Date().toLocaleString() + ": Milestone - " + data + "\n", start ? "w" : "a");
 	}
 
 	function metricCheck() {
