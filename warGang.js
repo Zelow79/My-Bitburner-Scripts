@@ -276,126 +276,126 @@ export async function main(ns) {
 		return lowestChance
 	}
 
-	function reportMetrics(data) { // data is expected to be a single line string
+	function reportMetrics(data, start = false) { // data is expected to be a single line string
 		const file = "/gang_reports/metrics.txt"
-		ns.write(file, new Date().toLocaleString() + ": " + data + "\n", "a");
+		ns.write(file, new Date().toLocaleString() + ": Milestone - " + data + "\n", start === true ? "w" : "a");
 	}
 
 	function metricCheck() {
 		if (!metricsFlags.gangMade) {
-			ns.write("/gang_reports/metrics.txt", new Date().toLocaleString() + ": Milestone - Gang Created\n", "w");
+			reportMetrics(`Gang Created`, true);
 			metricsFlags.gangMade = true
 		}
 		if (ns.gang.getGangInformation().territoryWarfareEngaged && !metricsFlags.warfareEnganged) {
-			reportMetrics(`Milestone - Territory Warfare engaged`);
+			reportMetrics(`Territory Warfare engaged`);
 			metricsFlags.warfareEnganged = true
 		}
 		if (ns.gang.getGangInformation().territory >= 0.2 && !metricsFlags.t20) {
-			reportMetrics(`Milestone - 20% territory owned`);
+			reportMetrics(`20% territory owned`);
 			metricsFlags.t20 = true
 		}
 		if (ns.gang.getGangInformation().territory >= 0.3 && !metricsFlags.t30) {
-			reportMetrics(`Milestone - 30% territory owned`);
+			reportMetrics(`30% territory owned`);
 			metricsFlags.t30 = true
 		}
 		if (ns.gang.getGangInformation().territory >= 0.4 && !metricsFlags.t40) {
-			reportMetrics(`Milestone - 40% territory owned`);
+			reportMetrics(`40% territory owned`);
 			metricsFlags.t40 = true
 		}
 		if (ns.gang.getGangInformation().territory >= 0.5 && !metricsFlags.halfTerritory) {
-			reportMetrics(`Milestone - 50% territory owned`);
+			reportMetrics(`50% territory owned`);
 			metricsFlags.halfTerritory = true
 		}
 		if (ns.gang.getGangInformation().territory >= 0.6 && !metricsFlags.t60) {
-			reportMetrics(`Milestone - 60% territory owned`);
+			reportMetrics(`60% territory owned`);
 			metricsFlags.t60 = true
 		}
 		if (ns.gang.getGangInformation().territory >= 0.7 && !metricsFlags.t70) {
-			reportMetrics(`Milestone - 70% territory owned`);
+			reportMetrics(`70% territory owned`);
 			metricsFlags.t70 = true
 		}
 		if (ns.gang.getGangInformation().territory >= 0.8 && !metricsFlags.t80) {
-			reportMetrics(`Milestone - 80% territory owned`);
+			reportMetrics(`80% territory owned`);
 			metricsFlags.t80 = true
 		}
 		if (ns.gang.getGangInformation().territory >= 0.9 && !metricsFlags.t90) {
-			reportMetrics(`Milestone - 90% territory owned`);
+			reportMetrics(`90% territory owned`);
 			metricsFlags.t90 = true
 		}
 		if (ns.gang.getGangInformation().territory === 1 && !metricsFlags.fullTerritory) {
-			reportMetrics(`Milestone - 100% territory owned`);
+			reportMetrics(`100% territory owned`);
 			metricsFlags.fullTerritory = true
 		}
 		if (ns.gang.getMemberNames().length >= 1 && !metricsFlags.m1) {
-			reportMetrics(`Milestone - 1st member recruited`);
+			reportMetrics(`1st member recruited`);
 			metricsFlags.m1 = true
 		}
 		if (ns.gang.getMemberNames().length >= 2 && !metricsFlags.m2) {
-			reportMetrics(`Milestone - 2nd member recruited`);
+			reportMetrics(`2nd member recruited`);
 			metricsFlags.m2 = true
 		}
 		if (ns.gang.getMemberNames().length >= 3 && !metricsFlags.m3) {
-			reportMetrics(`Milestone - 3rd member recruited`);
+			reportMetrics(`3rd member recruited`);
 			metricsFlags.m3 = true
 		}
 		if (ns.gang.getMemberNames().length >= 4 && !metricsFlags.m4) {
-			reportMetrics(`Milestone - 4th member recruited`);
+			reportMetrics(`4th member recruited`);
 			metricsFlags.m4 = true
 		}
 		if (ns.gang.getMemberNames().length >= 5 && !metricsFlags.m5) {
-			reportMetrics(`Milestone - 5th member recruited`);
+			reportMetrics(`5th member recruited`);
 			metricsFlags.m5 = true
 		}
 		if (ns.gang.getMemberNames().length >= 6 && !metricsFlags.m6) {
-			reportMetrics(`Milestone - 6th member recruited`);
+			reportMetrics(`6th member recruited`);
 			metricsFlags.m6 = true
 		}
 		if (ns.gang.getMemberNames().length >= 7 && !metricsFlags.m7) {
-			reportMetrics(`Milestone - 7th member recruited`);
+			reportMetrics(`7th member recruited`);
 			metricsFlags.m7 = true
 		}
 		if (ns.gang.getMemberNames().length >= 8 && !metricsFlags.m8) {
-			reportMetrics(`Milestone - 8th member recruited`);
+			reportMetrics(`8th member recruited`);
 			metricsFlags.m8 = true
 		}
 		if (ns.gang.getMemberNames().length >= 9 && !metricsFlags.m9) {
-			reportMetrics(`Milestone - 9th member recruited`);
+			reportMetrics(`9th member recruited`);
 			metricsFlags.m9 = true
 		}
 		if (ns.gang.getMemberNames().length >= 10 && !metricsFlags.m10) {
-			reportMetrics(`Milestone - 10th member recruited`);
+			reportMetrics(`10th member recruited`);
 			metricsFlags.m10 = true
 		}
 		if (ns.gang.getMemberNames().length >= 11 && !metricsFlags.m11) {
-			reportMetrics(`Milestone - 11th member recruited`);
+			reportMetrics(`11th member recruited`);
 			metricsFlags.m11 = true
 		}
 		if (ns.gang.getMemberNames().length === 12 && !metricsFlags.twelvthMember) {
-			reportMetrics(`Milestone - 12th member recruited`);
+			reportMetrics(`12th member recruited`);
 			metricsFlags.twelvthMember = true
 		}
 		if (ns.gang.getGangInformation().moneyGainRate * 5 >= 1e6 && !metricsFlags.rateOneMill) {
-			reportMetrics(`Milestone - Gang money rate 1m /s`);
+			reportMetrics(`Gang money rate 1m /s`);
 			metricsFlags.rateOneMill = true
 		}
 		if (ns.gang.getGangInformation().moneyGainRate * 5 >= 1e7 && !metricsFlags.rateTenMill) {
-			reportMetrics(`Milestone - Gang money rate 10m /s`);
+			reportMetrics(`Gang money rate 10m /s`);
 			metricsFlags.rateTenMill = true
 		}
 		if (ns.gang.getGangInformation().moneyGainRate * 5 >= 1e8 && !metricsFlags.rateOneHundredMill) {
-			reportMetrics(`Milestone - Gang money rate 100m /s`);
+			reportMetrics(`Gang money rate 100m /s`);
 			metricsFlags.rateOneHundredMill = true
 		}
 		if (ns.gang.getGangInformation().moneyGainRate * 5 >= 1e9 && !metricsFlags.rateOneBill) {
-			reportMetrics(`Milestone - Gang money rate 1b /s`);
+			reportMetrics(`Gang money rate 1b /s`);
 			metricsFlags.rateOneBill = true
 		}
 		if (ns.gang.getGangInformation().moneyGainRate * 5 >= 1e10 && !metricsFlags.rateTenBill) {
-			reportMetrics(`Milestone - Gang money rate 10b /s`);
+			reportMetrics(`Gang money rate 10b /s`);
 			metricsFlags.rateTenBill = true
 		}
 		if (ns.gang.getGangInformation().moneyGainRate * 5 >= 1e11 && !metricsFlags.rateOneHundredBill) {
-			reportMetrics(`Milestone - Gang money rate 100b /s`);
+			reportMetrics(`Gang money rate 100b /s`);
 			metricsFlags.rateOneHundredBill = true
 		}
 	}
