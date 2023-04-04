@@ -3,48 +3,48 @@ const [discountThresh, wantedPenThresh] = [0.8, 0.05]
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL"); ns.clearLog(); ns.tail();
-	const [faction, windowHeight, windowWidth] = ["Slum Snakes", 888, 390]
+	const [faction, width, height] = ["Slum Snakes", 390, 888]
 	const tick = {
 		tw: false,
 		otherGangsInfoPrevCycle: undefined,
 		nextTick: undefined
 	}
 	await ns.sleep(500);
-	ns.resizeTail(windowWidth, windowHeight);
+	ns.resizeTail(width, height);
 	while (true) {
-		ns.resizeTail(windowWidth, windowHeight); ns.clearLog();
+		ns.resizeTail(width, height); ns.clearLog();
 		if (ns.gang.inGang()) {
 			if (ns.args[1] === "metric") metricCheck(ns);
-			let [myGang, allowClash] = [ns.gang.getGangInformation(), true]
 			gangMemberAscension();
-
 			const purchaseAllowed = ns.getBitNodeMultipliers().GangSoftcap > 0.8 || ns.args[0] === true // softcap over ride, call script with true as first args
 			if (purchaseAllowed && ns.args[0] !== false) equipmentcheck();
 			else if (getDiscount() > 0.5 && ns.args[0] !== false) equipmentcheck(); // try to buy equipment if discount is good enough
 
-			myGang.territory < 1 ? tickCheck(allowClash, myGang) : tick.tw = false
-			if (myGang.territory >= 1) ns.gang.setTerritoryWarfare(false); // not really needed just added for personal pref, to catch if war is still engaged after 100%
+			ns.gang.getGangInformation().territory < 1 ? tickCheck() : tick.tw = false;
+			if (ns.gang.getGangInformation().territory >= 1) ns.gang.setTerritoryWarfare(false); // not really needed just added for personal pref, to catch if war is still engaged after 100%
 			if (!tick.tw) gangMemberStuff();
 			printInfo();
 		} else {
-			ns.print(`Current Karma: ${format(ns.heart.break())}`)
+			ns.print(`Current Karma: ${format(ns.heart.break())}`);
 			ns.singularity.joinFaction(faction);
 			ns.gang.createGang(faction);
 		}
 		await ns.sleep(500);
 	}
 
-	function tickCheck(allowClash, myGang) {
+	function tickCheck() {
 		// *** Territory warfaire *** credit: Sin from the Discord. I modified their detect tick method into a function to work with my script.
 		// Detect new tick
-		const [otherGangsInfo, members] = [ns.gang.getOtherGangInformation(), ns.gang.getMemberNames()];
-		let newTick = false;
+		const myGang = ns.gang.getGangInformation(),
+			otherGangsInfo = ns.gang.getOtherGangInformation(),
+			members = ns.gang.getMemberNames();
+		let newTick = false,
+			allowClash = true
 		for (let i = 0; i < Object.keys(otherGangsInfo).length; i++) {
 			const gangName = Object.keys(otherGangsInfo)[i];
 			if (gangName == myGang.faction) continue;
 
-			if (ns.gang.getChanceToWinClash(gangName) < 0.55)
-				allowClash = false;
+			if (ns.gang.getChanceToWinClash(gangName) < 0.55) allowClash = false;
 
 			const gi = Object.values(otherGangsInfo)[i],
 				ogi = tick.otherGangsInfoPrevCycle ? Object.values(tick.otherGangsInfoPrevCycle)[i] : gi;
@@ -53,9 +53,7 @@ export async function main(ns) {
 				territoryChanged = gi.territory != ogi.territory,
 				changed = powerChanged || territoryChanged;
 
-			if (changed) {
-				newTick = true;
-			}
+			if (changed) newTick = true;
 		}
 
 		// If we're in a new tick, take note of when next one is going to happen
@@ -187,7 +185,7 @@ export async function main(ns) {
 					if (x.respGain < x.wantGain * 99) continue; // old value 99
 					ns.gang.setMemberTask(name, x.name);
 					ns.print(`${colorPicker(namSpa(name), "white")} task: ${colorPicker(x.name, "white")}`);
-					printMemberStats(memberInfo)
+					printMemberStats(memberInfo);
 					break;
 				}
 			}
@@ -267,13 +265,13 @@ export async function main(ns) {
 		let lowestChance = 1
 		const gangInfo = ns.gang.getOtherGangInformation();
 		for (let i = 0; i < Object.keys(gangInfo).length; i++) {
-			const gangName = Object.keys(gangInfo)[i]
+			const gangName = Object.keys(gangInfo)[i];
 			if (gangName == ns.gang.getGangInformation().faction) continue;
 			if (ns.gang.getChanceToWinClash(gangName) < lowestChance) {
-				lowestChance = ns.gang.getChanceToWinClash(Object.keys(gangInfo)[i])
+				lowestChance = ns.gang.getChanceToWinClash(Object.keys(gangInfo)[i]);
 			}
 		}
-		return lowestChance
+		return lowestChance;
 	}
 
 	function reportMetrics(data, start = false) { // data is expected to be a single line string
