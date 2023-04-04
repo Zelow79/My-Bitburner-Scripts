@@ -55,8 +55,8 @@ export function scriptLaunch(ns, scriptName, serverName, t = 1, host = null, sle
 }
 
 export function makeHGW(ns, location = null) {
-	const maker = (func) => `export const main = async (ns) => await ns.${func}(ns.args[0], { additionalMsec: isNaN(ns.args[1]) ? 0 : ns.args[1] });`
-	const tools = ["hack", "grow", "weaken"]
+	const tools = ["hack", "grow", "weaken"],
+		maker = (func) => `export const main = async (ns) => await ns.${func}(ns.args[0], { additionalMsec: isNaN(ns.args[1]) ? 0 : ns.args[1] });`
 	location = location ?? "home"
 	tools.forEach(tool => {
 		ns.write(tool + ".js", maker(tool), "w");
@@ -78,12 +78,8 @@ export function shareIt(ns, target) {
 export async function bdServer(ns, server) { // courtesy of Mughur from the discord. handy way to bd a target
 	ns.singularity.connect("home");
 	let route = [server]
-	while (route[0] != "home") {
-		route.unshift(ns.scan(route[0])[0]);
-	}
-	for (let server of route) {
-		ns.singularity.connect(server);
-	}
+	while (route[0] != "home") route.unshift(ns.scan(route[0])[0]);
+	for (const server of route) ns.singularity.connect(server);
 	await ns.singularity.installBackdoor();
 	ns.singularity.connect("home");
 }
@@ -134,18 +130,15 @@ export function round(value, precision) { // rounds accurately to the precision 
 }
 
 export function diceBar(progress, length = 15) { // progress bar with random dice as the bar, also color coded, orginal design came from NightElf from BB discord
-	const diceSet = ["", "", "", "", "", ""]
-	const empty = " "
-	const progressValue = Math.min(progress, 1);
-
-	const colors = [196, 202, 226, 46, 33];
-	const fullColor = "white";
-
-	const categoryValue = Math.min(colors.length - 1, Math.floor(progressValue * colors.length));
-	const color = progressValue < 1 ? colors[categoryValue] : fullColor;
-
-	const barProgress = Math.floor(progressValue * length);
-	const array = []
+	const diceSet = ["", "", "", "", "", ""],
+		empty = " ",
+		progressValue = Math.min(progress, 1),
+		colors = [196, 202, 226, 46, 33],
+		fullColor = "white",
+		categoryValue = Math.min(colors.length - 1, Math.floor(progressValue * colors.length)),
+		color = progressValue < 1 ? colors[categoryValue] : fullColor,
+		barProgress = Math.floor(progressValue * length),
+		array = [];
 	for (let i = 0; i < barProgress; i++) { array.push(diceSet[Math.floor(Math.random() * diceSet.length)]); }
 	for (let i = 0; i < length - barProgress; i++) { array.push(empty); }
 	return `[${colorPicker(array.join(""), color)}]`;
@@ -153,17 +146,14 @@ export function diceBar(progress, length = 15) { // progress bar with random dic
 
 export function bar(progress, bar = true, length = 15) { // progress bar, orginal design came from NightElf from BB discord
 	if (bar == true) bar = "#"
-	const empty = " "
-	const progressValue = Math.min(progress, 1);
-	const barProgress = Math.floor(progressValue * length);
-
-	const colors = [196, 202, 226, 46, 33];
-	const fullColor = "white";
-
-	const categoryValue = Math.min(colors.length - 1, Math.floor(progressValue * colors.length));
-	const color = progressValue < 1 ? colors[categoryValue] : fullColor;
-
-	const array = new Array(barProgress).fill(bar).concat(new Array(length - barProgress).fill(empty));
+	const empty = " ",
+		progressValue = Math.min(progress, 1),
+		barProgress = Math.floor(progressValue * length),
+		colors = [196, 202, 226, 46, 33],
+		fullColor = "white",
+		categoryValue = Math.min(colors.length - 1, Math.floor(progressValue * colors.length)),
+		color = progressValue < 1 ? colors[categoryValue] : fullColor,
+		array = new Array(barProgress).fill(bar).concat(new Array(length - barProgress).fill(empty));
 	return `[${colorPicker(array.join(""), color)}]`;
 }
 
