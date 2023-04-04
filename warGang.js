@@ -3,9 +3,9 @@ const [discountThresh, wantedPenThresh] = [0.8, 0.05]
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL"); ns.clearLog(); ns.tail();
-	const [faction, width, height] = ["Slum Snakes", 390, 888]
-	const tick = { tw: false, otherGangsInfoPrevCycle: undefined, nextTick: undefined }
-	await ns.sleep(500); // sleep here to all first ns.resizeTail() to work properly
+	const [faction, width, height] = ["Slum Snakes", 390, 888],
+		tick = { tw: false, otherGangsInfoPrevCycle: undefined, nextTick: undefined }
+	await ns.sleep(500); // sleep here to allow first ns.resizeTail() to work properly
 	while (true) {
 		ns.resizeTail(width, height); ns.clearLog();
 		if (ns.gang.inGang()) {
