@@ -2,16 +2,16 @@ import { getAllServers, hmsms, format, formatGB, formatPercent, bar } from "ze-l
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.clearLog(); ns.disableLog("ALL"); //ns.enableLog("sleep");
-	let targets = getAllServers(ns);
-	const sleepTime = 200
-	let getInput = ns.args[0] ?? await ns.prompt("Select Server", { type: "select", choices: targets });
+	let targets = getAllServers(ns),
+		getInput = ns.args[0] ?? await ns.prompt("Select Server", { type: "select", choices: targets });
+	const [sleepTime, width, height] = [200, 333, 440]
 	ns.tail();
 	while (true) {
-		ns.resizeTail(333, 420);
-		const serverStats = ns.getServer(getInput);
-		const progress = serverStats.moneyAvailable / serverStats.moneyMax;
-		const freeRam = serverStats.maxRam - serverStats.ramUsed
-		const rProgress = freeRam / serverStats.maxRam;
+		ns.resizeTail(width, height);
+		const serverStats = ns.getServer(getInput),
+			progress = serverStats.moneyAvailable / serverStats.moneyMax,
+			freeRam = serverStats.maxRam - serverStats.ramUsed,
+			rProgress = freeRam / serverStats.maxRam;
 		let [sshPort, ftpPort, smtpPort, httpPort, sqlPort] = [
 			serverStats.sshPortOpen ? "Δ" : " ",
 			serverStats.ftpPortOpen ? "Δ" : " ",
@@ -23,10 +23,12 @@ export async function main(ns) {
 		ns.print("Server Name:      " + serverStats.hostname.slice(0, 22));
 		ns.print("IP Adress:        " + serverStats.ip);
 		ns.print("Admin Rights:     " + serverStats.hasAdminRights);
+		ns.print("Owned by Player:  " + serverStats.purchasedByPlayer);
 		ns.print("Base Security:    " + format(serverStats.baseDifficulty));
 		ns.print("Min Security:     " + format(serverStats.minDifficulty));
 		ns.print("Security:         " + format(serverStats.hackDifficulty));
-		ns.print(`Hack Time:        ${hmsms(ns.getHackTime(getInput))}`)
+		if (serverStats.minDifficulty > 0)
+			ns.print(`Hack Time:        ${hmsms(ns.getHackTime(getInput))}`);
 		ns.print("Required Ports:   " + format(serverStats.numOpenPortsRequired));
 		ns.print("Req Hack Skill:   " + format(serverStats.requiredHackingSkill));
 		ns.print("Max Money:        $" + format(serverStats.moneyMax));
