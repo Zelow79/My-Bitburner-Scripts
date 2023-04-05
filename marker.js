@@ -4,7 +4,7 @@ export async function main(ns) {
 	ns.clearLog(); ns.disableLog('ALL');
 	const [currentLayout, fileName, s] = [[], "charge_guide.txt", ns.stanek]
 	ns.print(`Filename set as: ${fileName}\n`);
-	s.activeFragments().forEach(obj => obj.limit > 99 ? currentLayout.push({ x: obj.x, y: obj.y }) : null);
+	s.activeFragments().forEach(obj => obj.limit < 99 ? currentLayout.push({ x: obj.x, y: obj.y }) : null);
 
 	ns.write(fileName, JSON.stringify(currentLayout), "w");
 	ns.print(`Saved: ${fileName}`);
