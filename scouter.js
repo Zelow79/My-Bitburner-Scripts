@@ -4,7 +4,7 @@ export async function main(ns) {
 	ns.clearLog(); ns.disableLog("ALL"); //ns.enableLog("sleep");
 	let targets = getAllServers(ns),
 		getInput = ns.args[0] ?? await ns.prompt("Select Server", { type: "select", choices: targets });
-	const [sleepTime, width, height] = [200, 333, 440]
+	const [sleepTime, width, height] = [200, 333, 460]
 	ns.tail();
 	while (true) {
 		ns.resizeTail(width, height);
@@ -24,6 +24,7 @@ export async function main(ns) {
 		ns.print("IP Adress:        " + serverStats.ip);
 		ns.print("Admin Rights:     " + serverStats.hasAdminRights);
 		ns.print("Owned by Player:  " + serverStats.purchasedByPlayer);
+		ns.print("Backdoor Open:    " + serverStats.backdoorInstalled);
 		ns.print("Base Security:    " + format(serverStats.baseDifficulty));
 		ns.print("Min Security:     " + format(serverStats.minDifficulty));
 		ns.print("Security:         " + format(serverStats.hackDifficulty));
