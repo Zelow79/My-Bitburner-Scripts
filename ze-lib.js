@@ -1,12 +1,13 @@
 export const cities = ["Sector-12", "Aevum", "Volhaven", "Chongqing", "New Tokyo", "Ishima"]
 
-export function getAllServers(ns) {
+export function getAllServers(ns, homeless = false) {
 	const x = new Set(["home"]);
 	for (const server of x) {
 		for (const connectServer of ns.scan(server)) {
 			x.add(connectServer);
 		}
 	}
+	if (homeless) x.delete("home");
 	return Array.from(x);
 }
 
