@@ -108,21 +108,25 @@ export async function main(ns) {
 			const ofInterest = g.getEquipmentNames().filter(n => !member.upgrades.includes(n)),
 				equipmentToGet = []
 			for (const x of ofInterest) {
-				const alwaysWanted = g.getEquipmentStats(x).str > 0 || g.getEquipmentStats(x).def > 0 || g.getEquipmentStats(x).dex > 0 || g.getEquipmentStats(x).agi > 0,
+				const alwaysWanted = g.getEquipmentStats(x).str > 0
+					|| g.getEquipmentStats(x).def > 0
+					|| g.getEquipmentStats(x).dex > 0
+					|| g.getEquipmentStats(x).agi > 0,
 					cheapEnough = getDiscount() > discountThresh
 				if (alwaysWanted || cheapEnough) {
 					equipmentToGet.push({
 						name: x,
-						hack: (g.getEquipmentStats(x).hack != null) ? g.getEquipmentStats(x).hack : 0,
-						str: (g.getEquipmentStats(x).str != null) ? g.getEquipmentStats(x).str : 0,
-						def: (g.getEquipmentStats(x).def != null) ? g.getEquipmentStats(x).def : 0,
-						dex: (g.getEquipmentStats(x).dex != null) ? g.getEquipmentStats(x).dex : 0,
-						agi: (g.getEquipmentStats(x).agi != null) ? g.getEquipmentStats(x).agi : 0,
-						cha: (g.getEquipmentStats(x).cha != null) ? g.getEquipmentStats(x).cha : 0
+						hack: g.getEquipmentStats(x).hack != null ? g.getEquipmentStats(x).hack : 0,
+						str: g.getEquipmentStats(x).str != null ? g.getEquipmentStats(x).str : 0,
+						def: g.getEquipmentStats(x).def != null ? g.getEquipmentStats(x).def : 0,
+						dex: g.getEquipmentStats(x).dex != null ? g.getEquipmentStats(x).dex : 0,
+						agi: g.getEquipmentStats(x).agi != null ? g.getEquipmentStats(x).agi : 0,
+						cha: g.getEquipmentStats(x).cha != null ? g.getEquipmentStats(x).cha : 0
 					});
 				}
 			}
-			equipmentToGet.sort((a, b) => b.agi - a.agi || b.dex - a.dex || b.def - a.def); // experimental sorting agi -> dex -> def -> rest in most to least fashion
+			// experimental sorting agi -> dex -> def -> rest in most to least fashion
+			equipmentToGet.sort((a, b) => b.agi - a.agi || b.dex - a.dex || b.def - a.def); 
 			//equipmentToGet.sort((a, b) => (a.str < b.str) ? 1 : -1); // recently added to make str gear bought first
 			for (const y of equipmentToGet) {
 				if (ns.getPlayer().money > g.getEquipmentCost(y.name) && g.purchaseEquipment(member.name, y.name)) {
@@ -145,7 +149,10 @@ export async function main(ns) {
 			let myGang = g.getGangInformation();
 			const arrayTaskObjects = [],
 				memberInfo = g.getMemberInformation(name),
-				statCheck = memberInfo.str < targetValue * memberInfo.str_asc_mult || memberInfo.def < targetValue * memberInfo.def_asc_mult || memberInfo.dex < targetValue * memberInfo.dex_asc_mult || memberInfo.agi < targetValue * memberInfo.agi_asc_mult
+				statCheck = memberInfo.str < targetValue * memberInfo.str_asc_mult
+					|| memberInfo.def < targetValue * memberInfo.def_asc_mult
+					|| memberInfo.dex < targetValue * memberInfo.dex_asc_mult
+					|| memberInfo.agi < targetValue * memberInfo.agi_asc_mult;
 			if (statCheck && 1 - myGang.wantedPenalty < wantedPenThresh) {
 				g.setMemberTask(memberInfo.name, "Train Combat");
 				ns.print(`${colorPicker(namSpa(memberInfo.name), "white")} task: ${colorPicker("Train Combat", "white")}.`);
@@ -163,9 +170,9 @@ export async function main(ns) {
 				arrayTaskObjects.push({ name: task, wantGain, respGain, moneGain });
 			}
 
-			arrayTaskObjects.sort((a, b) => (a.respGain < b.respGain) ? 1 : -1);
+			arrayTaskObjects.sort((a, b) => a.respGain < b.respGain ? 1 : -1);
 			if (myGang.respect >= 2e6 && 1 - g.getGangInformation().wantedPenalty < wantedPenThresh)
-				arrayTaskObjects.sort((a, b) => (a.moneGain < b.moneGain) ? 1 : -1);
+				arrayTaskObjects.sort((a, b) => a.moneGain < b.moneGain ? 1 : -1);
 
 			const canFight = myGang.territoryClashChance === 0 || memberInfo.def > 600
 			if (g.getBonusTime() > 5000 && canFight && myGang.territory < 1) {
@@ -194,8 +201,14 @@ export async function main(ns) {
 	}
 
 	function printMemberStats(memberInfo) {
-		ns.print(`┣STR: ${colorPicker(format(memberInfo.str).padStart(8, " "), "white")} ┣DEF: ${colorPicker(format(memberInfo.def).padStart(8, " "), "white")} ┣MON: ${colorPicker(format(memberInfo.moneyGain * 5).padStart(8, " "), "white")}`);
-		ns.print(`┗DEX: ${colorPicker(format(memberInfo.dex).padStart(8, " "), "white")} ┗AGI: ${colorPicker(format(memberInfo.agi).padStart(8, " "), "white")} ┗RES: ${colorPicker(format(memberInfo.respectGain * 5).padStart(8, " "), "white")}`);
+		ns.print(`┣STR: ${colorPicker(format(memberInfo.str).padStart(8, " "), "white")
+			} ┣DEF: ${colorPicker(format(memberInfo.def).padStart(8, " "), "white")
+			} ┣MON: ${colorPicker(format(memberInfo.moneyGain * 5).padStart(8, " "), "white")
+			}`);
+		ns.print(`┗DEX: ${colorPicker(format(memberInfo.dex).padStart(8, " "), "white")
+			} ┗AGI: ${colorPicker(format(memberInfo.agi).padStart(8, " "), "white")
+			} ┗RES: ${colorPicker(format(memberInfo.respectGain * 5).padStart(8, " "), "white")
+			}`);
 	}
 
 	// Credit: Mysteyes. https://discord.com/channels/415207508303544321/415207923506216971/940379724214075442
