@@ -126,7 +126,7 @@ export async function main(ns) {
 				}
 			}
 			// experimental sorting agi -> dex -> def -> rest in most to least fashion
-			equipmentToGet.sort((a, b) => b.agi - a.agi || b.dex - a.dex || b.def - a.def); 
+			equipmentToGet.sort((a, b) => b.agi - a.agi || b.dex - a.dex || b.def - a.def);
 			//equipmentToGet.sort((a, b) => (a.str < b.str) ? 1 : -1); // recently added to make str gear bought first
 			for (const y of equipmentToGet) {
 				if (ns.getPlayer().money > g.getEquipmentCost(y.name) && g.purchaseEquipment(member.name, y.name)) {
@@ -286,152 +286,98 @@ export async function main(ns) {
 
 	function metricCheck() {
 		if (!metricsFlags.gangMade) {
-			reportMetrics(`Gang Created`, true);
-			metricsFlags.gangMade = true
+			reportMetrics(`Gang Created`, true); metricsFlags.gangMade = true
 		}
 		if (g.getGangInformation().territoryWarfareEngaged && !metricsFlags.warfareEnganged) {
-			reportMetrics(`Territory Warfare engaged`);
-			metricsFlags.warfareEnganged = true
+			reportMetrics(`Territory Warfare engaged`); metricsFlags.warfareEnganged = true
 		}
 		if (g.getGangInformation().territory >= 0.2 && !metricsFlags.t20) {
-			reportMetrics(`20% territory owned`);
-			metricsFlags.t20 = true
+			reportMetrics(`20% territory owned`); metricsFlags.t20 = true
 		}
 		if (g.getGangInformation().territory >= 0.3 && !metricsFlags.t30) {
-			reportMetrics(`30% territory owned`);
-			metricsFlags.t30 = true
+			reportMetrics(`30% territory owned`); metricsFlags.t30 = true
 		}
 		if (g.getGangInformation().territory >= 0.4 && !metricsFlags.t40) {
-			reportMetrics(`40% territory owned`);
-			metricsFlags.t40 = true
+			reportMetrics(`40% territory owned`); metricsFlags.t40 = true
 		}
 		if (g.getGangInformation().territory >= 0.5 && !metricsFlags.halfTerritory) {
-			reportMetrics(`50% territory owned`);
-			metricsFlags.halfTerritory = true
+			reportMetrics(`50% territory owned`); metricsFlags.halfTerritory = true
 		}
 		if (g.getGangInformation().territory >= 0.6 && !metricsFlags.t60) {
-			reportMetrics(`60% territory owned`);
-			metricsFlags.t60 = true
+			reportMetrics(`60% territory owned`); metricsFlags.t60 = true
 		}
 		if (g.getGangInformation().territory >= 0.7 && !metricsFlags.t70) {
-			reportMetrics(`70% territory owned`);
-			metricsFlags.t70 = true
+			reportMetrics(`70% territory owned`); metricsFlags.t70 = true
 		}
 		if (g.getGangInformation().territory >= 0.8 && !metricsFlags.t80) {
-			reportMetrics(`80% territory owned`);
-			metricsFlags.t80 = true
+			reportMetrics(`80% territory owned`); metricsFlags.t80 = true
 		}
 		if (g.getGangInformation().territory >= 0.9 && !metricsFlags.t90) {
-			reportMetrics(`90% territory owned`);
-			metricsFlags.t90 = true
+			reportMetrics(`90% territory owned`); metricsFlags.t90 = true
 		}
 		if (g.getGangInformation().territory === 1 && !metricsFlags.fullTerritory) {
-			reportMetrics(`100% territory owned`);
-			metricsFlags.fullTerritory = true
+			reportMetrics(`100% territory owned`); metricsFlags.fullTerritory = true
 		}
 		if (g.getMemberNames().length >= 1 && !metricsFlags.m1) {
-			reportMetrics(`1st member recruited`);
-			metricsFlags.m1 = true
+			reportMetrics(`1st member recruited`); metricsFlags.m1 = true
 		}
 		if (g.getMemberNames().length >= 2 && !metricsFlags.m2) {
-			reportMetrics(`2nd member recruited`);
-			metricsFlags.m2 = true
+			reportMetrics(`2nd member recruited`); metricsFlags.m2 = true
 		}
 		if (g.getMemberNames().length >= 3 && !metricsFlags.m3) {
-			reportMetrics(`3rd member recruited`);
-			metricsFlags.m3 = true
+			reportMetrics(`3rd member recruited`); metricsFlags.m3 = true
 		}
 		if (g.getMemberNames().length >= 4 && !metricsFlags.m4) {
-			reportMetrics(`4th member recruited`);
-			metricsFlags.m4 = true
+			reportMetrics(`4th member recruited`); metricsFlags.m4 = true
 		}
 		if (g.getMemberNames().length >= 5 && !metricsFlags.m5) {
-			reportMetrics(`5th member recruited`);
-			metricsFlags.m5 = true
+			reportMetrics(`5th member recruited`); metricsFlags.m5 = true
 		}
 		if (g.getMemberNames().length >= 6 && !metricsFlags.m6) {
-			reportMetrics(`6th member recruited`);
-			metricsFlags.m6 = true
+			reportMetrics(`6th member recruited`); metricsFlags.m6 = true
 		}
 		if (g.getMemberNames().length >= 7 && !metricsFlags.m7) {
-			reportMetrics(`7th member recruited`);
-			metricsFlags.m7 = true
+			reportMetrics(`7th member recruited`); metricsFlags.m7 = true
 		}
 		if (g.getMemberNames().length >= 8 && !metricsFlags.m8) {
-			reportMetrics(`8th member recruited`);
-			metricsFlags.m8 = true
+			reportMetrics(`8th member recruited`); metricsFlags.m8 = true
 		}
 		if (g.getMemberNames().length >= 9 && !metricsFlags.m9) {
-			reportMetrics(`9th member recruited`);
-			metricsFlags.m9 = true
+			reportMetrics(`9th member recruited`); metricsFlags.m9 = true
 		}
 		if (g.getMemberNames().length >= 10 && !metricsFlags.m10) {
-			reportMetrics(`10th member recruited`);
-			metricsFlags.m10 = true
+			reportMetrics(`10th member recruited`); metricsFlags.m10 = true
 		}
 		if (g.getMemberNames().length >= 11 && !metricsFlags.m11) {
-			reportMetrics(`11th member recruited`);
-			metricsFlags.m11 = true
+			reportMetrics(`11th member recruited`); metricsFlags.m11 = true
 		}
 		if (g.getMemberNames().length === 12 && !metricsFlags.twelvthMember) {
-			reportMetrics(`12th member recruited`);
-			metricsFlags.twelvthMember = true
+			reportMetrics(`12th member recruited`); metricsFlags.twelvthMember = true
 		}
 		if (g.getGangInformation().moneyGainRate * 5 >= 1e6 && !metricsFlags.rateOneMill) {
-			reportMetrics(`Gang money rate 1m /s`);
-			metricsFlags.rateOneMill = true
+			reportMetrics(`Gang money rate 1m /s`); metricsFlags.rateOneMill = true
 		}
 		if (g.getGangInformation().moneyGainRate * 5 >= 1e7 && !metricsFlags.rateTenMill) {
-			reportMetrics(`Gang money rate 10m /s`);
-			metricsFlags.rateTenMill = true
+			reportMetrics(`Gang money rate 10m /s`); metricsFlags.rateTenMill = true
 		}
 		if (g.getGangInformation().moneyGainRate * 5 >= 1e8 && !metricsFlags.rateOneHundredMill) {
-			reportMetrics(`Gang money rate 100m /s`);
-			metricsFlags.rateOneHundredMill = true
+			reportMetrics(`Gang money rate 100m /s`); metricsFlags.rateOneHundredMill = true
 		}
 		if (g.getGangInformation().moneyGainRate * 5 >= 1e9 && !metricsFlags.rateOneBill) {
-			reportMetrics(`Gang money rate 1b /s`);
-			metricsFlags.rateOneBill = true
+			reportMetrics(`Gang money rate 1b /s`); metricsFlags.rateOneBill = true
 		}
 		if (g.getGangInformation().moneyGainRate * 5 >= 1e10 && !metricsFlags.rateTenBill) {
-			reportMetrics(`Gang money rate 10b /s`);
-			metricsFlags.rateTenBill = true
+			reportMetrics(`Gang money rate 10b /s`); metricsFlags.rateTenBill = true
 		}
 		if (g.getGangInformation().moneyGainRate * 5 >= 1e11 && !metricsFlags.rateOneHundredBill) {
-			reportMetrics(`Gang money rate 100b /s`);
-			metricsFlags.rateOneHundredBill = true
+			reportMetrics(`Gang money rate 100b /s`); metricsFlags.rateOneHundredBill = true
 		}
 	}
 }
 
 const metricsFlags = {
-	gangMade: false,
-	warfareEnganged: false,
-	t20: false,
-	t30: false,
-	t40: false,
-	halfTerritory: false,
-	t60: false,
-	t70: false,
-	t80: false,
-	t90: false,
-	fullTerritory: false,
-	m1: false,
-	m2: false,
-	m3: false,
-	m4: false,
-	m5: false,
-	m6: false,
-	m7: false,
-	m8: false,
-	m9: false,
-	m10: false,
-	m11: false,
-	twelvthMember: false,
-	rateOneMill: false,
-	rateTenMill: false,
-	rateOneHundredMill: false,
-	rateOneBill: false,
-	rateTenBill: false,
-	rateOneHundredBill: false
+	gangMade: false, warfareEnganged: false, t20: false, t30: false, t40: false, halfTerritory: false, t60: false,
+	t70: false, t80: false, t90: false, fullTerritory: false, m2: false, m3: false, m4: false, m5: false,
+	m6: false, m7: false, m8: false, m9: false, m10: false, m11: false, twelvthMember: false, rateOneMill: false,
+	rateTenMill: false, rateOneHundredMill: false, rateOneBill: false, rateTenBill: false, rateOneHundredBill: false
 }
