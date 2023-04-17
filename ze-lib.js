@@ -61,7 +61,7 @@ export function makeHGW(ns, location = null) {
 	location = location ?? "home"
 	tools.forEach(tool => {
 		ns.write(tool + ".js", maker(tool), "w");
-		if (location !== "home" && ns.scp(tool + ".js", location)) ns.tprint(`${tool + ".js"} sent to ${location}`);
+		if (location !== "home") ns.scp(tool + ".js", location);
 	});
 }
 
