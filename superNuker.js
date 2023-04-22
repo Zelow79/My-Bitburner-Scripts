@@ -24,7 +24,7 @@ export async function main(ns) {
 			if (ns.fileExists("SQLInject.exe", "home") && !ns.getServer(hostname).sqlPortOpen) {
 				ns.sqlinject(hostname); usedPrograms.push("SQLInject.exe");
 			}
-			if (ns.getServer(hostname).numOpenPortsRequired >= ns.getServer(hostname).openPortCount) ns.nuke(hostname);
+			if (ns.getServer(hostname).numOpenPortsRequired <= ns.getServer(hostname).openPortCount) ns.nuke(hostname);
 			if (usedPrograms.length > 0) ns.print(`${usedPrograms.join(" ")} were used on: ${hostname}`);
 			if (ns.hasRootAccess(hostname)) {
 				ns.toast(`${hostname} -- Rooted!!`, "success", 3000); ns.print(`${hostname} -- Rooted!!`);
