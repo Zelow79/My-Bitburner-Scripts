@@ -135,14 +135,14 @@ export function diceBar(progress, length = 15) { // progress bar with random dic
 		empty = " ",
 		progressValue = Math.min(progress, 1),
 		colors = [196, 202, 226, 46, 33],
-		fullColor = "white",
+		fullColor = 255,
 		categoryValue = Math.min(colors.length - 1, Math.floor(progressValue * colors.length)),
 		color = progressValue < 1 ? colors[categoryValue] : fullColor,
 		barProgress = Math.floor(progressValue * length),
 		array = [];
 	for (let i = 0; i < barProgress; i++) { array.push(diceSet[Math.floor(Math.random() * diceSet.length)]); }
 	for (let i = 0; i < length - barProgress; i++) { array.push(empty); }
-	return `[${colorPicker(array.join(""), color)}]`;
+	return `[${art(array.join(""), { color })}]`;
 }
 
 export function bar(progress, bar = true, length = 15) { // progress bar, orginal design came from NightElf from BB discord
@@ -151,14 +151,25 @@ export function bar(progress, bar = true, length = 15) { // progress bar, orgina
 		progressValue = Math.min(progress, 1),
 		barProgress = Math.floor(progressValue * length),
 		colors = [196, 202, 226, 46, 33],
-		fullColor = "white",
+		fullColor = 255,
 		categoryValue = Math.min(colors.length - 1, Math.floor(progressValue * colors.length)),
 		color = progressValue < 1 ? colors[categoryValue] : fullColor,
 		array = new Array(barProgress).fill(bar).concat(new Array(length - barProgress).fill(empty));
-	return `[${colorPicker(array.join(""), color)}]`;
+	return `[${art(array.join(""), { color })}]`;
 }
 
-export function colorPicker(x, color) { // x = what you want colored
+export function art(x, style) { // x = what you want colored replacing colorPicker() going forward
+	const o = {                                        // accepts style as an object, all options are optional
+		color: !isNaN(style.color) ? style.color : -1,  // style.color uses 256 color codes
+		background: !isNaN(style.background) ? style.background : -1, // style.background 256 color codes aswell
+		bold: style.bold ? true : false,                // style.bold is boolean true for bold else false
+		underline: style.underline ? true : false       // style.unders is boolean true for underline else false
+	}
+	return `\x1b[${o.color >= 0 ? `38;5;${o.color}` : null}${o.bold ? ";1" : null}${o.underline ?
+		";4" : null}${o.background >= 0 ? `;48;5;${o.background}` : null}m${x}\x1b[0m`;
+}
+
+export function colorPicker(x, color) { // x = what you want colored ***deprecated***
 	let y;
 	switch (color) {
 		case "black":
