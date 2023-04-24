@@ -1,4 +1,4 @@
-import { bar, format, formatPercent, colorPicker, names } from "ze-lib";
+import { bar, format, formatPercent, art, names } from "ze-lib";
 const [discountThresh, wantedPenThresh] = [0.8, 0.05]
 /** @param {NS} ns */
 export async function main(ns) {
@@ -16,7 +16,7 @@ export async function main(ns) {
 			else if (getDiscount() > 0.5 && ns.args[0] !== false) equipmentcheck(); // try to buy equipment if discount is good enough
 
 			g.getGangInformation().territory < 1 ? tickCheck() : tick.tw = false;
-			if (g.getGangInformation().territory >= 1) g.setTerritoryWarfare(false); // not really needed just added for personal pref, to catch if war is still engaged after 100%
+			if (g.getGangInformation().territory >= 1) g.setTerritoryWarfare(false);
 			if (!tick.tw) gangMemberStuff();
 			printInfo();
 		} else {
@@ -62,12 +62,12 @@ export async function main(ns) {
 			ns.print('WARN: Assigning all members to territory warfare');
 			for (const member of members) {
 				if (allowClash && g.getMemberInformation(member).def < 600) {
-					ns.print(`${colorPicker(namSpa(member), "white")} avoided war for saftey.`);
+					ns.print(`${art(namSpa(member), { color: 255 })} avoided war for saftey.`);
 					printMemberStats(g.getMemberInformation(member));
 					continue;
 				}
 				g.setMemberTask(member, 'Territory Warfare');
-				ns.print(`${colorPicker(namSpa(member), "white")} task: ${colorPicker("Territory Warfare", "white")}.`);
+				ns.print(`${art(namSpa(member), { color: 255 })} task: ${art("Territory Warfare", { color: 255 })}.`);
 				printMemberStats(g.getMemberInformation(member));
 				tick.tw = true
 			}
@@ -80,7 +80,7 @@ export async function main(ns) {
 	function gangMemberAscension() {
 		const squadInfo = []
 		for (const member of g.getMemberNames()) squadInfo.push(g.getMemberInformation(member));
-		squadInfo.sort((a, b) => a.str_asc_mult > b.str_asc_mult ? 1 : -1);
+		squadInfo.sort((a, b) => a.str_asc_mult < b.str_asc_mult ? 1 : -1);
 		for (const member of squadInfo) {
 			const [ganginfo, ascensionInfo] = [g.getGangInformation(), g.getAscensionResult(member.name)]
 			if (ascensionInfo === undefined) continue; // if cannot ascend skip
@@ -155,7 +155,7 @@ export async function main(ns) {
 					|| memberInfo.agi < targetValue * memberInfo.agi_asc_mult;
 			if (statCheck && 1 - myGang.wantedPenalty < wantedPenThresh) {
 				g.setMemberTask(memberInfo.name, "Train Combat");
-				ns.print(`${colorPicker(namSpa(memberInfo.name), "white")} task: ${colorPicker("Train Combat", "white")}.`);
+				ns.print(`${art(namSpa(memberInfo.name), { color: 255 })} task: ${art("Train Combat", { color: 255 })}.`);
 				printMemberStats(memberInfo);
 				continue;
 			}
@@ -177,13 +177,13 @@ export async function main(ns) {
 			const canFight = myGang.territoryClashChance === 0 || memberInfo.def > 600
 			if (g.getBonusTime() > 5000 && canFight && myGang.territory < 1) {
 				g.setMemberTask(name, "Territory Warfare");
-				ns.print(`${colorPicker(namSpa(name), "white")} task: ${colorPicker("Territory Warfare", "white")}`);
-				printMemberStats(memberInfo)
+				ns.print(`${art(namSpa(name), { color: 255 })} task: ${art("Territory Warfare", { color: 255 })}`);
+				printMemberStats(memberInfo);
 			} else {
 				for (const x of arrayTaskObjects) {
 					if (x.respGain < x.wantGain * 99) continue;
 					g.setMemberTask(name, x.name);
-					ns.print(`${colorPicker(namSpa(name), "white")} task: ${colorPicker(x.name, "white")}`);
+					ns.print(`${art(namSpa(name), { color: 255 })} task: ${art(x.name, { color: 255 })}`);
 					printMemberStats(memberInfo);
 					break;
 				}
@@ -201,13 +201,13 @@ export async function main(ns) {
 	}
 
 	function printMemberStats(memberInfo) {
-		ns.print(`┣STR: ${colorPicker(format(memberInfo.str).padStart(8, " "), "white")
-			} ┣DEF: ${colorPicker(format(memberInfo.def).padStart(8, " "), "white")
-			} ┣MON: ${colorPicker(format(memberInfo.moneyGain * 5).padStart(8, " "), "white")
+		ns.print(`┣STR: ${art(format(memberInfo.str).padStart(8, " "), { color: 255 })
+			} ┣DEF: ${art(format(memberInfo.def).padStart(8, " "), { color: 255 })
+			} ┣MON: ${art(format(memberInfo.moneyGain * 5).padStart(8, " "), { color: 255 })
 			}`);
-		ns.print(`┗DEX: ${colorPicker(format(memberInfo.dex).padStart(8, " "), "white")
-			} ┗AGI: ${colorPicker(format(memberInfo.agi).padStart(8, " "), "white")
-			} ┗RES: ${colorPicker(format(memberInfo.respectGain * 5).padStart(8, " "), "white")
+		ns.print(`┗DEX: ${art(format(memberInfo.dex).padStart(8, " "), { color: 255 })
+			} ┗AGI: ${art(format(memberInfo.agi).padStart(8, " "), { color: 255 })
+			} ┗RES: ${art(format(memberInfo.respectGain * 5).padStart(8, " "), { color: 255 })
 			}`);
 	}
 
@@ -238,23 +238,23 @@ export async function main(ns) {
 	function printInfo() {
 		//ns.print(`\n   *** GANG REPORT ***`);
 		const myGang = g.getGangInformation();
-		g.getBonusTime() > 5000 ? ns.print(colorPicker("***BONUS TIME***", 226)) : ns.print(" ");
-		ns.print(`Faction name:       ${colorPicker(myGang.faction.padStart(27, " "), "white")}`);
-		ns.print(`Faction Rep:        ${colorPicker(format(ns.singularity.getFactionRep(myGang.faction)).padStart(27, " "), "white")}`);
-		ns.print(`Total Respect:      ${colorPicker(format(myGang.respect).padStart(27, " "), "white")}`);
+		g.getBonusTime() > 5000 ? ns.print(art("***BONUS TIME***", { color: 226 })) : ns.print(" ");
+		ns.print(`Faction name:       ${art(myGang.faction.padStart(27, " "), { color: 255 })}`);
+		ns.print(`Faction Rep:        ${art(format(ns.singularity.getFactionRep(myGang.faction)).padStart(27, " "), { color: 255 })}`);
+		ns.print(`Total Respect:      ${art(format(myGang.respect).padStart(27, " "), { color: 255 })}`);
 		if (getRespectNeededToRecruitMember(g.getMemberNames()) > 0) {
-			ns.print(`New Member at:      ${colorPicker((format(getRespectNeededToRecruitMember(g.getMemberNames())) + " resp").padStart(27, " "), "white")}`);
+			ns.print(`New Member at:      ${art((format(getRespectNeededToRecruitMember(g.getMemberNames())) + " resp").padStart(27, " "), { color: 255 })}`);
 		}
-		const discountColor = getDiscount() > discountThresh ? "green" : getDiscount() > 0.2 ? "white" : "red"
-		ns.print(`Equip Discount:     ${colorPicker(("-" + formatPercent(getDiscount(), 2)).padStart(27, " "), discountColor)}`);
-		ns.print(`Wanted Level:       ${colorPicker(format(myGang.wantedLevel).padStart(27, " "), "white")}`);
-		const wantedPenColor = 1 - myGang.wantedPenalty < wantedPenThresh ? "green" : 1 - myGang.wantedPenalty < 0.5 ? "white" : "red"
-		ns.print(`Wanted Penalty:     ${colorPicker(("-" + formatPercent(1 - myGang.wantedPenalty, 2)).padStart(27, " "), wantedPenColor)}`);
-		ns.print(`Money gain rate:    ${colorPicker((format(myGang.moneyGainRate * 5) + " /s").padStart(27, " "), "white")}`);
-		ns.print(`Is war allowed?:    ${colorPicker((myGang.territoryWarfareEngaged).toString().padStart(27, " "), "white")}`);
-		ns.print(`Territory Power:    ${colorPicker(format(myGang.power).padStart(27, " "), "white")}`);
-		ns.print(`Min Win Chance:   ${bar(lowestClashChance(), "⚡", 20)}${colorPicker(formatPercent(lowestClashChance()).padStart(7, " "), "white")}`);
-		ns.print(`Territory Owned:  ${bar(myGang.territory, "⚡", 20)}${colorPicker(formatPercent(myGang.territory).padStart(7, " "), "white")}`);
+		const discountColor = getDiscount() > discountThresh ? 2 : getDiscount() > 0.2 ? 255 : 196
+		ns.print(`Equip Discount:     ${art(("-" + formatPercent(getDiscount(), 2)).padStart(27, " "), { color: discountColor })}`);
+		ns.print(`Wanted Level:       ${art(format(myGang.wantedLevel).padStart(27, " "), { color: 255 })}`);
+		const wantedPenColor = 1 - myGang.wantedPenalty < wantedPenThresh ? 2 : 1 - myGang.wantedPenalty < 0.5 ? 255 : 196
+		ns.print(`Wanted Penalty:     ${art(("-" + formatPercent(1 - myGang.wantedPenalty, 2)).padStart(27, " "), { color: wantedPenColor })}`);
+		ns.print(`Money gain rate:    ${art((format(myGang.moneyGainRate * 5) + " /s").padStart(27, " "), { color: 255 })}`);
+		ns.print(`Is war allowed?:    ${art((myGang.territoryWarfareEngaged).toString().padStart(27, " "), { color: 255 })}`);
+		ns.print(`Territory Power:    ${art(format(myGang.power).padStart(27, " "), { color: 255 })}`);
+		ns.print(`Min Win Chance:   ${bar(lowestClashChance(), "⚡", 20)}${art(formatPercent(lowestClashChance()).padStart(7, " "), { color: 255 })}`);
+		ns.print(`Territory Owned:  ${bar(myGang.territory, "⚡", 20)}${art(formatPercent(myGang.territory).padStart(7, " "), { color: 255 })}`);
 	}
 
 	function getRespectNeededToRecruitMember(members) {
