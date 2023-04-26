@@ -1,4 +1,4 @@
-import { dhms, colorPicker, bar, format } from "ze-lib.js"
+import { art, dhms, colorPicker, bar, format } from "ze-lib.js"
 const [cycleLimit, width, height] = [200, 250, 670]
 const contracts = ["Tracking", "Bounty Hunter", "Retirement"]
 let [intTracking, intBounty, intRetire, startTime] = [0, 0, 0, 0]
@@ -61,11 +61,11 @@ export async function main(ns) {
 		const currentRetire = bb.getActionCountRemaining("Contracts", "Retirement");
 		const totalCurrentValues = currentTracking + currentBounty + currentRetire
 		const totalIntValues = intTracking + intBounty + intRetire
-		ns.print(`Contracts completed: ${(totalCurrentValues - totalIntValues < 0) ? colorPicker(format((totalCurrentValues - totalIntValues) * -1, 3), "white") : ""}`);
+		ns.print(`Contracts completed: ${(totalCurrentValues - totalIntValues < 0) ? art(format((totalCurrentValues - totalIntValues) * -1, 3), { color: 255 }) : ""}`);
 		ns.print(`Remaining`);
-		ns.print(` ${colorPicker("┣", "white")}${(contracts[0] === "Tracking") ? colorPicker("Track", 46) : (contracts[2] === "Tracking") ? colorPicker("Track", 202) : "Track"}:  ${format(currentTracking, 3, 3)}${(currentTracking - intTracking < 0) ? colorPicker("(" + format(currentTracking - intTracking, 3) + ")", 202) : ""}`);
-		ns.print(` ${colorPicker("┣", "white")}${(contracts[0] === "Bounty Hunter") ? colorPicker("Hunter", 46) : (contracts[2] === "Bounty Hunter") ? colorPicker("Hunter", 202) : "Hunter"}: ${format(currentBounty, 3, 3)}${(currentBounty - intBounty < 0) ? colorPicker("(" + format(currentBounty - intBounty, 3) + ")", 202) : ""}`);
-		ns.print(` ${colorPicker("┗", "white")}${(contracts[0] === "Retirement") ? colorPicker("Retire", 46) : (contracts[2] === "Retirement") ? colorPicker("Retire", 202) : "Retire"}: ${format(currentRetire, 3, 3)}${(currentRetire - intRetire < 0) ? colorPicker("(" + format(currentRetire - intRetire, 3) + ")", 202) : ""}`);
+		ns.print(` ${art("┣", { color: 255 })}${(contracts[0] === "Tracking") ? art("Track", { color: 46 }) : (contracts[2] === "Tracking") ? art("Track", { color: 202 }) : "Track"}:  ${format(currentTracking, 3)}${(currentTracking - intTracking < 0) ? art("(" + format(currentTracking - intTracking, 3) + ")", { color: 202 }) : ""}`);
+		ns.print(` ${art("┣", { color: 255 })}${(contracts[0] === "Bounty Hunter") ? art("Hunter", { color: 46 }) : (contracts[2] === "Bounty Hunter") ? art("Hunter", { color: 202 }) : "Hunter"}: ${format(currentBounty, 3)}${(currentBounty - intBounty < 0) ? art("(" + format(currentBounty - intBounty, 3) + ")", { color: 202 }) : ""}`);
+		ns.print(` ${art("┗", { color: 255 })}${(contracts[0] === "Retirement") ? art("Retire", { color: 46 }) : (contracts[2] === "Retirement") ? art("Retire", { color: 202 }) : "Retire"}: ${format(currentRetire, 3)}${(currentRetire - intRetire < 0) ? art("(" + format(currentRetire - intRetire, 3) + ")", { color: 202 }) : ""}`);
 		ns.print(`---Time-Elapsed-${dhms(Math.floor((performance.now() - startTime)))}----`);
 
 		const steves = []
@@ -81,11 +81,11 @@ export async function main(ns) {
 		}
 
 		for (const steve of steves) {
-			ns.print(`Sleeve-${steve}     ${colorPicker("Int " + format(s.getSleeve(steve).skills.intelligence, 3), 75)}`);
-			const task = (s.getTask(steve) !== null) ? colorPicker(s.getTask(steve).actionName, "white") : colorPicker("idle", 242);
-			ns.print(` ${colorPicker("┣", "white")}Task:     ${task}`);
-			ns.print(` ${colorPicker("┣", "white")}Cycles:   ${format(s.getSleeve(steve).storedCycles)}`);
-			ns.print(` ${colorPicker("┗", "white")}Progress: ${bar(s.getSleeve(steve).storedCycles / cycleLimit, "⚡")}`);
+			ns.print(`Sleeve-${steve}     ${art("Int " + format(s.getSleeve(steve).skills.intelligence, 3), { color: 75 })}`);
+			const task = (s.getTask(steve) !== null) ? art(s.getTask(steve).actionName, { color: 255 }) : art("idle", { color: 242 });
+			ns.print(` ${art("┣", { color: 255 })}Task:     ${task}`);
+			ns.print(` ${art("┣", { color: 255 })}Cycles:   ${format(s.getSleeve(steve).storedCycles)}`);
+			ns.print(` ${art("┗", { color: 255 })}Progress: ${bar(s.getSleeve(steve).storedCycles / cycleLimit, "⚡")}`);
 		}
 	}
 }

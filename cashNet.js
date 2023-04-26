@@ -1,4 +1,4 @@
-import { colorPicker, format, hms } from "ze-lib.js";
+import { art, format, hms } from "ze-lib.js";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL"); //ns.enableLog("sleep");
@@ -38,13 +38,13 @@ export async function main(ns) {
 		ns.resizeTail(width, height);
 		ns.print('clearing log......');
 		ns.clearLog();
-		ns.print(colorPicker("-------Script Stats--------", colorPalette.titlebar));
-		ns.print(`Script start: ${colorPicker(scriptStartTime.toLocaleString(), colorPalette.starttime)}`);
+		ns.print(art("-------Script Stats--------", { color: colorPalette.titlebar }));
+		ns.print(`Script start: ${art(scriptStartTime.toLocaleString(), { color: colorPalette.starttime })}`);
 		const scriptCurrentTime = new Date();
-		ns.print(`Current time: ${colorPicker(scriptCurrentTime.toLocaleString(), colorPalette.currenttime)}`);
+		ns.print(`Current time: ${art(scriptCurrentTime.toLocaleString(), { color: colorPalette.currenttime })}`);
 		const runtime = (Date.now() - scriptStartTime)
 		if (runtime >= 86400 * 1000) { colorPalette.runtime = 200 } else if (runtime >= 36000 * 1000) { colorPalette.runtime = 196 } else if (runtime >= 18000 * 1000) { colorPalette.runtime = 208 } else if (runtime >= 3600 * 1000) { colorPalette.runtime = 3 } else if (runtime >= 600 * 1000) { colorPalette.runtime = 2 }
-		ns.print(`Script runtime: ${colorPicker(hms(runtime), colorPalette.runtime)}`);
+		ns.print(`Script runtime: ${art(hms(runtime), { color: colorPalette.runtime })}`);
 		const rate = [];
 		for (var i = 0; i < ns.hacknet.numNodes(); i++)
 			rate.push(ns.hacknet.getNodeStats(i).production)
@@ -55,9 +55,9 @@ export async function main(ns) {
 		if (ns.hacknet.numNodes() > 0) { productionRate = rate.reduce(sum) } else { productionRate = 0 }
 		let pMoney = format(ns.getPlayer().money);
 		if (pMoney > 1e33) { colorPalette.money = 231 } else if (pMoney > 1e15) { colorPalette.money = 200 } else if (pMoney > 1e12) { colorPalette.money = 196 } else if (pMoney > 1e9) { colorPalette.money = 208 } else if (pMoney > 1e6) { colorPalette.money = 3 } else if (pMoney > 1e3) { colorPalette.money = 2 }
-		ns.print(`Money: ${colorPicker(pMoney, colorPalette.money)}`);
-		ns.print(`Hashes: ${colorPicker(format(ns.hacknet.numHashes()), colorPalette.chash)} / ${colorPicker(format(ns.hacknet.hashCapacity()), colorPalette.mhash)}`);
-		if (ns.hacknet.numNodes() > 0) ns.print(`Total Hashnet Production: ${colorPicker(format(productionRate), colorPalette.hashrate)} h / s`);
+		ns.print(`Money: ${art(pMoney, { color: colorPalette.money })}`);
+		ns.print(`Hashes: ${art(format(ns.hacknet.numHashes()), { color: colorPalette.chash })} / ${art(format(ns.hacknet.hashCapacity()), { color: colorPalette.mhash })}`);
+		if (ns.hacknet.numNodes() > 0) ns.print(`Total Hashnet Production: ${art(format(productionRate), { color: colorPalette.hashrate })} h / s`);
 		for (let i = 0; i < 50; i++) {
 			const x = ns.hacknet.spendHashes("Sell for Money");
 			if (x) hashMoney++
@@ -90,15 +90,15 @@ export async function main(ns) {
 				if (x) nodePurchases++
 			}
 		}
-		ns.print(colorPicker("-------Since launch--------", colorPalette.titlebar));
-		ns.print(colorPicker("Hash purchases:", colorPalette.titles));
-		ns.print(`${colorPicker(format(hashMoney * 1e6), colorPalette.dollars)} dollars`);
-		ns.print(colorPicker("Hacknet server upgrades bought:", colorPalette.titles));
-		ns.print(`${colorPicker(format(nodePurchases), colorPalette.pnodes)} server node(s)`);
-		ns.print(`${colorPicker(format(levelUpgrades), colorPalette.lnodes)} level upgrade(s)`);
-		ns.print(`${colorPicker(format(ramUpgrades), colorPalette.rnodes)} RAM upgrade(s)`);
-		ns.print(`${colorPicker(format(coreUpgrades), colorPalette.cnodes)} core upgrade(s)`);
-		ns.print(`${colorPicker(format(cacheLvlUpgrades), colorPalette.cashelevel)} cache lvl upgrade(s)`);
+		ns.print(art("-------Since launch--------", { color: colorPalette.titlebar }));
+		ns.print(art("Hash purchases:", { color: colorPalette.titles }));
+		ns.print(`${art(format(hashMoney * 1e6), { color: colorPalette.dollars })} dollars`);
+		ns.print(art("Hacknet server upgrades bought:", { color: colorPalette.titles }));
+		ns.print(`${art(format(nodePurchases), { color: colorPalette.pnodes })} server node(s)`);
+		ns.print(`${art(format(levelUpgrades), { color: colorPalette.lnodes })} level upgrade(s)`);
+		ns.print(`${art(format(ramUpgrades), { color: colorPalette.rnodes })} RAM upgrade(s)`);
+		ns.print(`${art(format(coreUpgrades), { color: colorPalette.cnodes })} core upgrade(s)`);
+		ns.print(`${art(format(cacheLvlUpgrades), { color: colorPalette.cashelevel })} cache lvl upgrade(s)`);
 		await ns.sleep(sleepTime);
 	}
 }
