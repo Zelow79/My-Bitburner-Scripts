@@ -1,4 +1,4 @@
-import { colorPicker, hms, format, formatPercent, numPad } from "ze-lib.js";
+import { art, hms, format, formatPercent, numPad } from "ze-lib.js";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL");
@@ -60,13 +60,13 @@ export async function main(ns) {
 		ns.clearLog();
 		const targetMinSec = ns.getServer(target).minDifficulty;
 		const targetMaxMon = ns.getServer(target).moneyMax;
-		ns.print(colorPicker("-------Script Stats--------", colorPalette.titlebar));
-		ns.print(`Script start: ${colorPicker(scriptStartTime.toLocaleString(), colorPalette.starttime)}`);
+		ns.print(art("-------Script Stats--------", { color: colorPalette.titlebar }));
+		ns.print(`Script start: ${art(scriptStartTime.toLocaleString(), { color: colorPalette.starttime })}`);
 		const scriptCurrentTime = new Date();
-		ns.print(`Current time: ${colorPicker(scriptCurrentTime.toLocaleString(), colorPalette.currenttime)}`);
+		ns.print(`Current time: ${art(scriptCurrentTime.toLocaleString(), { color: colorPalette.currenttime })}`);
 		const runtime = (Date.now() - scriptStartTime);
 		if (runtime >= 86400 * 1e3) { colorPalette.runtime = 200 } else if (runtime >= 36000 * 1e3) { colorPalette.runtime = 196 } else if (runtime >= 18000 * 1e3) { colorPalette.runtime = 208 } else if (runtime >= 3600 * 1e3) { colorPalette.runtime = 3 } else if (runtime >= 600 * 1e3) { colorPalette.runtime = 2 }
-		ns.print(`Script runtime: ${colorPicker(hms(runtime), colorPalette.runtime)}`);
+		ns.print(`Script runtime: ${art(hms(runtime), { color: colorPalette.runtime })}`);
 		const rate = [];
 		for (var i = 0; i < ns.hacknet.numNodes(); i++)
 			rate.push(ns.hacknet.getNodeStats(i).production)
@@ -78,9 +78,9 @@ export async function main(ns) {
 		const pMoney = ns.getPlayer().money
 		if (pMoney > 1e15) { colorPalette.money = 200 } else if (pMoney > 1e12) { colorPalette.money = 196 } else if (pMoney > 1e9) { colorPalette.money = 208 } else if (pMoney > 1e6) { colorPalette.money = 3 } else if (pMoney > 1e3) { colorPalette.money = 2 }
 		if (pMoney > 1e33) { colorPalette.money = 231 }
-		ns.print(`Money:  ${colorPicker("$" + format(pMoney), colorPalette.money)}`);
-		ns.print(`Hashes: ${colorPicker(format(ns.hacknet.numHashes()), colorPalette.chash)} / ${colorPicker(format(ns.hacknet.hashCapacity()), colorPalette.mhash)}`);
-		if (ns.hacknet.numNodes() > 0) ns.print(`Total Hashnet Production: ${colorPicker(format(productionRate), colorPalette.hashrate)} h / s`);
+		ns.print(`Money:  ${art("$" + format(pMoney), { color: colorPalette.money })}`);
+		ns.print(`Hashes: ${art(format(ns.hacknet.numHashes()), { color: colorPalette.chash })} / ${art(format(ns.hacknet.hashCapacity()), { color: colorPalette.mhash })}`);
+		if (ns.hacknet.numNodes() > 0) ns.print(`Total Hashnet Production: ${art(format(productionRate), { color: colorPalette.hashrate })} h / s`);
 		const maxHash = ns.hacknet.hashCapacity();
 		if (ns.hacknet.numHashes() > maxHash * 0.9) {
 			const budget = Math.floor(maxHash * 0.25);
@@ -139,21 +139,21 @@ export async function main(ns) {
 		if (hashGymPerms) ns.print(`Current training mult: ${formatPercent(ns.hacknet.getTrainingMult() - 1)}`);
 		if (hashServerMinSecPerms) ns.print(`${target}'s MinSec: ${format(targetMinSec)}`);
 		if (hashServerIncMaxMon) ns.print(`${target}'s Max Server\$: ${"$" + format(targetMaxMon)}`);
-		if (hashMoney > 0 || hashCorpFund > 0 || hashCorpTech > 0 || redMinSec > 0 || incMaxMon > 0 || studyingImproved > 0 || trainingImproved > 0 || nodePurchases > 0 || levelUpgrades > 0 || ramUpgrades > 0 || coreUpgrades > 0 || cacheLvlUpgrades > 0) ns.print(colorPicker("-------Since launch--------", colorPalette.titlebar));
-		if (hashMoney > 0 || hashCorpFund > 0 || hashCorpTech > 0 || redMinSec > 0 || incMaxMon > 0 || studyingImproved > 0 || trainingImproved > 0) ns.print(colorPicker("Hash purchases:", colorPalette.titles));
-		if (hashMoney > 0) ns.print(`${colorPicker("$" + format(hashMoney * 1e6), colorPalette.dollars)} dollars`);
-		if (hashCorpFund > 0) ns.print(`${colorPicker("$" + format(hashCorpFund * 1e9), colorPalette.funds)} corp funds`);
-		if (hashCorpTech > 0) ns.print(`${colorPicker(format(hashCorpTech * 1e3), colorPalette.tech)} Scientific Research`);
-		if (redMinSec > 0) ns.print(`${colorPicker(numPad(redMinSec, 3), colorPalette.minsec)} Min Security Reduction(s)`);
-		if (incMaxMon > 0) ns.print(`${colorPicker(numPad(incMaxMon, 3), onlanguagechange.maxmon)} Server Max\$ Increase(s)`);
-		if (studyingImproved > 0) ns.print(`${colorPicker(numPad(studyingImproved, 3), colorPalette.study)} studying multiplier(s)`);
-		if (trainingImproved > 0) ns.print(`${colorPicker(numPad(trainingImproved, 3), colorPalette.train)} training multiplier(s)`);
-		if (nodePurchases > 0 || levelUpgrades > 0 || ramUpgrades > 0 || coreUpgrades > 0 || cacheLvlUpgrades > 0) ns.print(colorPicker("Hacknet server upgrades bought:", colorPalette.titles));
-		if (nodePurchases > 0) ns.print(`${colorPicker(numPad(nodePurchases, 3), colorPalette.pnodes)} server node(s)`);
-		if (levelUpgrades > 0) ns.print(`${colorPicker(numPad(levelUpgrades, 3), colorPalette.lnodes)} level upgrade(s)`);
-		if (ramUpgrades > 0) ns.print(`${colorPicker(numPad(ramUpgrades, 3), colorPalette.rnodes)} RAM upgrade(s)`);
-		if (coreUpgrades > 0) ns.print(`${colorPicker(numPad(coreUpgrades, 3), colorPalette.cnodes)} core upgrade(s)`);
-		if (cacheLvlUpgrades > 0) ns.print(`${colorPicker(numPad(cacheLvlUpgrades, 3), colorPalette.cashelevel)} cache lvl upgrade(s)`);
+		if (hashMoney > 0 || hashCorpFund > 0 || hashCorpTech > 0 || redMinSec > 0 || incMaxMon > 0 || studyingImproved > 0 || trainingImproved > 0 || nodePurchases > 0 || levelUpgrades > 0 || ramUpgrades > 0 || coreUpgrades > 0 || cacheLvlUpgrades > 0) ns.print(art("-------Since launch--------", { color: colorPalette.titlebar }));
+		if (hashMoney > 0 || hashCorpFund > 0 || hashCorpTech > 0 || redMinSec > 0 || incMaxMon > 0 || studyingImproved > 0 || trainingImproved > 0) ns.print(art("Hash purchases:", { color: colorPalette.titles }));
+		if (hashMoney > 0) ns.print(`${art("$" + format(hashMoney * 1e6), { color: colorPalette.dollars })} dollars`);
+		if (hashCorpFund > 0) ns.print(`${art("$" + format(hashCorpFund * 1e9), { color: colorPalette.funds })} corp funds`);
+		if (hashCorpTech > 0) ns.print(`${art(format(hashCorpTech * 1e3), { color: colorPalette.tech })} Scientific Research`);
+		if (redMinSec > 0) ns.print(`${art(numPad(redMinSec, 3), { color: colorPalette.minsec })} Min Security Reduction(s)`);
+		if (incMaxMon > 0) ns.print(`${art(numPad(incMaxMon, 3), { color: colorPalette.maxmon })} Server Max\$ Increase(s)`);
+		if (studyingImproved > 0) ns.print(`${art(numPad(studyingImproved, 3), { color: colorPalette.study })} studying multiplier(s)`);
+		if (trainingImproved > 0) ns.print(`${art(numPad(trainingImproved, 3), { color: colorPalette.train })} training multiplier(s)`);
+		if (nodePurchases > 0 || levelUpgrades > 0 || ramUpgrades > 0 || coreUpgrades > 0 || cacheLvlUpgrades > 0) ns.print(art("Hacknet server upgrades bought:", { color: colorPalette.titles }));
+		if (nodePurchases > 0) ns.print(`${art(numPad(nodePurchases, 3), { color: colorPalette.pnodes })} server node(s)`);
+		if (levelUpgrades > 0) ns.print(`${art(numPad(levelUpgrades, 3), { color: colorPalette.lnodes })} level upgrade(s)`);
+		if (ramUpgrades > 0) ns.print(`${art(numPad(ramUpgrades, 3), { color: colorPalette.rnodes })} RAM upgrade(s)`);
+		if (coreUpgrades > 0) ns.print(`${art(numPad(coreUpgrades, 3), { color: colorPalette.cnodes })} core upgrade(s)`);
+		if (cacheLvlUpgrades > 0) ns.print(`${art(numPad(cacheLvlUpgrades, 3), { color: colorPalette.cashelevel })} cache lvl upgrade(s)`);
 		await ns.sleep(100);
 	}
 }
