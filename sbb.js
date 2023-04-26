@@ -1,4 +1,4 @@
-import { dhms, colorPicker, bar, format } from "ze-lib.js"
+import { art, dhms, bar, format } from "ze-lib"
 const [cycleLimit, width, height] = [3000, 250, 670]
 let [generatedOps, startTime] = [0, 0]
 /** @param {NS} ns */
@@ -40,20 +40,20 @@ export async function main(ns) {
 	function printInfo() {
 		ns.resizeTail(width, height); ns.clearLog();  // resizeTail can be removed here if you do not want it sized
 		ns.print(`Sleeve Operation Creation`);
-		ns.print(`Total gained: ${format(round(generatedOps), 3)}`);
+		ns.print(`Total Gained: ${format(round(generatedOps), 3)}`);
 		ns.print(`Time Elapsed: ${dhms(Math.floor((performance.now() - startTime)))}`);
-		ns.print(`Avg Gained Per hour: ${format(generatedOps / ((performance.now() - startTime) / (1000 * 60 * 60)), 3)}`);
-		ns.print(`Current Cycle Limit: ${format(cycleLimit, 3, 0)}\n `)
+		ns.print(`Avg Gained Per Hour: ${format(generatedOps / ((performance.now() - startTime) / (1000 * 60 * 60)), 3)}`);
+		ns.print(`Current Cycle Limit: ${format(cycleLimit, 3, 0)}\n `);
 		for (const steve of sleeves) {
-			ns.print(`Sleeve-${steve}     ${colorPicker("Int " + format(s.getSleeve(steve).skills.intelligence, 3), 75)}`);
-			const task = (s.getTask(steve) !== null) ? colorPicker(s.getTask(steve).type.toLowerCase(), "white") : colorPicker("idle", 242);
-			ns.print(` ${colorPicker("┣", "white")}Task:     ${task}`);
-			ns.print(` ${colorPicker("┣", "white")}Cycles:   ${format(s.getSleeve(steve).storedCycles)}`);
-			ns.print(` ${colorPicker("┗", "white")}Progress: ${bar(s.getSleeve(steve).storedCycles / cycleLimit, "⚡")}`);
+			ns.print(`Sleeve-${steve}     ${art("Int " + format(s.getSleeve(steve).skills.intelligence, 3), { color: 75 })}`);
+			const task = (s.getTask(steve) !== null) ? art(s.getTask(steve).type.toLowerCase(), { color: 255 }) : art("idle", { color: 242 });
+			ns.print(` ${art("┣", { color: 255 })}Task:     ${task}`);
+			ns.print(` ${art("┣", { color: 255 })}Cycles:   ${format(s.getSleeve(steve).storedCycles)}`);
+			ns.print(` ${art("┗", { color: 255 })}Progress: ${bar(s.getSleeve(steve).storedCycles / cycleLimit, "⚡")}`);
 		}
 
 		function round(value, step = 0.5) {
-			var inv = 1.0 / step;
+			const inv = 1.0 / step
 			return Math.round(value * inv) / inv;
 		}
 	}

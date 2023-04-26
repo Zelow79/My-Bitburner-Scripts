@@ -1,4 +1,4 @@
-import { bar, format, cities } from "ze-lib.js";
+import { bar, format, cities } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog('ALL'); ns.clearLog(); ns.tail();
