@@ -169,39 +169,6 @@ export function art(x, style) { // x = what you want colored replacing colorPick
 		";4" : null}${o.background >= 0 ? `;48;5;${o.background}` : null}m${x}\x1b[0m`;
 }
 
-export function colorPicker(x, color) { // x = what you want colored ***deprecated***
-	let y;
-	switch (color) {
-		case "black":
-			y = `\u001b[30m${x}\u001b[0m`
-			break;
-		case "red":
-			y = `\u001b[31m${x}\u001b[0m`
-			break;
-		case "green":
-			y = `\u001b[32m${x}\u001b[0m`
-			break;
-		case "yellow":
-			y = `\u001b[33m${x}\u001b[0m`
-			break;
-		case "blue":
-			y = `\u001b[34m${x}\u001b[0m`
-			break;
-		case "magenta":
-			y = `\u001b[35m${x}\u001b[0m`
-			break;
-		case "cyan":
-			y = `\u001b[36m${x}\u001b[0m`
-			break;
-		case "white":
-			y = `\u001b[37m${x}\u001b[0m`
-			break;
-		default:
-			y = `\u001b[38;5;${color}m${x}\u001b[0m`
-	}
-	return y;
-}
-
 export function dhms(t) { // t is in ms
 	var cd = 24 * 60 * 60 * 1000,
 		ch = 60 * 60 * 1000,
