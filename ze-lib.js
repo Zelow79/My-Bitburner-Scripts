@@ -158,7 +158,7 @@ export function bar(progress, bar = true, length = 15) { // progress bar, orgina
 	return `[${art(array.join(""), { color })}]`;
 }
 
-export function art(x, style) { // x = what you want colored replacing colorPicker() going forward
+export function art(x, style) { // x = what you want colored
 	const o = {                                        // accepts style as an object, all options are optional
 		color: !isNaN(style.color) ? style.color : -1,  // style.color uses 256 color codes
 		background: !isNaN(style.background) ? style.background : -1, // style.background 256 color codes aswell
