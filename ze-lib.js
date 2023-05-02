@@ -47,7 +47,7 @@ export function hgw(ns, serverName, host = null, sleepTime = 0) {
 
 export function scriptLaunch(ns, scriptName, serverName, t = 1, host = null, sleepTime = 0) { // sleepTime in ms
 	host = host ?? ns.getHostname();
-	const [runningScripts, genSerial] = [ns.ps(host), () => numPad(Math.floor(Math.random() * (999999999 - 1 + 1) + 1), 9)];
+	const [runningScripts, genSerial] = [ns.ps(host), () => numPad(Math.floor(Math.random() * 999999999), 9)];
 	let serial = genSerial();
 	while (runningScripts.some(script => script.filename === scriptName && script.args[0] === serverName && script.args[2] === serial)) {
 		serial = genSerial();
