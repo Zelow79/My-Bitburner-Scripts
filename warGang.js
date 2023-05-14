@@ -1,4 +1,4 @@
-import { bar, format, formatPercent, art, names } from "ze-lib";
+import { dhms, bar, format, formatPercent, art, names } from "ze-lib";
 const [discountThresh, wantedPenThresh] = [0.8, 0.05]
 /** @param {NS} ns */
 export async function main(ns) {
