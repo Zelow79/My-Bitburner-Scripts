@@ -52,7 +52,7 @@ export function scriptLaunch(ns, scriptName, serverName, t = 1, host = null, sle
 	while (runningScripts.some(script => script.filename === scriptName && script.args[0] === serverName && script.args[2] === serial)) {
 		serial = genSerial();
 	}
-	ns.exec(scriptName, host, t, serverName, sleepTime, serial);
+	return ns.exec(scriptName, host, t, serverName, sleepTime, serial);
 }
 
 export function makeHGW(ns, location = null) {
@@ -158,12 +158,12 @@ export function bar(progress, bar = true, length = 15) { // progress bar, orgina
 	return `[${art(array.join(""), { color })}]`;
 }
 
-export function art(x, style) { // x = what you want colored
-	const o = {                                        // accepts style as an object, all options are optional
-		color: !isNaN(style.color) ? style.color : -1,  // style.color uses 256 color codes
+export function art(x, style) {                                     // x = what you want colored
+	const o = {                                                      // accepts style as an object, all options are optional
+		color: !isNaN(style.color) ? style.color : -1,                // style.color uses 256 color codes
 		background: !isNaN(style.background) ? style.background : -1, // style.background 256 color codes aswell
-		bold: style.bold ? true : false,                // style.bold is boolean true for bold else false
-		underline: style.underline ? true : false       // style.unders is boolean true for underline else false
+		bold: style.bold ? true : false,                              // style.bold is boolean true for bold else false
+		underline: style.underline ? true : false                     // style.unders is boolean true for underline else false
 	}
 	return `\x1b[${o.color >= 0 ? `38;5;${o.color}` : null}${o.bold ? ";1" : null}${o.underline ?
 		";4" : null}${o.background >= 0 ? `;48;5;${o.background}` : null}m${x}\x1b[0m`;
