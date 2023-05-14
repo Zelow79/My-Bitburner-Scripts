@@ -24,7 +24,7 @@ export async function main(ns) {
 			ns.singularity.joinFaction(faction);
 			g.createGang(faction);
 		}
-		await ns.sleep(500);
+		await ns.sleep(0);
 	}
 
 	function tickCheck() {
@@ -239,6 +239,7 @@ export async function main(ns) {
 		//ns.print(`\n   *** GANG REPORT ***`);
 		const myGang = g.getGangInformation();
 		g.getBonusTime() > 5000 ? ns.print(art("***BONUS TIME***", { color: 226 })) : ns.print(" ");
+		g.getBonusTime() > 5000 ? ns.print(`Bonus Time:       ${art(dhms(g.getBonusTime() / 25).padStart(29, " "), { color: 255 })}`) : null;
 		ns.print(`Faction name:       ${art(myGang.faction.padStart(27, " "), { color: 255 })}`);
 		ns.print(`Faction Rep:        ${art(format(ns.singularity.getFactionRep(myGang.faction)).padStart(27, " "), { color: 255 })}`);
 		ns.print(`Total Respect:      ${art(format(myGang.respect).padStart(27, " "), { color: 255 })}`);
