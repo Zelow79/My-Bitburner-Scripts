@@ -246,10 +246,10 @@ export async function main(ns) {
 		if (getRespectNeededToRecruitMember(g.getMemberNames()) > 0) {
 			ns.print(`New Member at:      ${art((format(getRespectNeededToRecruitMember(g.getMemberNames())) + " resp").padStart(27, " "), { color: 255 })}`);
 		}
-		const discountColor = getDiscount() > discountThresh ? 2 : getDiscount() > 0.2 ? 255 : 196
+		const discountColor = getDiscount() > discountThresh ? 10 : getDiscount() > 0.2 ? 255 : 196
 		ns.print(`Equip Discount:     ${art(("-" + formatPercent(getDiscount(), 2)).padStart(27, " "), { color: discountColor })}`);
 		ns.print(`Wanted Level:       ${art(format(myGang.wantedLevel).padStart(27, " "), { color: 255 })}`);
-		const wantedPenColor = 1 - myGang.wantedPenalty < wantedPenThresh ? 2 : 1 - myGang.wantedPenalty < 0.5 ? 255 : 196
+		const wantedPenColor = 1 - myGang.wantedPenalty < wantedPenThresh ? 10 : 1 - myGang.wantedPenalty < 0.5 ? 255 : 196
 		ns.print(`Wanted Penalty:     ${art(("-" + formatPercent(1 - myGang.wantedPenalty, 2)).padStart(27, " "), { color: wantedPenColor })}`);
 		ns.print(`Money gain rate:    ${art((format(myGang.moneyGainRate * 5) + " /s").padStart(27, " "), { color: 255 })}`);
 		ns.print(`Is war allowed?:    ${art((myGang.territoryWarfareEngaged).toString().padStart(27, " "), { color: 255 })}`);
