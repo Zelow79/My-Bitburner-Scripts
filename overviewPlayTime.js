@@ -8,8 +8,8 @@ export async function main(ns) {
 	while (1) {
 		const player = ns.getPlayer(),
 			totalPlaytime = player.totalPlaytime,
-			lastBitnode = player.playtimeSinceLastBitnode,
-			lastAug = player.playtimeSinceLastAug;
+			lastBitnode = Date.now() - ns.getResetInfo().lastNodeReset,
+			lastAug = Date.now() - ns.getResetInfo().lastAugReset;
 		hook0.innerText = `Playtime\nLast Aug:\nBN clear:\nTotal:`,
 			hook1.innerText = `\n${dhms(lastAug)}\n${dhms(lastBitnode)}\n${dhms(totalPlaytime)}`;
 		await ns.sleep(1000);
