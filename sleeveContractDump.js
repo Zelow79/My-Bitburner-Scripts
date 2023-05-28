@@ -1,4 +1,4 @@
-import { art, dhms, colorPicker, bar, format } from "ze-lib.js"
+import { art, dhms, bar, format } from "ze-lib.js"
 const [cycleLimit, width, height] = [200, 250, 670]
 const contracts = ["Tracking", "Bounty Hunter", "Retirement"]
 let [intTracking, intBounty, intRetire, startTime] = [0, 0, 0, 0]
