@@ -1,11 +1,11 @@
-import { getAllServers, hmsms, format, formatGB, formatPercent, bar } from "ze-lib.js";
+import { getAllServers, hmsms, format, formatGB, formatPercent, bar, tem } from "ze-lib.js";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.clearLog(); ns.disableLog("ALL"); //ns.enableLog("sleep");
-	let targets = getAllServers(ns),
-		getInput = ns.args[0] ?? await ns.prompt("Select Server", { type: "select", choices: targets });
-	const [sleepTime, width, height] = [200, 333, 460]
-	ns.tail();
+	const targets = getAllServers(ns),
+		getInput = ns.args[0] ?? await ns.prompt("Select Server", { type: "select", choices: targets }),
+		[sleepTime, width, height] = [200, 333, 460]; ns.tail();
+	ns.setTitle(tem(`🕵Scouter:"${getInput}"`, { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
 	while (true) {
 		ns.resizeTail(width, height);
 		const serverStats = ns.getServer(getInput),

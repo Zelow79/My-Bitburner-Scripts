@@ -1,8 +1,8 @@
-import { dhms, bar, format, formatPercent, art, names } from "ze-lib";
+import { dhms, bar, format, formatPercent, art, names, tem } from "ze-lib";
 const [discountThresh, wantedPenThresh] = [0.8, 0.05]
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog("ALL"); ns.clearLog(); ns.tail();
+	ns.disableLog("ALL"); ns.clearLog(); ns.tail(); ns.setTitle(tem("🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 -----------👮🏼‍♂️🩸", { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
 	const [faction, width, height, g] = ["Slum Snakes", 390, 888, ns.gang],
 		tick = { tw: false, otherGangsInfoPrevCycle: undefined, nextTick: undefined }
 	await ns.sleep(500); // sleep here to allow first ns.resizeTail() to work properly

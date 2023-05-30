@@ -1,9 +1,9 @@
-import { art, dhms, bar, format } from "ze-lib"
+import { art, dhms, bar, format, tem } from "ze-lib"
 const [cycleLimit, width, height] = [3000, 250, 670]
 let [generatedOps, startTime] = [0, 0]
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog('ALL'); ns.tail();
+	ns.disableLog('ALL'); ns.tail(); ns.setTitle(tem("🧍BladeBurner:Sleeves", { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
 	const [s, sleeves] = [ns.sleeve, []]
 	for (let i = 0; i < s.getNumSleeves(); i++) {
 		sleeves.push(i);

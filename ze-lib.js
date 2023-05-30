@@ -114,6 +114,14 @@ export function format(value, maxFracDigits = 3, minFracDigits = 0) {
 	}).format(value).toLocaleLowerCase();
 }
 
+export function tem(text, color = "rainbow") {
+	const eleMaker = (t, c) => React.createElement("span", { style: c }, t),
+		result = [];
+	color === "rainbow" ? text.split('').forEach(l => result.push(eleMaker(l, { color: `rgb(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255})` }))) :
+		result.push(eleMaker(text, color));
+	return result;
+}
+
 export function sillyNumbers(value, decimals = 3) { //bastardized xsinx's FormatMoney function
 	if (Math.abs(value) >= 1e69) return '$' + value.toExponential(0);
 	for (const pair of [[1e66, 'Uv'], [1e63, 'v'], [1e60, 'N'], [1e57, 'O'], [1e54, 'St'], [1e51, 'Sd'], [1e48, 'Qd'], [1e45, 'Qt'], [1e42, 'T'], [1e39, 'D'], [1e36, 'u'], [1e33, 'd'], [1e30, 'n'], [1e27, 'o'], [1e24, 'S'], [1e21, 's'], [1e18, 'Q'], [1e15, 'q'], [1e12, 't'], [1e9, 'b'], [1e6, 'm'], [1e3, 'k']])
