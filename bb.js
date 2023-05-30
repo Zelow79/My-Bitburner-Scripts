@@ -1,10 +1,9 @@
-import { bar, format, cities } from "ze-lib";
+import { bar, format, cities, tem } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog('ALL'); ns.clearLog(); ns.tail();
-	const [globalChaLimit, chaosLimit, ass_target, actionLogSize, skillLogSize, width, height, b, s] = [1e6, 50, 1e4, 7, 30, 375, 710, ns.bladeburner, ns.singularity]
-	const sleepTime = 500
-	const logs = { skill: [], action: [] }
+	ns.disableLog('ALL'); ns.clearLog(); ns.tail(); ns.setTitle(tem("💀BladeBurner:Headquarters", { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
+	const [globalChaLimit, chaosLimit, ass_target, actionLogSize, skillLogSize, width, height, sleepTime, b, s] = [1e6, 50, 1e4, 7, 30, 375, 710, 500, ns.bladeburner, ns.singularity],
+		logs = { skill: [], action: [] }
 	for (let i = 0; i < actionLogSize; i++) logs.action.push(" ");
 	for (let i = 0; i < skillLogSize; i++) logs.skill.push(" ");
 	if (!ns.scriptRunning("ibb.js", ns.getHostname())) ns.exec("ibb.js", ns.getHostname());
@@ -126,9 +125,9 @@ export async function main(ns) {
 			}
 		}
 		if (b.getStamina()[0] / b.getStamina()[1] < 0.7) {
-			const initStam = b.getStamina()[0];
-			const startTime = new Date();
-			const possibleActions = ["Training", "Hyperbolic Regeneration Chamber"];
+			const initStam = b.getStamina()[0],
+				startTime = new Date(),
+				possibleActions = ["Training", "Hyperbolic Regeneration Chamber"];
 			let action = possibleActions[0];
 			while (b.getStamina()[0] / b.getStamina()[1] < 1) {
 				if (startTime + 60000 * 2 <= Date.now() && initStam >= b.getStamina()[0]) action = possibleActions[1];
@@ -141,8 +140,8 @@ export async function main(ns) {
 	}
 
 	async function chaosEater() {
-		const c = b.getCity();
-		const act = "Diplomacy"
+		const c = b.getCity(),
+			act = "Diplomacy"
 		if (b.getCityChaos(c) > chaosLimit) {
 			while (b.getCityChaos(c) > 0) {
 				printLog();
@@ -170,8 +169,8 @@ export async function main(ns) {
 	}
 
 	async function violence() {
-		const assLevel = () => b.getActionCountRemaining("Operations", "Assassination");
-		const act = "Incite Violence"
+		const assLevel = () => b.getActionCountRemaining("Operations", "Assassination"),
+			act = "Incite Violence";
 		if (ns.getPlayer().skills.charisma < globalChaLimit) return; //we only wanna act after if we have the charisma to correct it. Testing 1e6.
 		if (assLevel() == 0) {
 			while (assLevel() < ass_target) {
@@ -210,11 +209,11 @@ export async function main(ns) {
 				addLog("action", `Diplomacy: ${c} - Skipped`);
 				cleanUpMessage += "\n***Diplomacy Skipped***"
 			}
-			const popStart = b.getCityEstimatedPopulation(c);
+			const popStart = b.getCityEstimatedPopulation(c),
+				check1 = b.getCityChaos(c) === 0,
+				check2 = b.getActionTime("Operations", "Investigation") === 1000,
+				check3 = b.getActionEstimatedSuccessChance("Operations", "Investigation")[1] > 0.99;
 			cleanUpMessage += `\nOld Est Pop: ${format(popStart, 3)}`
-			const check1 = b.getCityChaos(c) === 0
-			const check2 = b.getActionTime("Operations", "Investigation") === 1000
-			const check3 = b.getActionEstimatedSuccessChance("Operations", "Investigation")[1] > 0.99
 			if (check1 && check2 && check3) {
 				addLog("action", `Investigations: ${c}`);
 				b.startAction("Operations", "Investigation");
@@ -236,11 +235,11 @@ export async function main(ns) {
 			printLog();
 		}
 		b.switchCity(highestPop.name);
-		const endTime = new Date();
+		const endTime = new Date(),
+			folder = "/bladeburner_reports/",
+			fileName = "cleanup_" + (endTime.getMonth() + 1) + "-" + endTime.getDate() + "-" + endTime.getFullYear() + ".txt";
 		cleanUpMessage += `\nMoving BBHQ to highest est pop: ${highestPop.name}\n${endTime.toLocaleString()} - clean up phase ended\n${(endTime - startTime > 60 * 1000) ? format((endTime - startTime) / 1000 / 60) + " minutes" : (endTime - startTime > 1000) ? format((endTime - startTime) / 1000) + " seconds" : format(endTime - startTime, 0) + "ms"} to finish clean up`
 		ns.tprint(cleanUpMessage);
-		const folder = "/bladeburner_reports/"
-		const fileName = "cleanup_" + (endTime.getMonth() + 1) + "-" + endTime.getDate() + "-" + endTime.getFullYear() + ".txt"
 		ns.write(folder + fileName, cleanUpMessage, "w");
 	}
 
