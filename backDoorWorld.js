@@ -38,7 +38,7 @@ export async function main(ns) {
 		for (const server of route) ns.singularity.connect(server);
 		ns.scp(worker, host, "home");
 		const bdpid = scriptLaunch(worker, host);
-		await ns.getPortHandle(666).nextWrite();
+		await ns.getPortHandle(bdpid + 100).nextWrite();
 		ns.singularity.connect("home");
 		return bdpid;
 	}

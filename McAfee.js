@@ -1,5 +1,1 @@
-/** @param {NS} ns */
-export async function main(ns) {
-	ns.writePort(666, "started"); ns.getPortHandle(666).clear();
-	await ns.singularity.installBackdoor();
-}
+export const main = async (ns) => { const p = ns.getPortHandle(ns.pid + 100); p.write("started"); p.clear(); await ns.singularity.installBackdoor(); }
