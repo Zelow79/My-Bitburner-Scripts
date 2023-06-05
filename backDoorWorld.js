@@ -1,4 +1,4 @@
-import { getAllServers, numPad } from "ze-lib"
+import { getAllServers } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog('ALL'); ns.clearLog(); ns.tail(); const worker = "McAfee.js", workerWeight = ns.getScriptRam(worker),
@@ -28,15 +28,8 @@ export async function main(ns) {
 		ns.singularity.connect("home"); const route = [server];
 		while (route[0] != "home") route.unshift(ns.scan(route[0])[0]);
 		for (const server of route) ns.singularity.connect(server);
-		ns.scp(worker, host, "home"); const bdpid = scriptLaunch(worker, host);
+		ns.scp(worker, host, "home"); const bdpid = ns.exec(worker, host, 1);
 		await ns.getPortHandle(bdpid + 100).nextWrite();
 		ns.singularity.connect("home"); return bdpid;
-	}
-
-	function scriptLaunch(scriptName, host) {
-		const [runningScripts, genSerial] = [ns.ps(host), () => numPad(Math.floor(Math.random() * (999999999 - 1 + 1) + 1), 9)];
-		let serial = genSerial();
-		while (runningScripts.some(script => script.filename === scriptName && script.args[0] === serial)) serial = genSerial();
-		return ns.exec(scriptName, host, 1, serial);
 	}
 }
