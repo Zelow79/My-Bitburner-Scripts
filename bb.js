@@ -28,14 +28,14 @@ export async function main(ns) {
 	}
 
 	function getBBSkill() {
-		const bbSkills = []
+		const bbSkills = [];
 		if (b.getSkillLevel('Overclock') < 20) {
 			const x = {
 				name: 'Overclock',
 				upgradeCost: b.getSkillUpgradeCost('Overclock')
 			}
 			bbSkills.push(x);
-			return bbSkills
+			return bbSkills;
 		}
 
 		for (const skill of b.getSkillNames()) {
@@ -48,12 +48,12 @@ export async function main(ns) {
 		}
 		if (bbSkills.length == 0) return false;
 		bbSkills.sort((a, b) => (a.upgradeCost - b.upgradeCost));
-		return bbSkills
+		return bbSkills;
 	}
 
 	async function skillBuyer() {
 		while (getBBSkill() !== false && getBBSkill()[0].upgradeCost < b.getSkillPoints()) {
-			const cheapestSkill = getBBSkill()[0]
+			const cheapestSkill = getBBSkill()[0];
 			if (b.upgradeSkill(cheapestSkill.name)) addLog("skill", `Got 1 ${cheapestSkill.name} for ${cheapestSkill.upgradeCost} SP`);
 			await ns.sleep(20);
 		}
@@ -71,8 +71,8 @@ export async function main(ns) {
 			{ name: "Evasive System", limit: 50 },     //Each level of this skill increases your effective dexterity and agility for Bladeburner actions by 4%
 			{ name: "Datamancer", limit: 40 },         //Each level of this skill increases your effectiveness in synthoid population analysis and investigation by 5%. This affects all actions that can potentially increase the accuracy of your synthoid population/community estimates.
 			{ name: "Cyber's Edge", limit: 25 },       //Each level of this skill increases your max stamina by 2%
-			{ name: "Hands of Midas", limit: 50 },      //Each level of this skill increases the amount of money you receive from Contracts by 10%
-			{ name: "Hyperdrive", limit: 50 }           //Each level of this skill increases the experience earned from Contracts, Operations, and BlackOps by 10%
+			{ name: "Hands of Midas", limit: 50 },     //Each level of this skill increases the amount of money you receive from Contracts by 10%
+			{ name: "Hyperdrive", limit: 50 }          //Each level of this skill increases the experience earned from Contracts, Operations, and BlackOps by 10%
 		]
 		if (skillLimits.find(({ name }) => name === skill) != undefined) return skillLimits.find(({ name }) => name === skill).limit <= b.getSkillLevel(skill);
 		else return false;
@@ -141,7 +141,7 @@ export async function main(ns) {
 
 	async function chaosEater() {
 		const c = b.getCity(),
-			act = "Diplomacy"
+			act = "Diplomacy";
 		if (b.getCityChaos(c) > chaosLimit) {
 			while (b.getCityChaos(c) > 0) {
 				printLog();
@@ -156,15 +156,11 @@ export async function main(ns) {
 	}
 
 	function mughurTime() {
-		if (b.getSkillPoints() < 1e6) return;
-		const x = "Hyperdrive"
-		let n = 1
+		if (b.getSkillPoints() < 1e6) return; let x = "Hyperdrive", n = 1;
 		while (b.getSkillUpgradeCost(x, n * 2) < b.getSkillPoints()) n *= 2;
-		for (let i = n; i >= 1; i /= 2) {
-			if (b.getSkillUpgradeCost(x, n + i) < b.getSkillPoints()) n += i;
-		}
-		if (b.getSkillLevel(x) + n > b.getSkillLevel(x)) {
-			if (b.upgradeSkill(x, n)) addLog("skill", `Got ${format(n, 2, 2)} ${x}${(n >= 2) ? "s" : ""} for ${format(b.getSkillUpgradeCost(x, n), 2, 2)} sp`);
+		for (let i = n; i >= 1; i /= 2) if (b.getSkillUpgradeCost(x, n + i) < b.getSkillPoints()) n += i;
+		if (b.getSkillLevel(x) + n > b.getSkillLevel(x)) if (b.upgradeSkill(x, n)) {
+			addLog("skill", `Got ${format(n, 2, 2)} ${x}${(n >= 2) ? "s" : ""} for ${format(b.getSkillUpgradeCost(x, n), 2, 2)} sp`);
 		}
 	}
 
@@ -197,23 +193,23 @@ export async function main(ns) {
 		let cleanUpMessage = `\n${startTime.toLocaleString()} - clean up phase began\n\n-----------Reports------------`
 		for (const c of cities) {
 			b.switchCity(c);
-			cleanUpMessage += `\nCity:        ${c}`
-			cleanUpMessage += `\nOld Chaos:   ${format(b.getCityChaos(c), 3)}`
+			cleanUpMessage += `\nCity:        ${c}`;
+			cleanUpMessage += `\nOld Chaos:   ${format(b.getCityChaos(c), 3)}`;
 			if (b.getCityChaos(c) > 50) {
 				addLog("action", `Diplomacy: ${c}`);
 				b.startAction("General", "Diplomacy");
-				while (b.getCityChaos(c) > 0) { await ns.sleep(0) }
-				cleanUpMessage += `\nNew Chaos:   ${format(b.getCityChaos(c), 3)}`
+				while (b.getCityChaos(c) > 0) await ns.sleep(0);
+				cleanUpMessage += `\nNew Chaos:   ${format(b.getCityChaos(c), 3)}`;
 			}
 			else {
 				addLog("action", `Diplomacy: ${c} - Skipped`);
-				cleanUpMessage += "\n***Diplomacy Skipped***"
+				cleanUpMessage += "\n***Diplomacy Skipped***";
 			}
 			const popStart = b.getCityEstimatedPopulation(c),
 				check1 = b.getCityChaos(c) === 0,
 				check2 = b.getActionTime("Operations", "Investigation") === 1000,
 				check3 = b.getActionEstimatedSuccessChance("Operations", "Investigation")[1] > 0.99;
-			cleanUpMessage += `\nOld Est Pop: ${format(popStart, 3)}`
+			cleanUpMessage += `\nOld Est Pop: ${format(popStart, 3)}`;
 			if (check1 && check2 && check3) {
 				addLog("action", `Investigations: ${c}`);
 				b.startAction("Operations", "Investigation");
@@ -221,24 +217,24 @@ export async function main(ns) {
 				b.stopBladeburnerAction();
 				addLog("action", `Investigations: ${c} - complete`);
 				const popEnd = b.getCityEstimatedPopulation(c);
-				cleanUpMessage += `\nNew Est Pop: ${format(popEnd, 3)} (${(popEnd - popStart > 0) ? "+" + format(popEnd - popStart, 3) : format(popEnd - popStart, 3)})`
+				cleanUpMessage += `\nNew Est Pop: ${format(popEnd, 3)} (${(popEnd - popStart > 0) ? "+" + format(popEnd - popStart, 3) : format(popEnd - popStart, 3)})`;
 			}
 			else {
 				addLog("action", `Investigations: ${c} - skipped`);
-				cleanUpMessage += "\n***Investigations Skipped***"
+				cleanUpMessage += "\n***Investigations Skipped***";
 			}
 			if (b.getCityEstimatedPopulation(c) > highestPop.pop) {
-				highestPop.name = c
+				highestPop.name = c;
 				highestPop.pop = b.getCityEstimatedPopulation(c);
 			}
-			cleanUpMessage += `\n${boarder}`
+			cleanUpMessage += `\n${boarder}`;
 			printLog();
 		}
 		b.switchCity(highestPop.name);
 		const endTime = new Date(),
 			folder = "/bladeburner_reports/",
 			fileName = "cleanup_" + (endTime.getMonth() + 1) + "-" + endTime.getDate() + "-" + endTime.getFullYear() + ".txt";
-		cleanUpMessage += `\nMoving BBHQ to highest est pop: ${highestPop.name}\n${endTime.toLocaleString()} - clean up phase ended\n${(endTime - startTime > 60 * 1000) ? format((endTime - startTime) / 1000 / 60) + " minutes" : (endTime - startTime > 1000) ? format((endTime - startTime) / 1000) + " seconds" : format(endTime - startTime, 0) + "ms"} to finish clean up`
+		cleanUpMessage += `\nMoving BBHQ to highest est pop: ${highestPop.name}\n${endTime.toLocaleString()} - clean up phase ended\n${(endTime - startTime > 60 * 1000) ? format((endTime - startTime) / 1000 / 60) + " minutes" : (endTime - startTime > 1000) ? format((endTime - startTime) / 1000) + " seconds" : format(endTime - startTime, 0) + "ms"} to finish clean up`;
 		ns.tprint(cleanUpMessage);
 		ns.write(folder + fileName, cleanUpMessage, "w");
 	}
@@ -253,20 +249,14 @@ export async function main(ns) {
 		}
 		if (logs.skill.length > 0) {
 			ns.print(`--skill report--`);
-			for (const report of logs.skill) {
-				ns.print(report);
-			}
+			for (const report of logs.skill) ns.print(report);
 		}
 		if (b.inBladeburner()) ns.print(bar(b.getActionCountRemaining("Operations", "Assassination") / ass_target, "⚡") + `${b.getActionCountRemaining("Operations", "Assassination")}/${ass_target} Assassinations`);
 	}
 
 	function addLog(type, x) {
-		const maxLength = (type == "action") ? actionLogSize : skillLogSize
-		if (logs[type].length < maxLength) {
-			logs[type].push(x);
-		} else {
-			logs[type].shift();
-			logs[type].push(x);
-		}
+		const maxLength = (type === "action") ? actionLogSize : skillLogSize;
+		if (logs[type].length >= maxLength) logs[type].shift();
+		logs[type].push(x);
 	}
 }
