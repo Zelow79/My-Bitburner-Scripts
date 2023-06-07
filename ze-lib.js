@@ -1,4 +1,4 @@
-export const cities = ["Sector-12", "Aevum", "Volhaven", "Chongqing", "New Tokyo", "Ishima"]
+export const cities = ["Sector-12", "Aevum", "Volhaven", "Chongqing", "New Tokyo", "Ishima"];
 
 export function getAllServers(ns, homeless = false) {
 	const x = new Set(["home"]);
@@ -12,53 +12,25 @@ export function getAllServers(ns, homeless = false) {
 }
 
 export function pathFinder(ns, server) {
-	const path = [server]
+	const path = [server];
 	while (path[0] !== "home") path.unshift(ns.scan(path[0])[0]);
 	return path;
 }
 
-export function serverInfo(ns, serverName, threads = 1, cores = 1, host = null, sleepTime = 0) { // lazy object with server info and other useful server information
-	const [player, server, hf] = [ns.getPlayer(), ns.getServer(serverName), ns.formulas.hacking]
+export function hgw(ns, serverName, host = "home", sleepTime = 0, pingPort = false) {
 	return {
-		...server,
-		scripts: () => ns.ps(serverName),
-		itsGrowPercent: () => hf.growPercent(server, threads, player, cores),
-		itsHackTime: () => hf.hackTime(server, player),
-		itsGrowTime: () => hf.growTime(server, player),
-		itsWeakTime: () => hf.weakenTime(server, player),
-		itsHackChance: () => hf.hackChance(server, player),
-		itsHackPercent: () => hf.hackPercent(server, player),
-		itsHackExp: () => hf.hackExp(server, player),
-		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName),
-		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t, host, sleepTime),
-		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t, host, sleepTime),
-		weakIt: (t = 1) => scriptLaunch(ns, "weaken.js", serverName, t, host, sleepTime)
+		nukeIt: () => ns.exec("nuke.js", "home", 1, serverName),
+		hackIt: (t = 1) => ns.exec("hack.js", host, t, serverName, sleepTime, pingPort),
+		growIt: (t = 1) => ns.exec("grow.js", host, t, serverName, sleepTime, pingPort),
+		weakIt: (t = 1) => ns.exec("weaken.js", host, t, serverName, sleepTime, pingPort)
 	};
-}
-
-export function hgw(ns, serverName, host = null, sleepTime = 0) {
-	return {
-		nukeIt: () => scriptLaunch(ns, "nuke.js", serverName),
-		hackIt: (t = 1) => scriptLaunch(ns, "hack.js", serverName, t, host, sleepTime),
-		growIt: (t = 1) => scriptLaunch(ns, "grow.js", serverName, t, host, sleepTime),
-		weakIt: (t = 1) => scriptLaunch(ns, "weaken.js", serverName, t, host, sleepTime)
-	};
-}
-
-export function scriptLaunch(ns, scriptName, serverName, t = 1, host = null, sleepTime = 0) { // sleepTime in ms
-	host = host ?? ns.getHostname();
-	const [runningScripts, genSerial] = [ns.ps(host), () => numPad(Math.floor(Math.random() * 999999999), 9)];
-	let serial = genSerial();
-	while (runningScripts.some(script => script.filename === scriptName && script.args[0] === serverName && script.args[2] === serial)) {
-		serial = genSerial();
-	}
-	return ns.exec(scriptName, host, t, serverName, sleepTime, serial);
 }
 
 export function makeHGW(ns, location = null) {
 	const tools = ["hack", "grow", "weaken"],
-		maker = (func) => `export const main = async (ns) => await ns.${func}(ns.args[0], { additionalMsec: isNaN(ns.args[1]) ? 0 : ns.args[1] });`
-	location = location ?? "home"
+		pingPort = `if (ns.args[2]) {\n		const p = ns.getPortHandle(ns.pid + 100); \n		p.write("started"); \n		p.clear(); \n	}\n`,
+		maker = (func) => `export const main = async (ns) => {\n	${pingPort}	await ns.${func}(ns.args[0], { additionalMsec: ns.args[1] ?? 0 }); \n}`;
+	location = location ?? "home";
 	tools.forEach(tool => {
 		ns.write(tool + ".js", maker(tool), "w");
 		if (location !== "home") ns.scp(tool + ".js", location);
@@ -78,7 +50,7 @@ export function shareIt(ns, target) {
 
 export async function bdServer(ns, server) { // courtesy of Mughur from the discord. handy way to bd a target
 	ns.singularity.connect("home");
-	let route = [server]
+	let route = [server];
 	while (route[0] != "home") route.unshift(ns.scan(route[0])[0]);
 	for (const server of route) ns.singularity.connect(server);
 	await ns.singularity.installBackdoor();
@@ -86,7 +58,7 @@ export async function bdServer(ns, server) { // courtesy of Mughur from the disc
 }
 
 export function formatPercent(value, maxFracDigits = 2, minFracDigits = 0) {
-	const locale = "en-US"
+	const locale = "en-US";
 	return Intl.NumberFormat(locale, {
 		style: "percent",
 		maximumFractionDigits: maxFracDigits,
@@ -130,7 +102,7 @@ export function sillyNumbers(value, decimals = 3) { //bastardized xsinx's Format
 }
 
 export function numPad(value, digits) {
-	return value.toString().length < digits ? '0'.repeat(digits - value.toString().length) + value : value.toString()
+	return value.toString().length < digits ? '0'.repeat(digits - value.toString().length) + value : value.toString();
 }
 
 export function round(value, precision) { // rounds accurately to the precision value, which determines decimal place IE, 1 = 0.0, 2 = 0.00
@@ -154,7 +126,7 @@ export function diceBar(progress, length = 15) { // progress bar with random dic
 }
 
 export function bar(progress, bar = true, length = 15) { // progress bar, orginal design came from NightElf from BB discord
-	if (bar == true) bar = "#"
+	if (bar == true) bar = "#";
 	const empty = " ",
 		progressValue = Math.min(progress, 1),
 		barProgress = Math.floor(progressValue * length),
@@ -185,7 +157,7 @@ export function dhms(t) { // t is in ms
 		h = Math.floor((t - d * cd) / ch),
 		m = Math.floor((t - d * cd - h * ch) / cm),
 		s = Math.round((t - d * cd - h * ch - m * cm) / 1000),
-		pad = (n) => n < 10 ? '0' + n : n
+		pad = (n) => n < 10 ? '0' + n : n;
 	if (s === 60) { m++; s = 0 }
 	if (m === 60) { h++; m = 0 }
 	if (h === 24) { d++; h = 0 }
@@ -198,7 +170,7 @@ export function hms(t) { // t is in ms
 		h = Math.floor(t / ch),
 		m = Math.floor((t - h * ch) / cm),
 		s = Math.round((t - h * ch - m * cm) / 1000),
-		pad = (n) => n < 10 ? '0' + n : n
+		pad = (n) => n < 10 ? '0' + n : n;
 	if (s === 60) { m++; s = 0 }
 	if (m === 60) { h++; m = 0 }
 	return [pad(h), pad(m), pad(s)].join(':');
@@ -212,7 +184,7 @@ export function hmsms(t) { // t is in ms
 		s = Math.floor((t - h * ch - m * cm) / 1000),
 		ms = Math.round(t - h * ch - m * cm - s * 1000),
 		pad = (n) => n < 10 ? '0' + n : n,
-		msPad = (n) => n.toString().length < 3 ? '0'.repeat(3 - n.toString().length) + n : n
+		msPad = (n) => n.toString().length < 3 ? '0'.repeat(3 - n.toString().length) + n : n;
 	if (ms === 1000) { s++; ms = 0 }
 	if (s === 60) { m++; s = 0 }
 	if (m === 60) { h++; m = 0 }
@@ -250,35 +222,58 @@ export const names = [
 	"Feral Cheryl"
 ]
 
+export function tableMaker(data, columns = 4, tableProps = null, tdProps = null) {  // data is an array of Numbers or Strings
+	const tableRows = [],                                                     // Requires ns.printRaw() or ns.tprintRaw()
+		defacto = { style: { border: "2px solid green" } },
+		tabProps = tableProps ?? defacto,
+		datProps = tdProps ?? defacto;
+	data.reverse();
+	while (data.length > 0) tableRows.push(createRow());
+	return React.createElement("table", tabProps, tableRows);
+
+	function createRow() {
+		let content = [],
+			i = data.length,
+			j = 0;
+		while (data.length > 0 && i--) {
+			if (j >= columns) break;
+			content.push(React.createElement("td", datProps, data[i]));
+			data.splice(i, 1);
+			j++;
+		}
+		return React.createElement("tr", null, content);
+	}
+}
+
 // experimental table, first take.
 export function createTable(width, columns, data) { // data is an array of strings and/or numbers going row, by row starting with header
-	const tablePad = (x, y, z = " ") => x.toString().padStart(y, z).substring(0, y);
-	const cellPad = Math.floor(width / columns - (columns - 1))
+	const tablePad = (x, y, z = " ") => x.toString().padStart(y, z).substring(0, y),
+		cellPad = Math.floor(width / columns - (columns - 1));
 	while (!Number.isInteger(data.length / columns)) {
 		data.push(" ");
 	}
-	let content = ""
-	let i = data.length
+	let content = "",
+		i = data.length,
+		j = 0;
 	data.reverse();
-	let j = 0
 	const divider = "\n" + "├" + "─".repeat(cellPad * columns + (columns * 2 - 1)) + "┤" + "\n";
 	content += "\n" + "┌" + "─".repeat(cellPad * columns + (columns * 2 - 1)) + "┐" + "\n"
 	while (i--) {
 		if (j >= columns) break;
 		content += "|" + tablePad(data[i], cellPad) + " ";
 		data.splice(i, 1);
-		j++
+		j++;
 	}
-	content += "|"
-	content += divider
+	content += "|";
+	content += divider;
 	content += createRows(columns, data);
-	content += "\n" + "└" + "─".repeat(cellPad * columns + (columns * 2 - 1)) + "┘" + "\n"
-	return `${content}`
+	content += "\n" + "└" + "─".repeat(cellPad * columns + (columns * 2 - 1)) + "┘" + "\n";
+	return `${content}`;
 
 	function createRows(columns, data) {
-		let content = ""
-		let i = data.length
-		let j = 0
+		let content = "",
+			i = data.length,
+			j = 0;
 		while (i--) {
 			if (j >= columns) {
 				content += "|\n"; // create new row
@@ -286,8 +281,8 @@ export function createTable(width, columns, data) { // data is an array of strin
 			}
 			content += "|" + tablePad(data[i], cellPad) + " ";
 			data.splice(i, 1);
-			j++
+			j++;
 		}
-		return `${content}|`
+		return `${content}|`;
 	}
 }
