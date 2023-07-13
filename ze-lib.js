@@ -222,6 +222,12 @@ export const names = [
 	"Feral Cheryl"
 ]
 
+export function playSound(url) {
+	const audio = new Audio();
+	audio.src = url;
+	audio.play();
+}
+
 export function tableMaker(data, columns = 4, tableProps = null, tdProps = null) {  // data is an array of Numbers or Strings
 	const tableRows = [],                                                     // Requires ns.printRaw() or ns.tprintRaw()
 		defacto = { style: { border: "2px solid green" } },
@@ -286,3 +292,5 @@ export function createTable(width, columns, data) { // data is an array of strin
 		return `${content}|`;
 	}
 }
+
+export const totallyNotImportant = () => playSound("https://soundspunos.com/uploads/files/2022-05/1651865406_1651485572_18775-rickroll354.mp3");
