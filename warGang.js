@@ -2,12 +2,16 @@ import { dhms, bar, format, formatPercent, art, names, tem } from "ze-lib";
 const [discountThresh, wantedPenThresh] = [0.8, 0.05]
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog("ALL"); ns.clearLog(); ns.tail(); ns.setTitle(tem("🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 -----------👮🏼‍♂️🩸", { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
+	ns.disableLog("ALL"); ns.clearLog(); ns.tail();
 	const [faction, width, height, g] = ["Slum Snakes", 390, 888, ns.gang],
 		tick = { tw: false, otherGangsInfoPrevCycle: undefined, nextTick: undefined }
+	let tCount = 0;
+	ns.resizeTail(width, height);
 	await ns.sleep(500); // sleep here to allow first ns.resizeTail() to work properly
 	while (true) {
-		ns.resizeTail(width, height); ns.clearLog();
+		const titles = ["🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 --- ----- --👮🏼‍♂️", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 ----- ----- 👮🏼‍♂️🩸", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 - ------ ---👮🏼‍♂️🩸"];
+		ns.setTitle(tem(titles[tCount], { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
+		tCount++; tCount >= titles.length ? tCount = 0 : null; ns.clearLog();
 		if (g.inGang()) {
 			if (ns.args[1] === "metric") metricCheck(ns);
 			gangMemberAscension();
@@ -24,7 +28,7 @@ export async function main(ns) {
 			ns.singularity.joinFaction(faction);
 			g.createGang(faction);
 		}
-		await ns.sleep(0);
+		await ns.sleep(100);
 	}
 
 	function tickCheck() {
