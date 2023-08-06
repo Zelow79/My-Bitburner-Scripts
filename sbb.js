@@ -38,7 +38,7 @@ export async function main(ns) {
 		ns.print(`Current Cycle Limit: ${format(cycleLimit, 3, 0)}\n `);
 		for (const steve of sleeves) {
 			ns.print(`Sleeve-${steve}     ${art("Int " + format(s.getSleeve(steve).skills.intelligence, 3), { color: 75 })}`);
-			const task = (s.getTask(steve) !== null) ? art(s.getTask(steve).type.toLowerCase(), { color: 255 }) : art("idle", { color: 242 });
+			const task = (s.getTask(steve)) ? art(s.getTask(steve).type.toLowerCase(), { color: 255 }) : art("idle", { color: 242 });
 			ns.print(` ${art("┣", { color: 255 })}Task:     ${task}`);
 			ns.print(` ${art("┣", { color: 255 })}Cycles:   ${format(s.getSleeve(steve).storedCycles)}`);
 			ns.print(` ${art("┗", { color: 255 })}Progress: ${bar(s.getSleeve(steve).storedCycles / cycleLimit, "⚡")}`);
