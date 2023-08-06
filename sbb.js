@@ -1,16 +1,10 @@
-import { art, dhms, bar, format, tem } from "ze-lib"
-const [cycleLimit, width, height] = [3000, 250, 670]
-let [generatedOps, startTime] = [0, 0]
+import { art, dhms, bar, format, tem } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog('ALL'); ns.tail(); ns.setTitle(tem("🧍BladeBurner:Sleeves", { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
-	const [s, sleeves] = [ns.sleeve, []]
-	for (let i = 0; i < s.getNumSleeves(); i++) {
-		sleeves.push(i);
-		s.setToIdle(i); // set all sleeves to idle
-	}
-	generatedOps = 0
-	startTime = performance.now();
+	const [s, sleeves, cycleLimit, width, height] = [ns.sleeve, [], 3000, 250, 670];
+	let [generatedOps, startTime] = [0, performance.now()];
+	for (let i = 0; i < s.getNumSleeves(); i++) { sleeves.push(i); s.setToIdle(i); }
 	while (1) {
 		await bonusBuster();
 		printInfo();
@@ -24,14 +18,12 @@ export async function main(ns) {
 			const opsCanGen = Math.floor(s.getSleeve(steve).storedCycles / 300) * 0.5;
 			while (1) {
 				printInfo();
-				if (s.getTask(steve) !== null && s.getSleeve(steve).storedCycles < 600) {
-					if (s.getSleeve(steve).storedCycles < 300 - s.getTask(steve).cyclesWorked) break;
-				}
+				if (s.getSleeve(steve)?.storedCycles < 600 && s.getSleeve(steve).storedCycles < 300 - s.getTask(steve).cyclesWorked) break;
 				await ns.sleep(10);
-				if (s.getTask(steve) !== null && s.getTask(steve).type == "INFILTRATE") continue;
+				if (s.getTask(steve)?.type == "INFILTRATE") continue;
 				s.setToBladeburnerAction(steve, "Infiltrate synthoids");
 			}
-			generatedOps += opsCanGen
+			generatedOps += opsCanGen;
 			s.setToIdle(steve);
 			break;
 		}
@@ -53,7 +45,7 @@ export async function main(ns) {
 		}
 
 		function round(value, step = 0.5) {
-			const inv = 1.0 / step
+			const inv = 1.0 / step;
 			return Math.round(value * inv) / inv;
 		}
 	}
