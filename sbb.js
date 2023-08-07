@@ -1,7 +1,7 @@
 import { art, dhms, bar, format, tem } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog('ALL'); ns.tail(); ns.setTitle(tem("🧍BladeBurner:Sleeves", { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
+	ns.disableLog('ALL'); ns.tail(); ns.setTitle(tem("🧍BladeBurner:Sleeves", { "font-family": 'Brush Script MT, cursive' }));
 	const [s, sleeves, cycleLimit, width, height] = [ns.sleeve, [], 3000, 250, 670];
 	let [generatedOps, startTime] = [0, performance.now()];
 	for (let i = 0; i < s.getNumSleeves(); i++) { sleeves.push(i); s.setToIdle(i); }

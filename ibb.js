@@ -3,7 +3,7 @@ import { art, format, formatPercent, hms, cities, tem } from "ze-lib"
 export async function main(ns) {
 	const [width, height] = [250, 710], b = ns.bladeburner;
 	ns.tail(); ns.disableLog("ALL"); ns.resizeTail(width, height); ns.clearLog();
-	ns.setTitle(tem("🔍BladeBurner:Info", { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
+	ns.setTitle(tem("🔍BladeBurner:Info", { "font-family": 'Brush Script MT, cursive' }));
 	let lastKnownAssSpree;
 
 	while (1) {

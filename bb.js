@@ -1,7 +1,7 @@
 import { bar, format, cities, tem } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog('ALL'); ns.clearLog(); ns.tail(); ns.setTitle(tem("💀BladeBurner:Headquarters", { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
+	ns.disableLog('ALL'); ns.clearLog(); ns.tail(); ns.setTitle(tem("💀BladeBurner:Headquarters", { "font-family": 'Brush Script MT, cursive' }));
 	const [globalChaLimit, chaosLimit, ass_target, actionLogSize, skillLogSize, width, height, sleepTime, b, s] = [1e6, 50, 1e4, 7, 30, 375, 710, 500, ns.bladeburner, ns.singularity],
 		logs = { skill: [], action: [] }
 	for (let i = 0; i < actionLogSize; i++) logs.action.push(" ");
