@@ -10,7 +10,7 @@ export async function main(ns) {
 	await ns.sleep(500); // sleep here to allow first ns.resizeTail() to work properly
 	while (true) {
 		const titles = ["🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 --- ----- --👮🏼‍♂️", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 ----- ----- 👮🏼‍♂️🩸", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 - ------ ---👮🏼‍♂️🩸"];
-		ns.setTitle(tem(titles[tCount], { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
+		ns.setTitle(tem(titles[tCount], { "font-family": 'Brush Script MT, cursive' }));
 		tCount++; tCount >= titles.length ? tCount = 0 : null; ns.clearLog();
 		if (g.inGang()) {
 			if (ns.args[1] === "metric") metricCheck(ns);
