@@ -226,7 +226,7 @@ export function playSound(url) {
 	audio.play();
 }
 
-export function cipher(word, code = [420]) { //word to be encrypted and array of secret codes for encryption
+export function cipher(word, code = [420]) { //word to be ciphered and array of secret codes for encryption
 	if (!word || code.length < 1) return null;
 
 	function process(w, c) {
@@ -235,23 +235,6 @@ export function cipher(word, code = [420]) { //word to be encrypted and array of
 			encrypted.push(w.charCodeAt(i) ^ c); //convert letter to char number and xor bit shift by code
 		}
 		return String.fromCharCode(...encrypted) //return converted char numbers back to string
-	}
-	let result = word; //result will be modified based on number of codes given in code array
-	for (let i = 0; i < code.length; i++) {
-		result = process(result, code[i]);
-	}
-	return result;
-}
-
-export function decipher(word, code = [420]) { //word to be decrypted and array of secret codes for decryption
-	if (!word || code.length < 1) return null;
-
-	function process(w, c) {
-		const decrypted = []; //storage for decryption
-		for (let i = 0; i < w.length; i++) { //iterate encryptedWord letter by letter
-			decrypted.push(w.charCodeAt(i) ^ c); //convert letter to char number and xor bit shift by code
-		}
-		return String.fromCharCode(...decrypted); //return converted char numbers back to string
 	}
 	let result = word; //result will be modified based on number of codes given in code array
 	for (let i = 0; i < code.length; i++) {
