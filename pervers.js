@@ -22,7 +22,7 @@ export async function main(ns) {
 			ns.print(`${perver} RAM: ${formatGB(ns.getServer(perver).maxRam * 1073741824)} Upgrade Cost: ${format(cost())}`);
 		}
 		if (!isNaN(ns.args[0]) && ns.getPurchasedServers().every(s => ns.getServer(s).maxRam === ns.args[0])
-			|| ns.getPurchasedServers().every(s => ns.getServer(s).maxRam === ns.getPurchasedServerMaxRam())) ns.exit();
+			|| ns.getPurchasedServers().every(s => ns.getServer(s).maxRam >= ns.getPurchasedServerMaxRam())) ns.exit();
 		await ns.sleep(10);
 	}
 }
