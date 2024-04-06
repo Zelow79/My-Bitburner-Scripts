@@ -3,13 +3,13 @@ const [discountThresh, wantedPenThresh] = [0.8, 0.05]
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL"); ns.clearLog(); ns.tail();
-	const [faction, width, height, g] = ["Slum Snakes", 390, 888, ns.gang],
+	const [faction, width, height, g] = ["Slum Snakes", 340, 888, ns.gang],
 		tick = { tw: false, otherGangsInfoPrevCycle: undefined, nextTick: undefined }
 	let tCount = 0;
 	ns.resizeTail(width, height);
 	await ns.sleep(500); // sleep here to allow first ns.resizeTail() to work properly
 	while (true) {
-		const titles = ["🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 --- ----- --👮🏼‍♂️", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 ----- ----- 👮🏼‍♂️🩸", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 - ------ ---👮🏼‍♂️🩸"];
+		const titles = ["🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 --- ---- -👮🏼‍♂️", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 ----- --- 👮🏼‍♂️🩸", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 - ----- --👮🏼‍♂️🩸"];
 		ns.setTitle(tem(titles[tCount], { "font-family": 'Brush Script MT, cursive' }));
 		tCount++; tCount >= titles.length ? tCount = 0 : null; ns.clearLog();
 		if (g.inGang()) {
@@ -141,15 +141,17 @@ export async function main(ns) {
 	}
 
 	function gangMemberStuff() {
-		const targetValue = 125 // amount each stat will be trained up to * asc mult. Testing 125
+		const targetValue = 100 // amount each stat will be trained up to * asc mult
 		while (g.canRecruitMember()) {
 			const gangsterNames = names.filter(name => !g.getMemberNames().includes(name)),
 				name = gangsterNames[Math.floor(Math.random() * gangsterNames.length)]
 			g.recruitMember(name);
 			ns.print(`${name} has been recruited.`);
-			ns.tprint(`${name} has joined the gang!!`);
+			ns.tprintRaw(`${name} has joined the gang!!`);
 		}
-		for (const name of g.getMemberNames()) {
+		const bros = g.getMemberNames();
+		bros.sort((a, b) => g.getMemberInformation(a).str > g.getMemberInformation(b).str ? 1 : -1); //put lowest str first
+		for (const name of bros) {
 			let myGang = g.getGangInformation();
 			const arrayTaskObjects = [],
 				memberInfo = g.getMemberInformation(name),
