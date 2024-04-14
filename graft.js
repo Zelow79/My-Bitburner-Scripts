@@ -57,7 +57,7 @@ export async function main(ns) {
 
 			for (const aug of getCrackAugs()) {
 				if (ns.getPlayer().money > aug.cost) {
-					ns.tprintRaw(`Grafting ${aug.name} for \$${format(aug.cost, 2)} will take ${hms(Math.ceil(aug.graftTime))}`);
+					ns.tprintRaw(`Grafting ${aug.name} for \$${format(aug.cost, 2)} and will take ${hms(Math.ceil(aug.graftTime))}`);
 					ns.grafting.graftAugmentation(aug.name, !ns.singularity.getOwnedAugmentations(false).includes("Neuroreceptor Management Implant"));
 					break;
 				} else {
