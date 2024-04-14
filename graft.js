@@ -34,11 +34,11 @@ export async function main(ns) {
 			ns.clearLog();
 			if (ns.singularity.getCurrentWork().type === "GRAFTING") {
 				const task = ns.singularity.getCurrentWork(),
-					graftTime = Math.ceil(ns.grafting.getAugmentationGraftTime(task.augmentation));
+					graftTime = ns.grafting.getAugmentationGraftTime(task.augmentation);
 				ns.printRaw("Type:          " + task.type); // if current task is grafting display some information
 				ns.printRaw("Aug:           " + task.augmentation);
-				ns.printRaw("Graft Time:    " + hms(graftTime));
-				ns.printRaw("Time Left:     " + hms(graftTime - task.cyclesWorked * 200));
+				ns.printRaw("Graft Time:    " + hms(Math.ceil(graftTime)));
+				ns.printRaw("Time Left:     " + hms(Math.ceil(graftTime - task.cyclesWorked * 200)));
 				ns.printRaw("Time Passed:   " + hms(task.cyclesWorked * 200));
 				ns.printRaw("Cycles Worked: " + task.cyclesWorked);
 			} else {
