@@ -1,7 +1,7 @@
 import { hms, format } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog("sleep"); ns.clearLog(); ns.tail(); ns.resizeTail(400, 200);
+	ns.disableLog("sleep"); ns.clearLog(); ns.tail(); ns.resizeTail(450, 200);
 	const mode = {
 		["hacking"]: ns.args.includes("hacking") || ns.args.includes("hack") ? true : false, // a pool of augs that effect hacking
 		["hacknet"]: ns.args.includes("hacknet") ? true : false, // augs that include hacknet cost/profits
@@ -35,15 +35,16 @@ export async function main(ns) {
 			if (ns.singularity.getCurrentWork().type === "GRAFTING") {
 				const task = ns.singularity.getCurrentWork(),
 					graftTime = ns.grafting.getAugmentationGraftTime(task.augmentation);
-				ns.printRaw("Type:          " + task.type); // if current task is grafting display some information
-				ns.printRaw("Aug:           " + task.augmentation);
-				ns.printRaw("Graft Time:    " + hms(Math.ceil(graftTime)));
-				ns.printRaw("Time Left:     " + hms(Math.ceil(graftTime - task.cyclesWorked * 200)));
-				ns.printRaw("Time Passed:   " + hms(task.cyclesWorked * 200));
-				ns.printRaw("Cycles Worked: " + task.cyclesWorked);
+				ns.printRaw("Current Task Type: " + task.type); // if current task is grafting display some information
+				ns.printRaw("Augment Grafting:  " + task.augmentation);
+				ns.printRaw("Grafting Time:     " + hms(Math.ceil(graftTime)));
+				ns.printRaw("Time Left:         " + hms(Math.ceil(graftTime - task.cyclesWorked * 200)));
+				ns.printRaw("Time Progress:     " + hms(task.cyclesWorked * 200));
+				ns.printRaw("Cycles Worked:     " + task.cyclesWorked);
+				ns.printRaw("Augments in Pool:  " + format(getCrackAugs().length, 2));
 			} else {
-				ns.printRaw("Current Work: " + ns.singularity.getCurrentWork().type); // information for tasks that aren't grafting
-				ns.print("Not Grafting idle for " + (Math.floor(performance.now() - start)) + " ms");
+				ns.printRaw("Current Task Type: " + ns.singularity.getCurrentWork().type); // information for tasks that aren't grafting
+				ns.print("Not Grafting for " + (Math.floor(performance.now() - start)) + " ms");
 				if (mode["super"]) ns.singularity.stopAction(); // stop current task so we can start grafting when super mode is on
 			}
 			await ns.sleep(1000);
@@ -61,14 +62,15 @@ export async function main(ns) {
 					ns.grafting.graftAugmentation(aug.name, !ns.singularity.getOwnedAugmentations(false).includes("Neuroreceptor Management Implant"));
 					break;
 				} else {
-					ns.printRaw(`Unable to graft ${aug.name} cost: ${aug.cost} - Not enough money.`)
+					ns.tprintRaw(`Unable to graft ${aug.name} cost: \$${format(aug.cost, 2)} - Not enough money.`);
 				}
 			}
 		} else {
 			if (ns.getPlayer().money > ns.grafting.getAugmentationGraftPrice(remaining[0])) {
 				ns.grafting.graftAugmentation(remaining[0], !ns.singularity.getOwnedAugmentations(false).includes("Neuroreceptor Management Implant"));
 			} else {
-				ns.printRaw(`Not enough money to graft ${remaining[0]} Cost: ${ns.grafting.getAugmentationGraftPrice(remaining[0])}`);
+				ns.printRaw(`Not enough money to graft ${remaining[0]} Cost: \$${format(ns.grafting.getAugmentationGraftPrice(remaining[0]), 2)}`);
+				ns.printRaw(`Terminating...`);
 				ns.exit();
 			}
 		}
