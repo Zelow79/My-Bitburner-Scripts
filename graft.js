@@ -34,14 +34,22 @@ export async function main(ns) {
 			ns.clearLog();
 			if (ns.singularity.getCurrentWork().type === "GRAFTING") {
 				const task = ns.singularity.getCurrentWork(),
-					graftTime = ns.grafting.getAugmentationGraftTime(task.augmentation);
-				ns.printRaw("Current Task Type: " + task.type); // if current task is grafting display some information
-				ns.printRaw("Augment Grafting:  " + task.augmentation);
-				ns.printRaw("Grafting Time:     " + hms(Math.ceil(graftTime)));
-				ns.printRaw("Time Left:         " + hms(Math.ceil(graftTime - task.cyclesWorked * 200)));
-				ns.printRaw("Time Progress:     " + hms(task.cyclesWorked * 200));
-				ns.printRaw("Cycles Worked:     " + task.cyclesWorked);
-				ns.printRaw("Augments in Pool:  " + format(getCrackAugs().length, 2));
+					graftTime = ns.grafting.getAugmentationGraftTime(task.augmentation),
+					pool = getCrackAugs();
+				ns.printRaw("Current Task Type:  " + task.type); // if current task is grafting display some information
+				ns.printRaw("Augment Grafting:   " + task.augmentation);
+				ns.printRaw("Grafting Time:      " + hms(Math.ceil(graftTime)));
+				ns.printRaw("Time Left:          " + hms(Math.ceil(graftTime - task.cyclesWorked * 200)));
+				ns.printRaw("Time Progress:      " + hms(task.cyclesWorked * 200));
+				ns.printRaw("Cycles Worked:      " + task.cyclesWorked);
+				ns.printRaw("Augments in Pool:   " + format(pool.length, 2));
+				let poolcost = 0, pooltime = 0;
+				pool.forEach(o => {
+					poolcost += o.cost;
+					pooltime += o.graftTime;
+				});
+				ns.printRaw("Total cost of Pool: \$" + format(poolcost, 2));
+				ns.printRaw("Total time of Pool: " + hms(pooltime));
 			} else {
 				ns.printRaw("Current Task Type: " + ns.singularity.getCurrentWork().type); // information for tasks that aren't grafting
 				ns.print("Not Grafting for " + (Math.floor(performance.now() - start)) + " ms");
