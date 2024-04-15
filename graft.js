@@ -20,7 +20,7 @@ export async function main(ns) {
 	while (1) {
 		await ns.sleep(0); // Safety sleep
 		const priority = ["Neuroreceptor Management Implant", "The Blade's Simulacrum", "nickofolas Congruity Implant"],
-			remaining = [], graftableAugs = ns.grafting.getGraftableAugmentations();
+			remaining = [];
 
 		for (const aug of priority) {
 			if (aug === "The Blade's Simulacrum") { // check for Bladeburners faction or mode before allowing Simulacrum
@@ -62,16 +62,21 @@ export async function main(ns) {
 			//code for rest of graftables
 			ns.clearLog();
 			ns.printRaw("All priority augments already installed or grafted.");
+			const graftableAugs = getCrackAugs();
 			ns.printRaw(graftableAugs.length + " graftable augs remain.");
 
-			for (const aug of getCrackAugs()) {
-				if (ns.getPlayer().money > aug.cost) {
-					ns.tprintRaw(`Grafting ${aug.name} for \$${format(aug.cost, 2)} and will take ${hms(Math.ceil(aug.graftTime))}`);
-					ns.grafting.graftAugmentation(aug.name, !ns.singularity.getOwnedAugmentations(false).includes("Neuroreceptor Management Implant"));
-					break;
-				} else {
-					ns.tprintRaw(`Unable to graft ${aug.name} cost: \$${format(aug.cost, 2)} - Not enough money.`);
+			if (graftableAugs.length > 0) {
+				for (const aug of graftableAugs) {
+					if (ns.getPlayer().money > aug.cost) {
+						ns.tprintRaw(`Grafting ${aug.name} for \$${format(aug.cost, 2)} and will take ${hms(Math.ceil(aug.graftTime))}`);
+						ns.grafting.graftAugmentation(aug.name, !ns.singularity.getOwnedAugmentations(false).includes("Neuroreceptor Management Implant"));
+						break;
+					}
 				}
+			} else {
+				ns.printRaw(`No more Augments in pool.`);
+				ns.printRaw(`Terminating...`);
+				ns.exit();
 			}
 		} else {
 			if (ns.getPlayer().money > ns.grafting.getAugmentationGraftPrice(remaining[0])) {
