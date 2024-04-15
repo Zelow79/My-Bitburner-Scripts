@@ -60,20 +60,22 @@ export async function main(ns) {
 	}
 
 	function skillLimiter(skill) {
-		const skillLimits = [
-			{ name: "Blade's Intuition", limit: 200 }, //Each level of this skill increases your success chance for all Contracts, Operations, and BlackOps by 3%
-			{ name: "Cloak", limit: 200 },             //Each level of this skill increases your success chance in stealth-related Contracts, Operations, and BlackOps by 5.5%
-			{ name: "Short-Circuit", limit: 100 },     //Each level of this skill increases your success chance in Contracts, Operations, and BlackOps that involve retirement by 5.5%
-			{ name: "Digital Observer", limit: 200 },  //Each level of this skill increases your success chance in all Operations and BlackOps by 4%
-			{ name: "Tracer", limit: 20 },             //Each level of this skill increases your success chance in all Contracts by 4%
-			{ name: "Overclock", limit: 90 },          //Each level of this skill decreases the time it takes to attempt a Contract, Operation, and BlackOp by 1% (Max Level: 90)
-			{ name: "Reaper", limit: 400 },            //Each level of this skill increases your effective combat stats for Bladeburner actions by 2%
-			{ name: "Evasive System", limit: 400 },    //Each level of this skill increases your effective dexterity and agility for Bladeburner actions by 4%
-			{ name: "Datamancer", limit: 80 },         //Each level of this skill increases your effectiveness in synthoid population analysis and investigation by 5%. This affects all actions that can potentially increase the accuracy of your synthoid population/community estimates.
-			{ name: "Cyber's Edge", limit: 50 },       //Each level of this skill increases your max stamina by 2%
-			{ name: "Hands of Midas", limit: 200 },    //Each level of this skill increases the amount of money you receive from Contracts by 10%
-			{ name: "Hyperdrive", limit: 200 }         //Each level of this skill increases the experience earned from Contracts, Operations, and BlackOps by 10%
-		]
+		const comStats = b.getRank() > 4e5 ? 1e3 : 400,
+			opStats = b.getRank() > 4e5 ? 1e3 : 200,
+			skillLimits = [
+				{ name: "Blade's Intuition", limit: opStats }, //Each level of this skill increases your success chance for all Contracts, Operations, and BlackOps by 3%
+				{ name: "Cloak", limit: opStats },             //Each level of this skill increases your success chance in stealth-related Contracts, Operations, and BlackOps by 5.5%
+				{ name: "Short-Circuit", limit: 100 },         //Each level of this skill increases your success chance in Contracts, Operations, and BlackOps that involve retirement by 5.5%
+				{ name: "Digital Observer", limit: opStats },  //Each level of this skill increases your success chance in all Operations and BlackOps by 4%
+				{ name: "Tracer", limit: 20 },                 //Each level of this skill increases your success chance in all Contracts by 4%
+				{ name: "Overclock", limit: 90 },              //Each level of this skill decreases the time it takes to attempt a Contract, Operation, and BlackOp by 1% (Max Level: 90)
+				{ name: "Reaper", limit: comStats },           //Each level of this skill increases your effective combat stats for Bladeburner actions by 2%
+				{ name: "Evasive System", limit: comStats },   //Each level of this skill increases your effective dexterity and agility for Bladeburner actions by 4%
+				{ name: "Datamancer", limit: 80 },             //Each level of this skill increases your effectiveness in synthoid population analysis and investigation by 5%. This affects all actions that can potentially increase the accuracy of your synthoid population/community estimates.
+				{ name: "Cyber's Edge", limit: 50 },           //Each level of this skill increases your max stamina by 2%
+				{ name: "Hands of Midas", limit: 200 },        //Each level of this skill increases the amount of money you receive from Contracts by 10%
+				{ name: "Hyperdrive", limit: 200 }             //Each level of this skill increases the experience earned from Contracts, Operations, and BlackOps by 10%
+			]
 		if (skillLimits.find(({ name }) => name === skill) != undefined) return skillLimits.find(({ name }) => name === skill).limit <= b.getSkillLevel(skill);
 		else return false;
 	}
@@ -86,7 +88,7 @@ export async function main(ns) {
 			if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 			if (b.startAction("BlackOps", act)) {
 				addLog("action", `ACT: ${act}`);
-				await ns.sleep(b.getActionTime("BlackOps", act) / (b.getBonusTime() > 1000 ? 5 : 1) );
+				await ns.sleep(b.getActionTime("BlackOps", act) / (b.getBonusTime() > 1000 ? 5 : 1));
 				return;
 			}
 		}
