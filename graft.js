@@ -12,10 +12,12 @@ export async function main(ns) {
 		factionrep: ns.args.includes("faction") || ns.args.includes("rep") ? true : false, // faction rep gain and rep for both comp and faction
 		["work"]: ns.args.includes("work") ? true : false, // work money gained
 		all: ns.args.includes("all") ? true : false, // will attempt from a pool of any augments
+		custom: ns.args.includes("custom") ? true : false, // will ONLY pull from custom pool after priority
 		fast: ns.args.includes("fast") ? true : false, // sort augs fastest first *try to only use one sort at a time
 		cheap: ns.args.includes("cheap") ? true : false, // sort augs cheapest first *default is the most expensive first
 		["super"]: ns.args.includes("super") ? true : false // super mode is intended to take priority over other tasks
-	}
+	}, custom = ["QLink", "ECorp HVMind Implant", "SPTN-97 Gene Modification", // list of custom augs to get, still comes after priority
+		"Neuralstimulator", "Artificial Bio-neural Network Implant"];
 
 	while (1) {
 		await ns.sleep(0); // Safety sleep
@@ -91,7 +93,9 @@ export async function main(ns) {
 
 	function getCrackAugs(graftableAugs = ns.grafting.getGraftableAugmentations()) {
 		const chosen = [];
+		if (mode.custom) graftableAugs = custom;
 		for (const a of graftableAugs) {
+			if (ns.singularity.getOwnedAugmentations(true).includes(a)) continue; // skip if we already own aug
 			const preReqs = ns.singularity.getAugmentationPrereq(a);
 			if (preReqs.length > 0) { // check if there is preReqs for the aug
 				const actuallyNeed = []; // create container for augs we really need
@@ -139,7 +143,7 @@ export async function main(ns) {
 				factionrepwant = mode.factionrep && o.stats.faction_rep > 1,
 				workwant = mode["work"] && o.stats.work_money > 1;
 
-			if (mode.all || bbwant || hackwant || combatwant || chawant || hacknetwant || comprepwant || factionrepwant || workwant) chosen.push(o);
+			if (mode.custom || mode.all || bbwant || hackwant || combatwant || chawant || hacknetwant || comprepwant || factionrepwant || workwant) chosen.push(o);
 		}
 
 		if (mode.cheap) {
