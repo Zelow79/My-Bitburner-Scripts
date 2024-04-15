@@ -52,16 +52,19 @@ export async function main(ns) {
 	}
 
 	async function skillBuyer() {
+		let i = 0;
 		while (getBBSkill() !== false && getBBSkill()[0].upgradeCost < b.getSkillPoints()) {
 			const cheapestSkill = getBBSkill()[0];
 			if (b.upgradeSkill(cheapestSkill.name)) addLog("skill", `Got 1 ${cheapestSkill.name} for ${cheapestSkill.upgradeCost} SP`);
-			await ns.sleep(20);
+			if (i % 1000 === 0) await ns.sleep(0);
+			i++;
 		}
+		printLog();
 	}
 
 	function skillLimiter(skill) {
-		const comStats = b.getRank() > 4e5 ? 1e3 : 400,
-			opStats = b.getRank() > 4e5 ? 1e3 : 200,
+		const comStats = b.getRank() > 4e5 ? Math.max(Math.min(2e4, b.getRank() * 1e-4), 1e3) : 400, // experimental scaling for combat skills post 400k rank
+			opStats = b.getRank() > 4e5 ? Math.max(Math.min(1e4, b.getRank() * 7.5e-5), 1e3) : 200, // same as comStats, but for operation success chance
 			skillLimits = [
 				{ name: "Blade's Intuition", limit: opStats }, //Each level of this skill increases your success chance for all Contracts, Operations, and BlackOps by 3%
 				{ name: "Cloak", limit: opStats },             //Each level of this skill increases your success chance in stealth-related Contracts, Operations, and BlackOps by 5.5%
