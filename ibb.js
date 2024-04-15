@@ -1,7 +1,7 @@
-import { art, format, formatPercent, hms, cities, tem } from "ze-lib"
+import { art, format, formatPercent, hms, cities, tem } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
-	const [width, height] = [250, 710], b = ns.bladeburner;
+	const [width, height] = [215, 710], b = ns.bladeburner;
 	ns.tail(); ns.disableLog("ALL"); ns.resizeTail(width, height); ns.clearLog();
 	ns.setTitle(tem("🔍BladeBurner:Info", { "font-family": 'Brush Script MT, cursive' }));
 	let lastKnownAssSpree;
@@ -17,12 +17,12 @@ export async function main(ns) {
 		const divider = "══════════════════════════════";
 		ns.print("BLADEBURNER INFORMATION");
 		const currentTask = b.getCurrentAction(),
-			cTaskTime = b.getActionTime(currentTask.type, currentTask.name);
+			cTaskTime = currentTask.type == "Idle" ? 0 : b.getActionTime(currentTask.type, currentTask.name);
 		ns.print(`Current Task: ${art(currentTask.name, { color: 255 })}`);
 		const timeLeft = Math.ceil((cTaskTime - b.getActionCurrentTime()));
-		ns.print(` ${art("┣", { color: 255 })}Time Left: ${art(hms(timeLeft), { color: 255 })}`);
+		ns.print(` ${art("┣", { color: 255 })}Time Left:  ${art(hms(timeLeft), { color: 255 })}`);
 		const stamina = b.getStamina()[0] / b.getStamina()[1];
-		ns.print(` ${art("┗", { color: 255 })}Stamina:   ${art(formatPercent(stamina), { color: 255 })}`);
+		ns.print(` ${art("┗", { color: 255 })}Stamina:    ${art(formatPercent(stamina), { color: 255 })}`);
 		const assCount = b.getActionCountRemaining("Operations", "Assassination");
 		if (assCount == 0) lastKnownAssSpree = Date.now(); // timestamp spree start time
 		const assLevel = b.getActionCurrentLevel("Operations", "Assassination"),
