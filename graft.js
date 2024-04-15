@@ -1,7 +1,7 @@
 import { hms, format } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog("sleep"); ns.clearLog(); ns.tail(); ns.resizeTail(450, 200);
+	ns.disableLog("sleep"); ns.clearLog(); ns.tail(); ns.resizeTail(500, 200);
 	const mode = {
 		["hacking"]: ns.args.includes("hacking") || ns.args.includes("hack") ? true : false, // a pool of augs that effect hacking
 		["hacknet"]: ns.args.includes("hacknet") ? true : false, // augs that include hacknet cost/profits
@@ -71,6 +71,7 @@ export async function main(ns) {
 				for (const aug of graftableAugs) {
 					if (ns.getPlayer().money > aug.cost) {
 						ns.tprintRaw(`Grafting ${aug.name} for \$${format(aug.cost, 2)} and will take ${hms(Math.ceil(aug.graftTime))}`);
+						if (ns.getPlayer().location != 'New Tokyo') ns.singularity.travelToCity('New Tokyo');
 						ns.grafting.graftAugmentation(aug.name, !ns.singularity.getOwnedAugmentations(false).includes("Neuroreceptor Management Implant"));
 						break;
 					}
@@ -80,8 +81,9 @@ export async function main(ns) {
 				ns.printRaw(`Terminating...`);
 				ns.exit();
 			}
-		} else {
+		} else if (!ns.singularity.getOwnedAugmentations(true).includes(remaining[0])) {
 			if (ns.getPlayer().money > ns.grafting.getAugmentationGraftPrice(remaining[0])) {
+				if (ns.getPlayer().location != 'New Tokyo') ns.singularity.travelToCity('New Tokyo');
 				ns.grafting.graftAugmentation(remaining[0], !ns.singularity.getOwnedAugmentations(false).includes("Neuroreceptor Management Implant"));
 			} else {
 				ns.printRaw(`Not enough money to graft ${remaining[0]} Cost: \$${format(ns.grafting.getAugmentationGraftPrice(remaining[0]), 2)}`);
