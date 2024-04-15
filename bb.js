@@ -59,7 +59,6 @@ export async function main(ns) {
 			if (i % 1000 === 0) await ns.sleep(0);
 			i++;
 		}
-		printLog();
 	}
 
 	function skillLimiter(skill) {
