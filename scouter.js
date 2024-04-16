@@ -4,20 +4,20 @@ export async function main(ns) {
 	ns.clearLog(); ns.disableLog("ALL"); //ns.enableLog("sleep");
 	const targets = getAllServers(ns),
 		getInput = ns.args[0] ?? await ns.prompt("Select Server", { type: "select", choices: targets }),
-		[sleepTime, width, height] = [200, 333, 460]; ns.tail();
-	ns.setTitle(tem(`🕵Scouter:"${getInput}"`, { color: "rgb(0,255,0)", "font-family": 'Brush Script MT, cursive' }));
+		[sleepTime, width, height] = [200, 300, 460]; ns.tail();
+	ns.setTitle(tem(`🕵Scouter:"${getInput}"`, { "font-family": 'Brush Script MT, cursive' }));
 	while (true) {
 		ns.resizeTail(width, height);
 		const serverStats = ns.getServer(getInput),
 			progress = serverStats.moneyAvailable / serverStats.moneyMax,
 			freeRam = serverStats.maxRam - serverStats.ramUsed,
-			rProgress = freeRam / serverStats.maxRam;
+			rProgress = freeRam / serverStats.maxRam, portOpenIcon = "#";
 		let [sshPort, ftpPort, smtpPort, httpPort, sqlPort] = [
-			serverStats.sshPortOpen ? "Δ" : " ",
-			serverStats.ftpPortOpen ? "Δ" : " ",
-			serverStats.smtpPortOpen ? "Δ" : " ",
-			serverStats.httpPortOpen ? "Δ" : " ",
-			serverStats.sqlPortOpen ? "Δ" : " "
+			serverStats.sshPortOpen ? portOpenIcon : " ",
+			serverStats.ftpPortOpen ? portOpenIcon : " ",
+			serverStats.smtpPortOpen ? portOpenIcon : " ",
+			serverStats.httpPortOpen ? portOpenIcon : " ",
+			serverStats.sqlPortOpen ? portOpenIcon : " "
 		]
 		ns.clearLog();
 		ns.print("Server Name:      " + serverStats.hostname.slice(0, 22));
@@ -38,9 +38,9 @@ export async function main(ns) {
 			ns.print("Money Progress Bar");
 			ns.print(bar(progress, "⚡", 33) + "|" + formatPercent(progress, 0));
 		}
-		ns.print("Max Ram:          " + formatGB(serverStats.maxRam * 1e9));
+		ns.print("Max Ram:          " + formatGB(serverStats.maxRam * 2 ** 30));
 		if (serverStats.maxRam > 0) {
-			ns.print("Used Ram:         " + formatGB(serverStats.ramUsed * 1e9));
+			ns.print("Used Ram:         " + formatGB(serverStats.ramUsed * 2 ** 30));
 			ns.print("Free Ram Progress Bar");
 			ns.print(bar(rProgress, "⚡", 33) + "|" + formatPercent(rProgress, 0));
 		}
