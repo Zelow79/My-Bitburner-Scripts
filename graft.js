@@ -15,9 +15,13 @@ export async function main(ns) {
 		custom: ns.args.includes("custom") ? true : false, // will ONLY pull from custom pool after priority
 		fast: ns.args.includes("fast") ? true : false, // sort augs fastest first *try to only use one sort at a time
 		cheap: ns.args.includes("cheap") ? true : false, // sort augs cheapest first *default is the most expensive first
-		["super"]: ns.args.includes("super") ? true : false // super mode is intended to take priority over other tasks
+		["super"]: ns.args.includes("super") ? true : false, // super mode is intended to take priority over other tasks
+		onerun: ns.args.includes("one_run") ? true : false, // with this mode grafter will stop after one graft and exit
+		nless: ns.args.includes("no_n") ? true : false // with this mode on grafter will skip buying nickofolas Congruity Implant
 	}, custom = ["QLink", "ECorp HVMind Implant", "SPTN-97 Gene Modification", // list of custom augs to get, still comes after priority
 		"Neuralstimulator", "Artificial Bio-neural Network Implant"];
+
+	let grafted = false; // default state before any grafting as been done
 
 	while (1) {
 		await ns.sleep(0); // Safety sleep
@@ -27,6 +31,8 @@ export async function main(ns) {
 		for (const aug of priority) {
 			if (aug === "The Blade's Simulacrum") { // check for Bladeburners faction or mode before allowing Simulacrum
 				if (!mode.bb || !ns.getPlayer().factions.includes("Bladeburners")) continue;
+			} else if (aug === "nickofolas Congruity Implant") { // check if nickofolas should be skipped
+				if (nless) continue;
 			}
 			if (!ns.singularity.getOwnedAugmentations(true).includes(aug)) remaining.push(aug);
 		}
@@ -52,12 +58,18 @@ export async function main(ns) {
 				});
 				ns.printRaw("Total cost of Pool: \$" + format(poolcost, 2));
 				ns.printRaw("Total time of Pool: " + hms(pooltime));
+				grafted = true; // set grafted to true since script spotted us grafting
 			} else {
 				ns.printRaw("Current Task Type: " + ns.singularity.getCurrentWork().type); // information for tasks that aren't grafting
 				ns.print("Not Grafting for " + (Math.floor(performance.now() - start)) + " ms");
 				if (mode["super"]) ns.singularity.stopAction(); // stop current task so we can start grafting when super mode is on
 			}
 			await ns.sleep(1000);
+		}
+
+		if (grafted && onerun) {
+			ns.printRaw(`One run enabled and script detected grafting finsihed now exiting..`);
+			ns.exit();
 		}
 
 		if (remaining.length === 0) {
