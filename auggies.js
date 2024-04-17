@@ -14,7 +14,7 @@ export async function main(ns) {
 			this.updaterep = () => this.rep = ns.singularity.getAugmentationRepReq(this.augment);
 			this.buyIt = () => ns.singularity.purchaseAugmentation(this.faction, this.augment)
 				? ns.tprintRaw(tem(`${this.augment} was purchased from ${this.faction}.`, { color: "rgb(0,255,0)" }))
-				: ns.tprintRaw(tem(`Failure: Could not purchase ${this.augment} from ${this.faction}.`, { color: "rgb(255, 0, 0)" }));
+				: ns.tprintRaw(tem(`⚠️ Failure: Could not purchase ${this.augment} from ${this.faction}.`, { color: "rgb(255, 0, 0)" }));
 		}
 	}
 
@@ -63,7 +63,7 @@ export async function main(ns) {
 				}
 				if (purchased > 0) {
 					ns.tprintRaw(React.createElement("span", { style: { color: "rgb(0, 255, 255)" } },
-						`${purchased} level${purchased > 1 ? "s" : ""} of ${o.augment} purchased from ${o.faction}.`));
+						`👾 ${purchased} level${purchased > 1 ? "s" : ""} of ${o.augment} purchased from ${o.faction}.`));
 				}
 			}
 		}
@@ -75,7 +75,7 @@ export async function main(ns) {
 				if (ns.singularity.getFactionRep(o.faction) > o.rep) {
 					preReqCheck(o.augment);
 					if (ns.singularity.purchaseAugmentation(o.faction, o.augment)) {
-						ns.tprintRaw(React.createElement("span", { style: { color: "rgb(173, 255, 47)" } }, `${o.augment} was bestowed upon us praise our lord and savior!`));
+						ns.tprintRaw(React.createElement("span", { style: { color: "rgb(173, 255, 47)" } }, `🙏 ${o.augment} was bestowed upon us praise our lord and savior!`));
 					}
 				}
 			}
@@ -87,7 +87,7 @@ export async function main(ns) {
 			if (ns.singularity.getFactionRep(o.faction) > o.rep) {
 				preReqCheck(o.augment);
 				if (ns.singularity.purchaseAugmentation(o.faction, o.augment)) {
-					ns.tprintRaw(React.createElement("span", { style: { color: "rgb(255, 0, 0)" } }, `${o.augment} has been taken!`));
+					ns.tprintRaw(React.createElement("span", { style: { color: "rgb(255, 0, 0)" } }, `💊 ${o.augment} has been taken! 💊`));
 				}
 			}
 		}
