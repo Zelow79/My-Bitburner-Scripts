@@ -1,4 +1,3 @@
-import { tem, format } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
 	class Aug {
@@ -13,8 +12,8 @@ export async function main(ns) {
 			this.cost = () => ns.singularity.getAugmentationPrice(this.augment);
 			this.updaterep = () => this.rep = ns.singularity.getAugmentationRepReq(this.augment);
 			this.buyIt = () => ns.singularity.purchaseAugmentation(this.faction, this.augment)
-				? ns.tprintRaw(tem(`${this.augment} was purchased from ${this.faction}.`, { color: "rgb(0,255,0)" }))
-				: ns.tprintRaw(tem(`⚠️ Failure: Could not purchase ${this.augment} from ${this.faction}.`, { color: "rgb(255, 0, 0)" }));
+				? ns.tprintRaw(React.createElement("span", { style: { color: "rgb(0,255,0)" } }, `${this.augment} was purchased from ${this.faction}.`))
+				: ns.tprintRaw(React.createElement("span", { style: { color: "rgb(255, 0, 0)" } }, `⚠️ Failure: Could not purchase ${this.augment} from ${this.faction}.`));
 		}
 	}
 
