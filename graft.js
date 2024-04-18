@@ -32,7 +32,7 @@ export async function main(ns) {
 			if (aug === "The Blade's Simulacrum") { // check for Bladeburners faction or mode before allowing Simulacrum
 				if (!mode.bb || !ns.getPlayer().factions.includes("Bladeburners")) continue;
 			} else if (aug === "nickofolas Congruity Implant") { // check if nickofolas should be skipped
-				if (nless) continue;
+				if (mode.nless) continue;
 			}
 			if (!ns.singularity.getOwnedAugmentations(true).includes(aug)) remaining.push(aug);
 		}
