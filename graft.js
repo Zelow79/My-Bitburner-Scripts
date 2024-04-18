@@ -67,7 +67,7 @@ export async function main(ns) {
 			await ns.sleep(1000);
 		}
 
-		if (grafted && onerun) {
+		if (grafted && mode.onerun) {
 			ns.printRaw(`One run enabled and script detected grafting finsihed now exiting..`);
 			ns.exit();
 		}
