@@ -48,7 +48,7 @@ export async function main(ns) {
 		o.buyIt();
 	}
 
-	if (mode.nfg) { // only if mode is enabled
+	if (mode.nfg || mode.all) { // only if nfg and/or all modes are enabled
 		for (const o of augs) { // iterate the array again and buy up all the nfg I can
 			if (o.augment === nfg) {
 				let i = 0, purchased = 0;
@@ -68,7 +68,7 @@ export async function main(ns) {
 		}
 	}
 
-	if (mode["stanek"]) { // only if mode is enabled
+	if (mode["stanek"] || mode.all) { // only if stanek and/or all modes are enabled
 		for (const o of augs) { // finally iterate the array one last time for Stanek augs
 			if (theGift.includes(o.augment)) {
 				if (ns.singularity.getFactionRep(o.faction) > o.rep) {
