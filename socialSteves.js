@@ -1,7 +1,7 @@
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL"); ns.clearLog();
-	if (ns.args.includes("tail")) ns.tail(); ns.resizeTail(400, 720);
+	if (ns.args.includes("tail")) ns.tail(); ns.resizeTail(450, 720);
 	const steves = [],
 		updateTime = 10000,
 		blackListedFacs = ["Church of the Machine God", "Bladeburners"];
@@ -136,9 +136,11 @@ export async function main(ns) {
 					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })})`);
 				} else {
 					const facRep = Math.floor(ns.singularity.getFactionRep(task.factionName)),
-						favor = ns.singularity.getFactionFavor(task.factionName);
+						favor = ns.singularity.getFactionFavor(task.factionName),
+						postFavor = ns.formulas.reputation.calculateRepToFavor(ns.formulas.reputation.calculateFavorToRep(ns.singularity.getFactionFavor(task.factionName))
+							+ ns.singularity.getFactionRep(task.factionName));
 					ns.print(` - rep:          ${art(ns.formatNumber(facRep), { color: 255 })}`);
-					ns.print(` - favor:        ${art(ns.formatNumber(favor), { color: 255 })}`);
+					ns.print(` - favor(post):  ${art(ns.formatNumber(favor), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })})`);
 				}
 			} else if (task.type === "COMPANY") {
 				ns.print(`Steve: ${art(steve, { color: 255, bold: true })} is working job at ${art(task.companyName, { color: 226 })}`);
