@@ -29,6 +29,7 @@ export async function main(ns) {
 		nfg: ns.args.includes("nfg") ? true : false, // if NFG should be purchased or not
 		["stanek"]: ns.args.includes("stanek") ? true : false, // if stanek should be purchased or not
 		all: ns.args.includes("all") ? true : false, // will attempt from a pool of any augments
+		donate: ns.args.includes("donate") ? true : false, // will donate to a faction when purchasing NFG
 		cheap: ns.args.includes("cheap") ? true : false, // sort augs cheapest first *default is the most expensive first
 		install: ns.args.includes("install") ? true : false // if true will perform install after aug purchases
 	}, theGift = ["Stanek's Gift - Awakening", "Stanek's Gift - Serenity"], nfg = "NeuroFlux Governor", trp = "The Red Pill", augs = getChrome();
@@ -51,14 +52,30 @@ export async function main(ns) {
 	if (mode.nfg || mode.all) { // only if nfg and/or all modes are enabled
 		for (const o of augs) { // iterate the array again and buy up all the nfg I can
 			if (o.augment === nfg) {
-				let i = 0, purchased = 0;
-				while (ns.getPlayer().money > o.cost() && ns.singularity.getFactionRep(o.faction) > o.rep) {
+				let i = 0, purchased = 0, amtDonated = 0;
+				while (ns.getPlayer().money > o.cost()) {
 					if (i % 100 === 0) await ns.sleep(0);
 					i++;
+					if (mode.donate && ns.singularity.getFactionRep(o.faction) < o.rep) { //if mode.donate is on will donate to boost NFG count
+						const amt = Math.floor(ns.getPlayer().money * 0.01); // 1% of money floored
+						if (!ns.singularity.donateToFaction(o.faction, amt)) {
+							ns.tprint("failed to doante");
+							break;
+						} else {
+							amtDonated += amt;
+							//ns.tprint(`Successfully donated ${amt} to ${o.faction}`) 
+						};
+						o.updaterep();
+					}
+
 					if (ns.singularity.purchaseAugmentation(o.faction, o.augment)) {
 						purchased++;
 					}
 					o.updaterep();
+				}
+				if (amtDonated > 0) {
+					ns.tprintRaw(React.createElement("span", { style: { color: "rgb(200, 200, 20)" } },
+						`💸 \$${ns.formatNumber(amtDonated)} was donated to ${o.faction}.`));
 				}
 				if (purchased > 0) {
 					ns.tprintRaw(React.createElement("span", { style: { color: "rgb(0, 255, 255)" } },
