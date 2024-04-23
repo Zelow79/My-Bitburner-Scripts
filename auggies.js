@@ -63,9 +63,7 @@ export async function main(ns) {
 							break;
 						} else {
 							amtDonated += amt;
-							//ns.tprint(`Successfully donated ${amt} to ${o.faction}`) 
 						};
-						o.updaterep();
 					}
 
 					if (ns.singularity.purchaseAugmentation(o.faction, o.augment)) {
