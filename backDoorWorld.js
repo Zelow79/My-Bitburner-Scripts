@@ -12,6 +12,7 @@ export async function main(ns) {
 		for (const ramHost of ram) {
 			if (availableRam(ramHost) < workerWeight) continue;
 			scripts.push(await bdServer(server, ramHost));
+			//ns.tprintRaw(`Backdoor started on ${server}.`);
 			break;
 		}
 	}
@@ -20,7 +21,7 @@ export async function main(ns) {
 			if (ns.isRunning(scripts[i])) continue;
 			scripts.splice(i, 1); --i;
 		}
-		ns.clearLog(); ns.print(`Running Workers: ${scripts.join(", ")}`);
+		ns.clearLog(); ns.print(`Victims: ${victims.join(", ")}.`); ns.print(`Running Workers: ${scripts.join(", ")}`);
 		await ns.sleep(0);
 	}
 
