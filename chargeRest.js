@@ -4,6 +4,7 @@ export async function main(ns) {
 	ns.disableLog('sleep'); ns.clearLog();
 	const fileName = "charge_marked.js",
 		startTime = performance.now(),
+		launchMessages = [],
 		workers = [];
 
 	ns.exec("superNuker.js", "home");
@@ -24,7 +25,7 @@ export async function main(ns) {
 		if (ns.scp(fileName, server)) {
 			const p = ns.exec(fileName, server, threads);
 			if (p) {
-				ns.toast(`PID: (${p}) File: ${fileName} started on ${server} with ${threads} threads.`);
+				launchMessages.push(`PID: (${p}) File: ${fileName} started on ${server} with ${threads} threads.`);
 				workers.push(p);
 			}
 		}
@@ -38,6 +39,7 @@ export async function main(ns) {
 
 	while (1) {
 		ns.clearLog();
+		ns.print(launchMessages.join("\n"));
 		ns.print(`PIDS: ${workers.join(", ")}.`);
 		await ns.sleep(1000); // to keep running
 		if (Number.isInteger(ns.args[0]) && performance.now() > startTime + ns.args[0]) ns.kill(ns.pid);
