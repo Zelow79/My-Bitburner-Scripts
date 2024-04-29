@@ -4,13 +4,20 @@ export async function main(ns) {
 	if (ns.args.includes("tail")) ns.tail(); ns.resizeTail(450, 720);
 	const steves = [],
 		updateTime = 10000,
-		blackListedFacs = ["Church of the Machine God", "Bladeburners"];
+		workScriptTimer = 1000 * 60 * 5,
+		blackListedFacs = ["Church of the Machine God", "Bladeburners"],
+		workScript = "workWork.js"; // script for getting/promoting/quitting jobs
 	for (let i = 0; i < ns.sleeve.getNumSleeves(); i++) steves.push(i);
 
-	let timeCheck = 0;
+	let timeCheck = 0,
+		workScriptCheck = 0;
 
 	while (1) {
 		if (timeCheck < performance.now()) { // only update if timeCheck is less that current performance.now()
+			if (ns.getServerMaxRam("home") > ns.getScriptRam(workScript) && workScriptCheck < performance.now()) {
+				ns.run(workScript);
+				workScriptCheck = performance.now() + workScriptTimer;
+			}
 			for (const steve of steves) ns.sleeve.setToIdle(steve); // start with all sleeves to idle so assigning should be easier
 			steves.sort((a, b) => ns.sleeve.getSleeve(b).storedCycles - ns.sleeve.getSleeve(a).storedCycles)
 			let factions = [],
@@ -119,12 +126,13 @@ export async function main(ns) {
 	function printOut() {
 		ns.setTitle(React.createElement("span", { style: { color: "rgb(255,255,255)" } }, ns.getScriptName())); ns.clearLog();
 		ns.print(`Seconds until next update: ${art(Math.ceil((timeCheck - performance.now()) / 1000), { color: 255, bold: true })}`);
+		const colors = [15, 10, 11, 27, 13, 14, 202, 135]; // colors for sleeve numbers to help distinguish what sleeve went where.
 		for (const steve of steves) {
 			const task = ns.sleeve.getTask(steve);
 			if (task === null) {
-				ns.print(`Steve: ${art(steve, { color: 255, bold: true })} is idle.`);
+				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is idle.`);
 			} else if (task.type === "FACTION") {
-				ns.print(`Steve: ${art(steve, { color: 255, bold: true })} is doing ${art(task.factionWorkType, { color: 255 })} work for ${art(task.factionName, { color: 255 })}`);
+				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is doing ${art(task.factionWorkType, { color: 255 })} work for ${art(task.factionName, { color: 255 })}`);
 				if (factionMinRep(task.factionName) > 0) {
 					const repGoal = Math.ceil(factionMinRep(task.factionName)),
 						facRep = Math.floor(ns.singularity.getFactionRep(task.factionName)),
@@ -140,17 +148,17 @@ export async function main(ns) {
 						postFavor = ns.formulas.reputation.calculateRepToFavor(ns.formulas.reputation.calculateFavorToRep(ns.singularity.getFactionFavor(task.factionName))
 							+ ns.singularity.getFactionRep(task.factionName));
 					ns.print(` - rep:          ${art(ns.formatNumber(facRep), { color: 255 })}`);
-					ns.print(` - favor(post):  ${art(ns.formatNumber(favor), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })})`);
+					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })})`);
 				}
 			} else if (task.type === "COMPANY") {
-				ns.print(`Steve: ${art(steve, { color: 255, bold: true })} is working job at ${art(task.companyName, { color: 226 })}`);
+				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is working job at ${art(task.companyName, { color: 226 })}`);
 				const companyRep = ns.singularity.getCompanyRep(task.companyName),
 					position = ns.getPlayer().jobs[task.companyName],
 					pay = ns.formulas.work.companyGains(ns.sleeve.getSleeve(steve), task.companyName, position, ns.singularity.getCompanyFavor(task.companyName)).money * 5;
 				ns.print(` - position:     ${position}`);
 				ns.print(` - company rep:  ${art(ns.formatNumber(companyRep), { color: 255 })} pay: ${art("$" + ns.formatNumber(pay, 0) + " /s", { color: 226 })}`);
 			} else {
-				ns.print(`Steve: ${art(steve, { color: 255, bold: true })} is doing something...`);
+				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is doing something...`);
 			}
 
 			if (ns.args.includes("bonus")) ns.print(` - bonus cycles: ${art(ns.sleeve.getSleeve(steve).storedCycles, { color: 255, bold: true })}`);
