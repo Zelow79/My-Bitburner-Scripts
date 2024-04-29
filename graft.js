@@ -17,7 +17,7 @@ export async function main(ns) {
 		cheap: ns.args.includes("cheap") ? true : false, // sort augs cheapest first *default is the most expensive first
 		["super"]: ns.args.includes("super") ? true : false, // super mode is intended to take priority over other tasks
 		onerun: ns.args.includes("one_run") ? true : false, // with this mode grafter will stop after one graft and exit
-		nless: ns.args.includes("no_n") ? true : false // with this mode on grafter will skip buying nickofolas Congruity Implant
+		vless: ns.args.includes("no_v") ? true : false // with this mode on grafter will skip buying violet Congruity Implant
 	}, custom = ["QLink", "ECorp HVMind Implant", "SPTN-97 Gene Modification", // list of custom augs to get, still comes after priority
 		"Neuralstimulator", "Artificial Bio-neural Network Implant"];
 
@@ -25,14 +25,14 @@ export async function main(ns) {
 
 	while (1) {
 		await ns.sleep(0); // Safety sleep
-		const priority = ["Neuroreceptor Management Implant", "The Blade's Simulacrum", "nickofolas Congruity Implant"],
+		const priority = ["Neuroreceptor Management Implant", "The Blade's Simulacrum", "violet Congruity Implant"],
 			remaining = [];
 
 		for (const aug of priority) {
 			if (aug === "The Blade's Simulacrum") { // check for Bladeburners faction or mode before allowing Simulacrum
 				if (!mode.bb || !ns.getPlayer().factions.includes("Bladeburners")) continue;
-			} else if (aug === "nickofolas Congruity Implant") { // check if nickofolas should be skipped
-				if (mode.nless) continue;
+			} else if (aug === "violet Congruity Implant") { // check if violet should be skipped
+				if (mode.vless) continue;
 			}
 			if (!ns.singularity.getOwnedAugmentations(true).includes(aug)) remaining.push(aug);
 		}
