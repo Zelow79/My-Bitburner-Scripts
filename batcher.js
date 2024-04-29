@@ -6,8 +6,7 @@ export async function main(ns) {
 		strip: false,
 		hedger: true,
 		awaitPort: false,
-		killOnLevel: false,
-		prep: false,
+		prep: ns.args.includes("prep") ? true : false,
 		hack_percent: 0.02,
 		hack_threads: 1,
 		grow_threads: 1,
@@ -16,7 +15,6 @@ export async function main(ns) {
 		grow_time: 1,
 		weaken_time: 1,
 		maxbatches: 1,
-		lastKnownLevel: 1,
 		killedHacks: 0, // this value will increment as hacks are killed
 		base_spacer: 4, // space between each HGW call in ms
 		batch_spacer: 0, // space between each batch in ms
@@ -37,13 +35,18 @@ export async function main(ns) {
 			consts.target = worthy[0];
 		}
 	}
+	if (ns.getServer(consts.target).moneyAvailable / ns.getServer(consts.target).moneyMax < 0.5) consts.prep = true; // turn prep on if target blows
 	if (!isNaN(ns.args[1])) consts.hack_percent = ns.args[1];
 	const crapIdontWant = [`sleep`, `scp`, `scan`, `ALL`],
 		fh = ns.formulas.hacking,
 		getSecurityCost = (threads, option = "grow") => option === "grow" ? threads * 0.004 : threads * 0.002,
 		prepCheck = () => ns.getServer(consts.target).hackDifficulty === ns.getServer(consts.target).minDifficulty && ns.getServer(consts.target).moneyAvailable === ns.getServer(consts.target).moneyMax,
-		pids = [ns.exec("scouter.js", "home", 1, consts.target)];
-	ns.clearLog(); crapIdontWant.forEach(fn => ns.disableLog(fn)); ns.tail(); ns.resizeTail(360, 570);
+		pids = [];
+	ns.clearLog(); crapIdontWant.forEach(fn => ns.disableLog(fn)); 
+	if (ns.args.includes("tail")) {ns.tail(); ns.resizeTail(360, 570); }
+	if (ns.args.includes("scout") || ns.args.includes("scouter")) {
+		p = ns.exec("scouter.js", "home", 1, consts.target);
+	}
 	makeHGW(ns, "home");
 	const [hackWeight, growWeight, weakenWeight] = [ns.getScriptRam("hack.js", "home"), ns.getScriptRam("grow.js", "home"), ns.getScriptRam("weaken.js", "home")],
 		batchRam = () => (hackWeight * consts.hack_threads) + (growWeight * consts.grow_threads) + (weakenWeight * consts.weaken_threads);
@@ -59,8 +62,6 @@ export async function main(ns) {
 		});
 	});
 
-	consts.lastKnownLevel = ns.getPlayer().skills.hacking;
-
 	while (1) {
 		while (hgwRunCheck()) await ns.sleep(0);
 		if (consts.prep) await prepServer();
@@ -71,20 +72,6 @@ export async function main(ns) {
 		// main loop
 		while (1) {
 			loop++;
-			if (consts.lastKnownLevel !== ns.getPlayer().skills.hacking) {
-				const hacks = [];
-				getAllServers(ns).forEach(server => ns.ps(server).forEach(script => script.filename === "hack.js" ? hacks.push(script.pid) : null));
-				hacks.sort((a, b) => a - b);
-				//ns.kill(hacks[0]);
-				let i = 0;
-				for (const p of hacks) {
-					if (i > 5) break; // only kill frist 5 hack scripts
-					//if (ns.kill(p)) ns.tprint(`PID ${p} killed.`);
-					if (consts.killOnLevel) if (ns.kill(p)) consts.killedHacks++;
-					i++;
-				}
-				consts.lastKnownLevel = ns.getPlayer().skills.hacking;
-			}
 
 			if (consts.hedger) {
 				const scripts = [];
