@@ -107,7 +107,7 @@ export async function main(ns) {
 		}
 	}
 
-	if (mode.install) ns.singularity.installAugmentations(); // will install augments when true TODO: add callback script when ready
+	if (mode.install) ns.singularity.installAugmentations("ai.js"); // will install augments when true TODO: add callback script when ready
 
 	function preReqCheck(augname) {
 		const filteredPreReq = ns.singularity.getAugmentationPrereq(augname).filter(n => !ns.singularity.getOwnedAugmentations(true).includes(n));
