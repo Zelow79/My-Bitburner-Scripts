@@ -2,7 +2,8 @@
 export async function main(ns) {
 	ns.clearLog(); ns.disableLog("ALL");
 	const s = ns.stanek,
-		layoutFile = await ns.prompt("Load which layout?", { type: "select", choices: ns.ls("home", "/giftLayouts/") });
+		layoutFile = ns.args[0] ? "giftLayouts/" + ns.args[0]
+			: await ns.prompt("Load which layout?", { type: "select", choices: ns.ls("home", "/giftLayouts/") });
 	if (!ns.ls("home", "/giftLayouts/").includes(layoutFile)) ns.exit();
 	const layout = JSON.parse(ns.read(layoutFile));
 	if (s.acceptGift() && s.activeFragments().length == 0) {
@@ -11,5 +12,5 @@ export async function main(ns) {
 				ns.print(`Fragment-#${frag.id} set in location X: ${frag.x}, Y: ${frag.y} & Rotation: ${frag.rotation}`);
 		}
 	}
-	ns.tail(); ns.resizeTail(450, 600);
+	if (ns.args.includes("tail")) { ns.tail(); ns.resizeTail(450, 600); }
 }
