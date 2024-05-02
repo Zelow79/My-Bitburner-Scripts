@@ -33,7 +33,7 @@ export async function main(ns) {
 
 	ns.atExit(() => {
 		workers.forEach(w => ns.kill(w));
-		ns.write("giftLayouts/chargeTimestamp.txt", performance.now(), "w");
+		ns.write("giftLayouts/chargeTimestamp.txt", Date.now(), "w");
 		if (ns.args.includes("ai")) ns.exec("ai.js", "home"); // script name can be whatever you want ai.js is my start script
 	});
 
