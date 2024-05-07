@@ -20,4 +20,4 @@ My Bitburner Progression Path.
 -> Started Farming INT
 -> Stopped Farming INT at 7,777 INT
 -> 14.1 -> 14.2 -> 14.3
--> 12.2 -> 12.7
+-> 12.2 -> 12.14
