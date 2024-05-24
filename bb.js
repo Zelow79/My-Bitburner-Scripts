@@ -86,7 +86,7 @@ export async function main(ns) {
 		for (const act of b.getBlackOpNames()) {
 			if (b.getActionCountRemaining("BlackOps", act) < 1) continue;
 			if (b.getActionEstimatedSuccessChance("BlackOps", act)[0] < aSuccessChance || b.getBlackOpRank(act) > b.getRank()) break;
-			if (b.getCurrentAction().name == act) return;
+			if (b.getCurrentAction()?.name == act) return;
 			if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 			if (b.startAction("BlackOps", act)) {
 				addLog("action", `ACT: ${act}`);
@@ -97,7 +97,7 @@ export async function main(ns) {
 
 		for (const act of [{ name: "Assassination", type: "Operations" }, { name: "Undercover Operation", type: "Operations" }, { name: "Investigation", type: "Operations" }, { name: "Tracking", type: "Contracts" }, { name: "Bounty Hunter", type: "Contracts" }, { name: "Retirement", type: "Contracts" }]) {
 			if (b.getActionEstimatedSuccessChance(act.type, act.name)[0] < aSuccessChance || b.getActionCountRemaining(act.type, act.name) < 1) continue;
-			if (b.getCurrentAction().name == act.name) return;
+			if (b.getCurrentAction()?.name == act.name) return;
 			if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 			if (b.startAction(act.type, act.name)) {
 				addLog("action", `ACT: ${act.name}`);
@@ -108,7 +108,7 @@ export async function main(ns) {
 
 		for (const act of [{ name: "Investigation", type: "Operations" }, { name: "Field Analysis", type: "General" }]) {
 			if (act.name == "Investigation" && b.getActionCountRemaining(act.type, act.name) < 1) continue;
-			if (b.getCurrentAction().name == act) return;
+			if (b.getCurrentAction()?.name == act.name) return;
 			if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 			if (b.startAction(act.type, act.name)) {
 				addLog("action", `ACT: ${act.name}`);
@@ -123,7 +123,7 @@ export async function main(ns) {
 			while (ns.getPlayer().hp.current / ns.getPlayer().hp.max < 1) {
 				await ns.sleep(20);
 				if (ns.getPlayer().hp.current / ns.getPlayer().hp.max === 1) continue;
-				if (b.getCurrentAction().name === "Hyperbolic Regeneration Chamber") continue;
+				if (b.getCurrentAction()?.name === "Hyperbolic Regeneration Chamber") continue;
 				if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 				if (b.startAction('General', "Hyperbolic Regeneration Chamber")) addLog("action", 'ACT: Hyperbolic Regeneration Chamber');
 			}
@@ -136,7 +136,7 @@ export async function main(ns) {
 			while (b.getStamina()[0] / b.getStamina()[1] < 1) {
 				if (startTime + 60000 * 2 <= Date.now() && initStam >= b.getStamina()[0]) action = possibleActions[1];
 				await ns.sleep(20);
-				if (b.getCurrentAction().name === action) continue;
+				if (b.getCurrentAction()?.name === action) continue;
 				if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 				if (b.startAction('General', action)) addLog("action", `ACT: ${action}`);
 			}
@@ -150,7 +150,7 @@ export async function main(ns) {
 			while (b.getCityChaos(c) > 0) {
 				printLog();
 				await ns.sleep(500); //precautionary sleep incase it gets caught in returning below
-				if (b.getCurrentAction().name == act) continue;
+				if (b.getCurrentAction()?.name == act) continue;
 				if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 				b.startAction("General", act);
 				addLog("action", `ACT: ${act}`);
@@ -176,7 +176,7 @@ export async function main(ns) {
 			while (assLevel() < ass_target) {
 				printLog();
 				await ns.sleep(500); //precautionary sleep when it gets caught in 'continue' below
-				if (b.getCurrentAction().name == act) continue;
+				if (b.getCurrentAction()?.name == act) continue;
 				if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
 				b.startAction("General", act);
 				addLog("action", `ACT: ${act}`);
