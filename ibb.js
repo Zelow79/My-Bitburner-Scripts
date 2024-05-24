@@ -17,7 +17,7 @@ export async function main(ns) {
 		const divider = "══════════════════════════════";
 		ns.print("BLADEBURNER INFORMATION");
 		const currentTask = b.getCurrentAction(),
-			cTaskTime = currentTask.type == "Idle" ? 0 : b.getActionTime(currentTask.type, currentTask.name);
+			cTaskTime = currentTask?.type == "Idle" ? 0 : b.getActionTime(currentTask.type, currentTask.name);
 		ns.print(`Current Task: ${art(currentTask.name, { color: 255 })}`);
 		const timeLeft = Math.ceil((cTaskTime - b.getActionCurrentTime()));
 		ns.print(` ${art("┣", { color: 255 })}Time Left:  ${art(hms(timeLeft), { color: 255 })}`);
