@@ -133,11 +133,13 @@ export async function main(ns) {
 		ns.print(`Seconds until next update: ${art(Math.ceil((timeCheck - performance.now()) / 1000), { color: 255, bold: true })}`);
 		const colors = [15, 10, 11, 27, 13, 14, 202, 135]; // colors for sleeve numbers to help distinguish what sleeve went where.
 		for (const steve of steves) {
-			const task = ns.sleeve.getTask(steve);
+			const task = ns.sleeve.getTask(steve),
+				overclocked = ns.sleeve.getSleeve(steve).storedCycles >= 15,
+				color = overclocked ? 11 : 255;
 			if (task === null) {
 				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is idle.`);
 			} else if (task.type === "FACTION") {
-				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is doing ${art(task.factionWorkType, { color: 255 })} work for ${art(task.factionName, { color: 255 })}`);
+				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is doing ${art(task.factionWorkType, { color })} work for ${art(task.factionName, { color })}`);
 				if (factionMinRep(task.factionName) > 0) {
 					const repGoal = Math.ceil(factionMinRep(task.factionName)),
 						facRep = Math.floor(ns.singularity.getFactionRep(task.factionName)),
@@ -146,7 +148,7 @@ export async function main(ns) {
 						postFavor = ns.formulas.reputation.calculateRepToFavor(ns.formulas.reputation.calculateFavorToRep(ns.singularity.getFactionFavor(task.factionName))
 							+ ns.singularity.getFactionRep(task.factionName));
 					ns.print(` - Progress:     ${bar(facRep / repGoal, true, 25)}`);
-					ns.print(` - rep/goal:     ${art(ns.formatNumber(facRep), { color: 255 })} / ${art(ns.formatNumber(repGoal), { color: 255 })} ${art("+" + (facGains.reputation * 5).toFixed(2) + "/s", { color: 10 })}`);
+					ns.print(` - rep/goal:     ${art(ns.formatNumber(facRep), { color })} / ${art(ns.formatNumber(repGoal), { color })} ${art("+" + (facGains.reputation * 5 * (overclocked ? 3 : 1)).toFixed(2) + "/s", { color: 10 })}`);
 					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })}) ${postFavor > favor ? art("+" + (postFavor - favor).toFixed(2), { color: 10 }) : ""}`);
 				} else {
 					const facRep = Math.floor(ns.singularity.getFactionRep(task.factionName)),
@@ -154,16 +156,16 @@ export async function main(ns) {
 						facGains = ns.formulas.work.factionGains(ns.sleeve.getSleeve(steve), task.factionWorkType, favor),
 						postFavor = ns.formulas.reputation.calculateRepToFavor(ns.formulas.reputation.calculateFavorToRep(ns.singularity.getFactionFavor(task.factionName))
 							+ ns.singularity.getFactionRep(task.factionName));
-					ns.print(` - rep:          ${art(ns.formatNumber(facRep), { color: 255 })} ${art("+" + (facGains.reputation * 5).toFixed(2) + "/s", { color: 10 })}`);
+					ns.print(` - rep:          ${art(ns.formatNumber(facRep), { color })} ${art("+" + (facGains.reputation * 5 * (overclocked ? 3 : 1)).toFixed(2) + "/s", { color: 10 })}`);
 					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })}) ${postFavor > favor ? art("+" + (postFavor - favor).toFixed(2), { color: 10 }) : ""}`);
 				}
 			} else if (task.type === "COMPANY") {
 				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is working job at ${art(task.companyName, { color: 226 })}`);
 				const companyRep = ns.singularity.getCompanyRep(task.companyName),
 					position = ns.getPlayer().jobs[task.companyName],
-					pay = ns.formulas.work.companyGains(ns.sleeve.getSleeve(steve), task.companyName, position, ns.singularity.getCompanyFavor(task.companyName)).money * 5;
-				ns.print(` - position:     ${position}`);
-				ns.print(` - company rep:  ${art(ns.formatNumber(companyRep), { color: 255 })} pay: ${art("$" + ns.formatNumber(pay, 0) + " /s", { color: 226 })}`);
+					pay = ns.formulas.work.companyGains(ns.sleeve.getSleeve(steve), task.companyName, position, ns.singularity.getCompanyFavor(task.companyName)).money * 5 * (overclocked ? 3 : 1);
+				ns.print(` - position:     ${art(position, { color })}`);
+				ns.print(` - company rep:  ${art(ns.formatNumber(companyRep), { color })} pay: ${art("$" + ns.formatNumber(pay, 0) * (overclocked ? 3 : 1)+ " /s", { color: 226 })}`);
 			} else {
 				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is doing something...`);
 			}
