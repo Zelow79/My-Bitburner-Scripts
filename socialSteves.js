@@ -146,14 +146,15 @@ export async function main(ns) {
 						postFavor = ns.formulas.reputation.calculateRepToFavor(ns.formulas.reputation.calculateFavorToRep(ns.singularity.getFactionFavor(task.factionName))
 							+ ns.singularity.getFactionRep(task.factionName));
 					ns.print(` - Progress:     ${bar(facRep / repGoal, true, 25)}`);
-					ns.print(` - rep/goal:     ${art(ns.formatNumber(facRep), { color: 255 })} / ${art(ns.formatNumber(repGoal), { color: 255 })} ${art("+" + (facGains.reputation).toFixed(2) + "/s", { color: 10 })}`);
+					ns.print(` - rep/goal:     ${art(ns.formatNumber(facRep), { color: 255 })} / ${art(ns.formatNumber(repGoal), { color: 255 })} ${art("+" + (facGains.reputation * 5).toFixed(2) + "/s", { color: 10 })}`);
 					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })}) ${postFavor > favor ? art("+" + (postFavor - favor).toFixed(2), { color: 10 }) : ""}`);
 				} else {
 					const facRep = Math.floor(ns.singularity.getFactionRep(task.factionName)),
 						favor = ns.singularity.getFactionFavor(task.factionName),
+						facGains = ns.formulas.work.factionGains(ns.sleeve.getSleeve(steve), task.factionWorkType, favor),
 						postFavor = ns.formulas.reputation.calculateRepToFavor(ns.formulas.reputation.calculateFavorToRep(ns.singularity.getFactionFavor(task.factionName))
 							+ ns.singularity.getFactionRep(task.factionName));
-					ns.print(` - rep:          ${art(ns.formatNumber(facRep), { color: 255 })}`);
+					ns.print(` - rep:          ${art(ns.formatNumber(facRep), { color: 255 })} ${art("+" + (facGains.reputation * 5).toFixed(2) + "/s", { color: 10 })}`);
 					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })}) ${postFavor > favor ? art("+" + (postFavor - favor).toFixed(2), { color: 10 }) : ""}`);
 				}
 			} else if (task.type === "COMPANY") {
