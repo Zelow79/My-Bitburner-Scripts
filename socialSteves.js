@@ -29,7 +29,7 @@ export async function main(ns) {
 			const focusFac = ns.getPlayer().factions.includes("ECorp") ? baseFactions.splice(baseFactions.indexOf("ECorp"), 1)[0] : baseFactions.shift();
 
 			for (const fac of baseFactions) {
-				if (factionMinRep(fac) === 0) continue;
+				if (factionMinRep(fac) === 0 || fac === "Daedalus") continue;
 				factions.push({
 					name: fac,
 					limit: factionMinRep(fac)
@@ -37,6 +37,11 @@ export async function main(ns) {
 			}
 
 			factions.sort((a, b) => a.limit - b.limit); // sort with lowest rep needed first
+			if (ns.getPlayer().factions.includes("Daedalus") // if we're in Daedalus
+				&& focusFac !== "Daedalus" // and Daedalus isn't our focus
+				&& factionMinRep("Daedalus") !== 0) { // and we have less rep than the higest aug they offer
+				factions.unshift({ name: "Daedalus", limit: factionMinRep("Daedalus") }); // put Daedalus infront behind focus
+			}
 			if (focusFac !== undefined) factions.unshift({ name: focusFac }); // put our focus first if it isn't undefined
 
 			for (const steve of steves) {
@@ -137,18 +142,19 @@ export async function main(ns) {
 					const repGoal = Math.ceil(factionMinRep(task.factionName)),
 						facRep = Math.floor(ns.singularity.getFactionRep(task.factionName)),
 						favor = ns.singularity.getFactionFavor(task.factionName),
+						facGains = ns.formulas.work.factionGains(ns.sleeve.getSleeve(steve), task.factionWorkType, favor),
 						postFavor = ns.formulas.reputation.calculateRepToFavor(ns.formulas.reputation.calculateFavorToRep(ns.singularity.getFactionFavor(task.factionName))
 							+ ns.singularity.getFactionRep(task.factionName));
 					ns.print(` - Progress:     ${bar(facRep / repGoal, true, 25)}`);
-					ns.print(` - rep/goal:     ${art(ns.formatNumber(facRep), { color: 255 })} / ${art(ns.formatNumber(repGoal), { color: 255 })}`);
-					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })})`);
+					ns.print(` - rep/goal:     ${art(ns.formatNumber(facRep), { color: 255 })} / ${art(ns.formatNumber(repGoal), { color: 255 })} ${art("+" + (facGains.reputation).toFixed(2) + "/s", { color: 10 })}`);
+					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })}) ${postFavor > favor ? art("+" + (postFavor - favor).toFixed(2), { color: 10 }) : ""}`);
 				} else {
 					const facRep = Math.floor(ns.singularity.getFactionRep(task.factionName)),
 						favor = ns.singularity.getFactionFavor(task.factionName),
 						postFavor = ns.formulas.reputation.calculateRepToFavor(ns.formulas.reputation.calculateFavorToRep(ns.singularity.getFactionFavor(task.factionName))
 							+ ns.singularity.getFactionRep(task.factionName));
 					ns.print(` - rep:          ${art(ns.formatNumber(facRep), { color: 255 })}`);
-					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })})`);
+					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })}) ${postFavor > favor ? art("+" + (postFavor - favor).toFixed(2), { color: 10 }) : ""}`);
 				}
 			} else if (task.type === "COMPANY") {
 				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is working job at ${art(task.companyName, { color: 226 })}`);
