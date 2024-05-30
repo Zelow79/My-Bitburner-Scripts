@@ -17,7 +17,6 @@ export class Jobs {
 		this.companyName = companyName;
 		this.favor = ns.singularity.getCompanyFavor(companyName);
 		this.jobs = [];
-		//this.ns = ns;
 		this.applyBest = () => {
 			let j = this.jobs;
 			j = j.filter(x => x.requiredReputation === 0);
@@ -89,15 +88,22 @@ export class MyEmployment {
 			}
 		}
 		this.jobs = [];
+		this.applyCompany = (companyName) => {
+			for (const comp of compWithFac) {
+				if (comp[0] === companyName) {
+					if (Object.keys(ns.getPlayer().jobs).includes(comp[0])) {
+						ns.print(`Already work for ${comp[0]}.`);
+					} else if (ns.getPlayer().factions.includes(comp[1])) {
+						ns.print(`Skipping job at ${comp[0]} you're already in faction ${comp[1]}.`);
+					} else {
+						new Jobs(ns, comp[0]).applyBest();
+					}
+				}
+			}
+		}
 		this.apply4Factions = () => {
 			for (const company of compWithFac) {
-				if (Object.keys(ns.getPlayer().jobs).includes(company[0])) {
-					ns.print(`Already work for ${company[0]}.`);
-				} else if (ns.getPlayer().factions.includes(company[1])) {
-					ns.print(`Skipping job at ${company[0]} you're already in faction ${company[1]}.`);
-				} else {
-					new Jobs(ns, company[0]).applyBest();
-				}
+				this.applyCompany(company[0]);
 			}
 		};
 		this.promoteMyJobs = () => this.jobs.forEach(j => j.promote());
