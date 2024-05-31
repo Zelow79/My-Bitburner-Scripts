@@ -15,7 +15,7 @@ export async function main(ns) {
 	while (1) {
 		if (timeCheck < performance.now()) { // only update if timeCheck is less that current performance.now()
 			if (ns.getServerMaxRam("home") > ns.getScriptRam(workScript) && workScriptCheck < performance.now()) {
-				ns.run(workScript);
+				ns.run(workScript, 1, "ECorp", "Clarke Incorporated");
 				workScriptCheck = performance.now() + workScriptTimer;
 			}
 			for (const steve of steves) ns.sleeve.setToIdle(steve); // start with all sleeves to idle so assigning should be easier
@@ -160,12 +160,14 @@ export async function main(ns) {
 					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })}) ${postFavor > favor ? art("+" + (postFavor - favor).toFixed(2), { color: 10 }) : ""}`);
 				}
 			} else if (task.type === "COMPANY") {
-				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is working job at ${art(task.companyName, { color: 226 })}`);
+				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is working job at ${art(task.companyName, { color })}`);
 				const companyRep = ns.singularity.getCompanyRep(task.companyName),
 					position = ns.getPlayer().jobs[task.companyName],
-					pay = ns.formulas.work.companyGains(ns.sleeve.getSleeve(steve), task.companyName, position, ns.singularity.getCompanyFavor(task.companyName)).money * 5 * (overclocked ? 3 : 1);
+					compGains = ns.formulas.work.companyGains(ns.sleeve.getSleeve(steve), task.companyName, position, ns.singularity.getCompanyFavor(task.companyName)),
+					pay = compGains.money * 5 * (overclocked ? 3 : 1);
 				ns.print(` - position:     ${art(position, { color })}`);
-				ns.print(` - company rep:  ${art(ns.formatNumber(companyRep), { color })} pay: ${art("$" + ns.formatNumber(pay, 0) * (overclocked ? 3 : 1)+ " /s", { color: 226 })}`);
+				ns.print(` - pay:          ${art("$" + ns.formatNumber(pay, 0) + "/s", { color: 226 })}`);
+				ns.print(` - company rep:  ${art(ns.formatNumber(companyRep), { color })} ${art("+" + (compGains.reputation * 5 * (overclocked ? 3 : 1)).toFixed(2) + "/s", { color: 10 })}`);
 			} else {
 				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is doing something...`);
 			}
