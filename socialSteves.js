@@ -149,7 +149,7 @@ export async function main(ns) {
 							+ ns.singularity.getFactionRep(task.factionName));
 					ns.print(` - Progress:     ${bar(facRep / repGoal, true, 25)}`);
 					ns.print(` - rep/goal:     ${art(ns.formatNumber(facRep), { color })} / ${art(ns.formatNumber(repGoal), { color })} ${art("+" + (facGains.reputation * 5 * (overclocked ? 3 : 1)).toFixed(2) + "/s", { color: 10 })}`);
-					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })}) ${postFavor > favor ? art("+" + (postFavor - favor).toFixed(2), { color: 10 }) : ""}`);
+					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: favor > ns.getFavorToDonate() ? 11 : 255 })}(${art(Math.floor(postFavor), { color: postFavor > ns.getFavorToDonate() ? 11 : 255 })}) ${postFavor > favor ? art("+" + (postFavor - favor).toFixed(2), { color: 10 }) : ""}`);
 				} else {
 					const facRep = Math.floor(ns.singularity.getFactionRep(task.factionName)),
 						favor = ns.singularity.getFactionFavor(task.factionName),
@@ -157,7 +157,7 @@ export async function main(ns) {
 						postFavor = ns.formulas.reputation.calculateRepToFavor(ns.formulas.reputation.calculateFavorToRep(ns.singularity.getFactionFavor(task.factionName))
 							+ ns.singularity.getFactionRep(task.factionName));
 					ns.print(` - rep:          ${art(ns.formatNumber(facRep), { color })} ${art("+" + (facGains.reputation * 5 * (overclocked ? 3 : 1)).toFixed(2) + "/s", { color: 10 })}`);
-					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color: 255 })}(${art(Math.floor(postFavor), { color: 255 })}) ${postFavor > favor ? art("+" + (postFavor - favor).toFixed(2), { color: 10 }) : ""}`);
+					ns.print(` - favor(post):  ${art(ns.formatNumber(Math.floor(favor)), { color:  favor > ns.getFavorToDonate() ? 11 : 255 })}(${art(Math.floor(postFavor), { color:  postFavor > ns.getFavorToDonate() ? 11 : 255 })}) ${postFavor > favor ? art("+" + (postFavor - favor).toFixed(2), { color: 10 }) : ""}`);
 				}
 			} else if (task.type === "COMPANY") {
 				ns.print(`Steve: ${art(steve, { color: colors[steve], bold: true })} is working job at ${art(task.companyName, { color })}`);
