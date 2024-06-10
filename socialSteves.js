@@ -8,6 +8,11 @@ export async function main(ns) {
 		blackListedFacs = ["Church of the Machine God", "Bladeburners"],
 		workScript = "workWork.js"; // script for getting/promoting/quitting jobs
 	for (let i = 0; i < ns.sleeve.getNumSleeves(); i++) steves.push(i);
+	ns.atExit(() => {
+		for (const steve of steves) {
+			if (ns.sleeve.getSleeve(steve).shock > 0) ns.sleeve.setToShockRecovery(steve);
+		}
+	});
 
 	let timeCheck = 0,
 		workScriptCheck = 0;
