@@ -19,7 +19,7 @@ export async function main(ns) {
 		const currentTask = b.getCurrentAction(),
 			cTaskTime = currentTask === null || currentTask?.type === "Idle" ? 0
 				: b.getActionTime(currentTask.type, currentTask.name);
-		ns.print(`Current Task: ${art(currentTask?.name, { color: 255 })}`);
+		ns.print(`Current Task: ${art(currentTask?.name.substring(0, 13), { color: 255 })}`);
 		const timeLeft = Math.ceil((cTaskTime - b.getActionCurrentTime()));
 		ns.print(` ${art("┣", { color: 255 })}Time Left:  ${art(hms(timeLeft), { color: 255 })}`);
 		const stamina = b.getStamina()[0] / b.getStamina()[1];
