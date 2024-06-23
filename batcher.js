@@ -3,6 +3,7 @@ import { hgw, makeHGW, hmsms, dhms, format, formatGB, formatPercent, getAllServe
 export async function main(ns) {
 	const consts = {
 		target: "joesguns",
+		hashRam: ns.args.includes("hash") ? true : false, //if true use hash ram
 		strip: false,
 		hedger: true,
 		awaitPort: false,
@@ -42,8 +43,8 @@ export async function main(ns) {
 		getSecurityCost = (threads, option = "grow") => option === "grow" ? threads * 0.004 : threads * 0.002,
 		prepCheck = () => ns.getServer(consts.target).hackDifficulty === ns.getServer(consts.target).minDifficulty && ns.getServer(consts.target).moneyAvailable === ns.getServer(consts.target).moneyMax,
 		pids = [];
-	ns.clearLog(); crapIdontWant.forEach(fn => ns.disableLog(fn)); 
-	if (ns.args.includes("tail")) {ns.tail(); ns.resizeTail(360, 570); }
+	ns.clearLog(); crapIdontWant.forEach(fn => ns.disableLog(fn));
+	if (ns.args.includes("tail")) { ns.tail(); ns.resizeTail(360, 570); }
 	if (ns.args.includes("scout") || ns.args.includes("scouter")) {
 		p = ns.exec("scouter.js", "home", 1, consts.target);
 	}
@@ -91,7 +92,6 @@ export async function main(ns) {
 					&& s.moneyAvailable !== s.moneyMax
 					&& s.hackDifficulty !== s.minDifficulty) {
 					if (ns.kill(scripts[0].pid)) consts.killedHacks++;
-					//ns.tprint(`Killed ${scripts[0].filename} PID: ${scripts[0].pid}`);
 				}
 			}
 			printNshit();
@@ -129,34 +129,33 @@ export async function main(ns) {
 		ns.getServer(consts.target).hasAdminRights ? ns.print(`${consts.target} has root access.`) : hgw(ns, consts.target, "home", 0).nukeIt();
 		ns.print(`Prepping ${consts.target} now...`)
 		while (ns.ps("home").some(f => f.filename === "nuke.js")) await ns.sleep(0);
-		const needsGrow = () => ns.getServer(consts.target).moneyAvailable < ns.getServer(consts.target).moneyMax
-		const needsWeaken = () => ns.getServer(consts.target).hackDifficulty > ns.getServer(consts.target).minDifficulty
+		const needsGrow = () => ns.getServer(consts.target).moneyAvailable < ns.getServer(consts.target).moneyMax,
+			needsWeaken = () => ns.getServer(consts.target).hackDifficulty > ns.getServer(consts.target).minDifficulty;
+		let i = 0;
 		while (needsGrow() || needsWeaken()) {
 			for (const ram of getRam()) {
-				while (ram.freeRam > weakenWeight || ram.freeRam > growWeight) {
-					if (!needsGrow() && !needsWeaken()) {
-						getAllServers(ns).forEach(server => ns.ps(server).forEach(script => {
-							script.filename === "grow.js" || script.filename === "weaken.js" ? ns.kill(script.pid) : null
-						}));
-						return;
-					}
-					if (needsWeaken()) {
-						if (ram.freeRam < weakenWeight) break;
-						if (!ns.ls(ram.name).includes("weaken.js")) makeHGW(ns, ram.name);
-						hgw(ns, consts.target, ram.name).weakIt(1);
-						ram.freeRam -= weakenWeight;
-					}
-					if (needsGrow()) {
-						if (ram.freeRam < growWeight) break;
-						if (!ns.ls(ram.name).includes("grow.js")) makeHGW(ns, ram.name);
-						hgw(ns, consts.target, ram.name).growIt(1);
-						ram.freeRam -= growWeight;
-					}
-					await ns.sleep(consts.batch_spacer);
+				if (!ns.ls(ram.name).includes("weaken.js") || !ns.ls(ram.name).includes("grow.js")) makeHGW(ns, ram.name);
+				if (needsWeaken() && needsGrow()) { // logic for both
+					if (ram.freeRam < weakenWeight + growWeight) break;
+					const pThreads = Math.floor(ram.freeRam / (weakenWeight + growWeight));
+					hgw(ns, consts.target, ram.name).weakIt(pThreads);
+					hgw(ns, consts.target, ram.name).growIt(pThreads);
+				} else if (needsWeaken()) { // if it needs weaken and not grow send all threads at grow
+					if (ram.freeRam < weakenWeight) break;
+					const pThreads = Math.floor(ram.freeRam / weakenWeight);
+					hgw(ns, consts.target, ram.name).weakIt(pThreads);
+				} else { // if it doesn't new both or weaken, throw all threads at grow
+					if (ram.freeRam < growWeight) break;
+					const pThreads = Math.floor(ram.freeRam / growWeight);
+					hgw(ns, consts.target, ram.name).growIt(pThreads);
 				}
 			}
-			await ns.sleep(0);
+			if (i % 10 === 0) await ns.sleep(consts.batch_spacer);
+			i++;
 		}
+		getAllServers(ns).forEach(server => ns.ps(server).forEach(script => { // clean up prep workers
+			script.filename === "grow.js" || script.filename === "weaken.js" ? ns.kill(script.pid) : null
+		}));
 	}
 
 	async function sendBatch(x = 0) {
@@ -230,7 +229,6 @@ export async function main(ns) {
 			serverObj.moneyAvailable = serverObj.moneyMax;
 			serverObj.hackDifficulty = serverObj.minDifficulty + secAdj;
 		} else {
-			//serverObj.moneyAvailable = Math.floor(serverObj.moneyMax - ns.formulas.hacking.hackPercent(spoofTarget(server, 0, true), ns.getPlayer()) * serverObj.moneyMax * consts.hack_threads);
 			serverObj.moneyAvailable = Math.floor(serverObj.moneyMax * (1 - ns.formulas.hacking.hackPercent(spoofTarget(server, 0, true), ns.getPlayer()) * consts.hack_threads));
 			serverObj.hackDifficulty = serverObj.minDifficulty + secAdj;
 		}
@@ -248,6 +246,11 @@ export async function main(ns) {
 			ram.unshift("home");
 		} else {
 			ram.push("home");
+		}
+		if (consts.hashRam) {
+			for (const server of getAllServers(ns, true)) {
+				if (hashnet.includes(server)) ram.unshift(server);
+			}
 		}
 		for (const server of ram) result.push({
 			name: server,
