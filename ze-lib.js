@@ -13,8 +13,8 @@ export function pathFinder(ns, server) {
 	return path;
 }
 
-export function hgw(ns, serverName, host = "home", sleepTime = 0, pingPort = false) {
-	const ahhgs = [serverName, sleepTime, pingPort];
+export function hgw(ns, serverName, host = "home", sleepTime = 0, pingPort = false, finishTime = 0) {
+	const ahhgs = [serverName, sleepTime, pingPort, finishTime];
 	console.log("args:"); console.log(ahhgs);
 	return {
 		nukeIt: () => ns.exec("nuke.js", "home", 1, serverName),
@@ -136,6 +136,19 @@ export function bar(progress, bar = true, length = 15) { // progress bar, orgina
 	return `[${art(array.join(""), { color })}]`;
 }
 
+export function progBar(progress, width = 200, deci = 0) {
+	if (isNaN(progress)) return false;
+	progress = Math.max(0, Math.min(progress, 1));
+	const height = "18px",
+		colors = ["#a80100", "#a70200", "#a50300", "#a30300", "#a20400", "#a00500", "#9e0600", "#9d0700", "#9b0800", "#990800", "#970900", "#960a00", "#940b00", "#920c00", "#910d00", "#8f0d00", "#8d0e00", "#8c0f00", "#8a1000", "#881100", "#871200",
+			"#851300", "#831300", "#821400", "#801500", "#7e1600", "#7d1700", "#7b1800", "#791800", "#781900", "#761a00", "#741b00", "#721c00", "#711d00", "#6f1d00", "#6d1e00", "#6c1f00", "#6a2000", "#682100", "#672200", "#652300", "#632300", "#622400",
+			"#602500", "#5e2600", "#5d2700", "#5b2800", "#592800", "#582900", "#562a00", "#542b00", "#522c00", "#512d00", "#4f2d00", "#4d2e00", "#4c2f00", "#4a3000", "#483100", "#473200", "#453200", "#433300", "#423400", "#403500", "#3e3600", "#3d3700",
+			"#3b3800", "#393800", "#383900", "#363a00", "#343b00", "#323c00", "#313d00", "#2f3d00", "#2d3e00", "#2c3f00", "#2a4000", "#284100", "#274200", "#254200", "#234300", "#224400", "#204500", "#1e4600", "#1d4700", "#1b4800", "#194800", "#184900",
+			"#164a00", "#144b00", "#134c00", "#114d00", "#0f4d00", "#0d4e00", "#0c4f00", "#0a5000", "#085100", "#075200", "#055200", "#035300", "#025400"],
+		progressBar = React.createElement("div", { style: { height: "100%", "line-height": height, width: (progress * 100) + "%", "background-color": colors[Math.floor(progress * 100) - 1], "text-align": "center", "white-space": "nowrap" } }, (progress * 100).toFixed(deci) + "%");
+	return React.createElement("div", { style: { height: height, width: width + "px", color: "white", border: "1px solid rgb(255,255,255)" } }, progressBar);
+}
+
 export function art(x, style) {                                     // x = what you want colored
 	const o = {                                                      // accepts style as an object, all options are optional
 		color: !isNaN(style.color) ? style.color : -1,                // style.color uses 256 color codes
@@ -187,6 +200,21 @@ export function hmsms(t) { // t is in ms
 	if (s === 60) { m++; s = 0 }
 	if (m === 60) { h++; m = 0 }
 	return [pad(h), pad(m), pad(s), msPad(ms)].join(':');
+}
+
+export function timeFormat(t, v = null) { // t is in ms
+	const cd = 8.64e7, ch = 3.6e6, cm = 6e4, mf = Math.floor, mr = Math.round,
+		d = mf(t / cd), h = mf((t - d * cd) / ch), m = mf((t - d * cd - h * ch) / cm),
+		s = mf((t - d * cd - h * ch - m * cm) / 1000), ms = mr(t - d * cd - h * ch - m * cm - s * 1000),
+		pad = (n) => n < 10 ? '0' + n : n, msPad = (n) => (n + "").length < 3 ? '0'.repeat(3 - (n + "").length) + n : n;
+	if (ms === 1000) { s++; ms = 0; }
+	if (s === 60) { m++; s = 0; }
+	if (m === 60) { h++; m = 0; }
+	if (v === "hmsms") return [pad(h + d * 24), pad(m), pad(s), msPad(ms)].join(':');
+	if (v === "hms") return [pad(h + d * 24), pad(m), pad(s)].join(':');
+	if (h === 24) { d++; h = 0; }
+	if (v === "dhms") return [pad(d), pad(h), pad(m), pad(s)].join(':');
+	return [pad(d), pad(h), pad(m), pad(s), msPad(ms)].join(':');
 }
 
 export const names = [
