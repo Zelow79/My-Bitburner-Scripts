@@ -1,28 +1,29 @@
 /** @param {NS} ns */
 export async function main(ns) {
 	["exec", "scan", "sleep"].forEach(o => ns.disableLog(o));
-	ns.clearLog(); ns.tail(); ns.resizeTail(330, 470);
+	ns.clearLog(); ns.tail(); ns.resizeTail(330, 420);
 	const info = {
 		title: "SHOTTY!**SHOTTY!**SHOTTY!**SHOTTY!**",
-		workerName: "pellet.js",
-		workerWeight: { "hack": 1.7, "grow": 1.75, "weaken": 1.75 },
-		target: "n00dles",
-		hack_percent: 0,
-		startingHack_percent: 0.05,
-		hack_percent_hardcap: 0.5,
-		percentIncrease: 0.02,
-		hackAmount: 0,
-		threads: { "hack": 1, "grow": 1, "weaken": 1 },
-		timings: { "hack": 0, "grow": 0, "weaken": 0 },
-		minHackChance: 0.5,
-		waitTime: 400,
-		maxWorkers: ns.args.includes("yolo") ? 2.5e5 : 3e4,
-		pids: [],
-		"print": ns.args.includes("no_hud") ? false : true,
-		autoAdvance: ns.args.includes("advance") ? true : false,
-		debug: ns.args.includes("debug") ? true : false,
+		workerName: "pellet.js", // name of the worker 
+		workerWeight: { "hack": 1.7, "grow": 1.75, "weaken": 1.75 }, // weights for worker in different modes
+		target: "n00dles", // mostly just use by the script likely wont stay n00dles
+		hack_percent: 0, // this value is modified by the script
+		startingHack_percent: 0.05, // set this value for the starting value for script
+		hack_percent_hardcap: 0.5, // highest hacking percent can go
+		percentIncrease: 0.02, // amount hacking % increases by when autoAdvance is on
+		hackAmount: 0, // this value is modified by the script
+		threads: { "hack": 1, "grow": 1, "weaken": 1 }, // script stores thread values here
+		timings: { "hack": 0, "grow": 0, "weaken": 0 }, // timing values stored here
+		minHackChance: 0.5, // min allowed hacking chance
+		waitTime: 400, // time to wait before sleeping when firing workers
+		minWeakenTime: ns.args.includes("yeet") ? 1000 * 60 * 5 : 1000 * 60, // yeet mode to allow longer batches
+		maxWorkers: ns.args.includes("yolo") ? 2.5e5 : 3e4, // yolo mode to raise batch count upper limit
+		"print": ns.args.includes("no_hud") ? false : true, // no_hud to disable most print screen feedback
+		sound: ns.args.includes("sound") ? true : false, // sound mode adds sounds to some events
+		autoAdvance: ns.args.includes("advance") ? true : false, // WIP goal is for auto hacking percent increase
 		update: ns.args.includes("update") ? true : false, // force worker to update every getRam call default: false
-		sound: ns.args.includes("sound") ? true : false
+		debug: ns.args.includes("debug") ? true : false, // debug mode adds some additional info to print out
+		pids: [] // container for worker pids
 	}, startTime = performance.now();
 
 	servers().forEach(s => ns.ps(s).forEach(x => x.filename === info.workerName ? ns.kill(x.pid) : null)); // kill any running workers
@@ -87,33 +88,31 @@ export async function main(ns) {
 		ns.print("Runtime:        " + ns.tFormat(performance.now() - startTime));
 		ns.print("Worker Limit:   " + info.maxWorkers);
 		ns.print("Active Workers: " + info.pids.length);
+		if (info.debug) ns.print("Wait Time:      " + info.waitTime);
 		ns.print("---Target Info---");
 		ns.print("Server Name:    " + info.target);
 		const secDiff = tar.hackDifficulty - tar.minDifficulty,
 			moneyDiff = tar.moneyAvailable - tar.moneyMax;
-		ns.print(`Security(min):  ${tar.hackDifficulty} (${tar.minDifficulty}) ${secDiff > 0 ? ns.formatNumber(secDiff) : ""}`);
+		ns.print(`Security(min):  ${tar.hackDifficulty.toFixed(2)} (${tar.minDifficulty.toFixed(2)}) ${secDiff > 0 ? ns.formatNumber(secDiff, 2) : ""}`);
 		ns.print(`Money(max):     \$${ns.formatNumber(tar.moneyAvailable, 2)} (\$${ns.formatNumber(tar.moneyMax, 2)}) ${moneyDiff < 0 ? ns.formatNumber(moneyDiff) : ""}`);
-		ns.print("Hack %:         " + ns.formatPercent(info.hack_percent, 0));
-		ns.print("Hack $ amt:     $" + ns.formatNumber(info.hackAmount, 2));
-		if (info.debug) ns.print("Wait Time:      " + info.waitTime);
+		ns.print("Hack %($):      " + ns.formatPercent(info.hack_percent, 0) + " ($" + ns.formatNumber(info.hackAmount, 2) + ")");
 		ns.print("---Script Earnings---")
 		ns.print("EXP:            " + ns.formatNumber(ns.getRunningScript(ns.pid).onlineExpGained, 2));
+		ns.print("EXP /s(h):      " + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineExpGained / ((performance.now() - startTime) / (1000))), 2)
+			+ " (" + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineExpGained / ((performance.now() - startTime) / (1000 * 60 * 60))), 2) + ")");
 		ns.print("Money:          $" + ns.formatNumber(ns.getRunningScript(ns.pid).onlineMoneyMade, 2));
-		ns.print("Money /s:       $" + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineMoneyMade / ((performance.now() - startTime) / (1000))), 2));
-		ns.print("Money /h:       $" + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineMoneyMade / ((performance.now() - startTime) / (1000 * 60 * 60))), 2));
+		ns.print("Money /s(h):    $" + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineMoneyMade / ((performance.now() - startTime) / (1000))), 2)
+			+ " ($" + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineMoneyMade / ((performance.now() - startTime) / (1000 * 60 * 60))), 2) + ")");
 		if (info.debug) {
 			ns.print("---Threads---");
-			Object.entries(info.threads).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${value}`));
+			Object.entries(info.threads).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${ns.formatNumber(value)}`));
 			ns.print("---Timings---");
-			Object.entries(info.timings).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${value.toFixed(2)}`));
+			Object.entries(info.timings).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${ns.tFormat(value)}`));
 		}
 	}
 
 	function sendBatch() {
-		const ram = getRam(),
-			instructions = [],
-			pids = [];
-
+		const ram = getRam(), instructions = [], pids = [];
 		// Hack
 		instructions.push(stageWorker("hack", info.threads["hack"], info.timings["weaken"] - info.timings["hack"]));
 		// Weaken
@@ -163,7 +162,7 @@ export async function main(ns) {
 
 	async function prep() {
 		const needMoney = () => ns.getServer(info.target).moneyAvailable < ns.getServer(info.target).moneyMax,
-			badSec = () => ns.getServer(info.target).hackDifficulty < ns.getServer(info.target).minDifficulty,
+			badSec = () => ns.getServer(info.target).hackDifficulty > ns.getServer(info.target).minDifficulty,
 			calls = [];
 		while (needMoney() || badSec()) {
 			for (const ram of getRam()) {
@@ -207,12 +206,14 @@ export async function main(ns) {
 
 	function targetSelector() {
 		const result = servers().filter(server => ns.getServer(server).hasAdminRights
-			&& ns.formulas.hacking.weakenTime(spoof(server), ns.getPlayer()) < 1000 * 30
+			&& ns.formulas.hacking.hackChance(spoof(server), ns.getPlayer()) > info.minHackChance
+			&& ns.formulas.hacking.weakenTime(spoof(server), ns.getPlayer()) < info.minWeakenTime
 			&& ns.getServer(server).moneyMax > 0
 			& ns.getServer(server).requiredHackingSkill < ns.getPlayer().skills.hacking);
 
 		if (result.length > 0) {
-			result.sort((a, b) => ns.getServer(b).moneyMax - ns.getServer(a).moneyMax);
+			const interest = server => ns.getServer(server).moneyMax * ns.getServer(server).serverGrowth;
+			result.sort((a, b) => interest(b) - interest(a));
 			if (info.target != result[0]) {
 				info.target = result[0];
 				info.hack_percent = info.startingHack_percent;
