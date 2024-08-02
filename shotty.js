@@ -12,7 +12,7 @@ export async function main(ns) {
 		hack_percent_hardcap: 0.5, // highest hacking percent can go
 		percentIncrease: 0.02, // amount hacking % increases by when autoAdvance is on
 		hackAmount: 0, // this value is modified by the script
-		threads: { "hack": 1, "grow": 1, "weaken": 1 }, // script stores thread values here
+		threads: { "hack": 1, "grow": [1, 1], "weaken": 1 }, // script stores thread values here
 		timings: { "hack": 0, "grow": 0, "weaken": 0 }, // timing values stored here
 		minHackChance: 0.5, // min allowed hacking chance
 		waitTime: 400, // time to wait before sleeping when firing workers
@@ -52,7 +52,7 @@ export async function main(ns) {
 		setValues(); // set values for batch
 
 		let tCheck = performance.now();
-
+		printInfo();
 		while (info.pids.length < info.maxWorkers) {
 			const batch = sendBatch();
 			if (batch) {
@@ -105,7 +105,9 @@ export async function main(ns) {
 			+ " ($" + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineMoneyMade / ((performance.now() - startTime) / (1000 * 60 * 60))), 2) + ")");
 		if (info.debug) {
 			ns.print("---Threads---");
-			Object.entries(info.threads).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${ns.formatNumber(value)}`));
+			ns.print("hack:           " + ns.formatNumber(info.threads["hack"]));
+			ns.print("grow:           " + info.threads["grow"][0] + " ~ " + info.threads["grow"][info.threads["grow"].length - 1]);
+			ns.print("weaken:         " + ns.formatNumber(info.threads["weaken"]));
 			ns.print("---Timings---");
 			Object.entries(info.timings).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${ns.tFormat(value)}`));
 		}
@@ -114,19 +116,21 @@ export async function main(ns) {
 	function sendBatch() {
 		const ram = getRam(), instructions = [], pids = [];
 		// Hack
-		instructions.push(stageWorker("hack", info.threads["hack"], info.timings["weaken"] - info.timings["hack"]));
+		instructions.push(stageWorker("hack", info.timings["weaken"] - info.timings["hack"]));
 		// Weaken
-		instructions.push(stageWorker("weaken", info.threads["weaken"]));
+		instructions.push(stageWorker("weaken"));
 		// Grow
-		instructions.push(stageWorker("grow", info.threads["grow"], info.timings["weaken"] - info.timings["grow"]));
+		sort(true); // sort ram for grow instruction
+		instructions.push(stageWorker("grow", info.timings["weaken"] - info.timings["grow"]));
 		// Weaken
-		instructions.push(stageWorker("weaken", info.threads["weaken"]));
+		sort() // sort ram back for last weaken instruction
+		instructions.push(stageWorker("weaken"));
 
 		if (instructions.includes(undefined)) return false;
 
 		for (const instruction of instructions) {
 			pids.push(ns.exec(info.workerName, instruction[1], {
-				threads: info.threads[instruction[0]],
+				threads: instruction[3],
 				ramOverride: info.workerWeight[instruction[0]],
 				temporary: true
 			}, info.target, instruction[2], instruction[0]));
@@ -134,11 +138,22 @@ export async function main(ns) {
 
 		return pids;
 
-		function stageWorker(type, threads = 1, wait = 0) {
+		function stageWorker(type, wait = 0) {
 			for (let i = 0; i < ram.length; i++) {
+				const threads = type === "grow" ? info.threads["grow"][ram[i].cpuCores - 1] : info.threads[type];
 				if (ram[i].maxRam - ram[i].ramUsed < info.workerWeight[type] * threads) continue; // not enough ram to run worker
 				ram[i].ramUsed += info.workerWeight[type] * threads;
-				return [type, ram[i].hostname, wait];
+				return [type, ram[i].hostname, wait, threads];
+			}
+		}
+
+		function sort(gro = false) { // if true we want to sort by cores most to least
+			if (gro) { // sort by cores for grow calls
+				ram.sort((a, b) => b.cpuCores - a.cpuCores);
+			} else { // if not sorting for grow, put home on the bottom of the list
+				const storage = ram.splice(ram.map(e => e.hostname).indexOf("home"), 1); // pop home out of the list
+				ram.sort((a, b) => a.maxRam - b.maxRam); // sort remaining servers by max ram, smaller to larger
+				ram.push(storage); // put home back in at the bottom of the list
 			}
 		}
 	}
@@ -153,10 +168,13 @@ export async function main(ns) {
 		info.hackAmount = spoof.moneyMax * ns.formulas.hacking.hackPercent(spoof, ns.getPlayer()) * info.threads["hack"];
 		spoof.moneyAvailable = spoof.moneyMax - info.hackAmount;
 
-		info.threads["grow"] = ns.formulas.hacking.growThreads(spoof, ns.getPlayer(), spoof.moneyMax);
+		info.threads["grow"].length = 0; // clear old thread values
+		for (let i = 1; i < 129; i++) {
+			info.threads["grow"].push(ns.formulas.hacking.growThreads(spoof, ns.getPlayer(), spoof.moneyMax, i));
+		}
 		info.timings["grow"] = ns.getGrowTime(info.target);
 
-		info.threads["weaken"] = Math.max(Math.ceil(info.threads["hack"] * 0.002 / ns.weakenAnalyze(1)), Math.ceil(info.threads["grow"] * 0.004 / ns.weakenAnalyze(1)));
+		info.threads["weaken"] = Math.max(Math.ceil(info.threads["hack"] * 0.002 / ns.weakenAnalyze(1)), Math.ceil(info.threads["grow"][0] * 0.004 / ns.weakenAnalyze(1)));
 		info.timings["weaken"] = ns.getWeakenTime(info.target);
 	}
 
@@ -187,6 +205,7 @@ export async function main(ns) {
 			for (const instructions of calls) {
 				info.pids.push(ns.exec(...instructions));
 			}
+			calls.length = 0; // clears calls to prevent repeating last calls
 
 			while (info.pids.length > 0) {
 				if (!badSec() && !needMoney()) {
