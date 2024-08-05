@@ -14,7 +14,7 @@ export async function main(ns) {
 		hackAmount: 0, // this value is modified by the script
 		threads: { "hack": 1, "grow": [1, 1], "weaken": 1 }, // script stores thread values here
 		timings: { "hack": 0, "grow": 0, "weaken": 0 }, // timing values stored here
-		minHackChance: 0.5, // min allowed hacking chance
+		minHackChance: 0.9, // min allowed hacking chance
 		waitTime: 400, // time to wait before sleeping when firing workers
 		minWeakenTime: ns.args.includes("yeet") ? 1000 * 60 * 5 : 1000 * 60, // yeet mode to allow longer batches
 		maxWorkers: ns.args.includes("yolo") ? 2.5e5 : 3e4, // yolo mode to raise batch count upper limit
@@ -105,9 +105,9 @@ export async function main(ns) {
 			+ " ($" + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineMoneyMade / ((performance.now() - startTime) / (1000 * 60 * 60))), 2) + ")");
 		if (info.debug) {
 			ns.print("---Threads---");
-			ns.print("hack:           " + ns.formatNumber(info.threads["hack"]));
+			ns.print("hack:           " + ns.formatNumber(info.threads["hack"], 0));
 			ns.print("grow:           " + info.threads["grow"][0] + " ~ " + info.threads["grow"][info.threads["grow"].length - 1]);
-			ns.print("weaken:         " + ns.formatNumber(info.threads["weaken"]));
+			ns.print("weaken:         " + ns.formatNumber(info.threads["weaken"], 0));
 			ns.print("---Timings---");
 			Object.entries(info.timings).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${ns.tFormat(value)}`));
 		}
@@ -151,7 +151,8 @@ export async function main(ns) {
 			if (gro) { // sort by cores for grow calls
 				ram.sort((a, b) => b.cpuCores - a.cpuCores);
 			} else { // if not sorting for grow, put home on the bottom of the list
-				const storage = ram.splice(ram.map(e => e.hostname).indexOf("home"), 1); // pop home out of the list
+				const storage = ram.splice(ram.map(e => e.hostname).indexOf("home"), 1)[0]; // pop home out of the list
+				ns.tprint(storage);
 				ram.sort((a, b) => a.maxRam - b.maxRam); // sort remaining servers by max ram, smaller to larger
 				ram.push(storage); // put home back in at the bottom of the list
 			}
