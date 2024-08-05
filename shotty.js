@@ -152,7 +152,6 @@ export async function main(ns) {
 				ram.sort((a, b) => b.cpuCores - a.cpuCores);
 			} else { // if not sorting for grow, put home on the bottom of the list
 				const storage = ram.splice(ram.map(e => e.hostname).indexOf("home"), 1)[0]; // pop home out of the list
-				ns.tprint(storage);
 				ram.sort((a, b) => a.maxRam - b.maxRam); // sort remaining servers by max ram, smaller to larger
 				ram.push(storage); // put home back in at the bottom of the list
 			}
