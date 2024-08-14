@@ -49,16 +49,26 @@ export async function main(ns) {
 			level: checkLevels() >= max.levels
 		}
 
+		// max length of server stat values for print padding
+		let maxLen = { serverName: 0, level: 0, ram: 0, cores: 0, cache: 0 }
+		for (const server of serversInfo) {
+			if (maxLen.serverName < server.name.length) maxLen.serverName = server.name.length;
+			if (maxLen.level < server.level.toString().length) maxLen.level = server.level.toString().length;
+			if (maxLen.ram < ns.formatRam(server.ram).length) maxLen.ram = ns.formatRam(server.ram).length;
+			if (maxLen.cores < server.cores.toString().length) maxLen.cores = server.cores.toString().length;
+			if (maxLen.cache < server.cache.toString().length) maxLen.cache = server.cache.toString().length;
+		}
+
 		ns.print("Active servers: " + servers.length + "/" + cutoff);
 		ns.print("Total level:    " + checkLevels())
 		ns.print("Cap Values:     " + JSON.stringify(max));
 		ns.print("Caps Reached:   " + JSON.stringify(check));
 		for (const server of serversInfo) {
-			ns.print(`-${server.name
-				}: Level: ${server.level.toString().padStart(3, " ")
-				} -- Ram: ${ns.formatRam(server.ram).padStart(6, " ")
-				} -- Cores: ${server.cores.toString().padStart(3, " ")
-				} -- Cache: ${server.cache.toString().padStart(2, " ")}`);
+			ns.print(`-${(server.name + ":").padEnd(maxLen.serverName + 1, " ")
+				} Level: ${server.level.toString().padStart(maxLen.level, " ")
+				} -- Ram: ${ns.formatRam(server.ram).padStart(maxLen.ram, " ")
+				} -- Cores: ${server.cores.toString().padStart(maxLen.cores, " ")
+				} -- Cache: ${server.cache.toString().padStart(maxLen.cache, " ")}`);
 		}
 
 		if (check.node && check.level && check.ram && check.core && check.cache) {
