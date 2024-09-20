@@ -163,7 +163,7 @@ export async function main(ns) {
 		spoof.moneyAvailable = spoof.moneyMax;
 		spoof.minDifficulty = spoof.minDifficulty;
 
-		info.threads["hack"] = Math.floor(ns.hackAnalyzeThreads(info.target, ns.getServer(info.target).moneyMax * info.hack_percent));
+		info.threads["hack"] = Math.max(1, Math.floor(ns.hackAnalyzeThreads(info.target, ns.getServer(info.target).moneyMax * info.hack_percent)));
 		info.timings["hack"] = ns.getHackTime(info.target);
 		info.hackAmount = spoof.moneyMax * ns.formulas.hacking.hackPercent(spoof, ns.getPlayer()) * info.threads["hack"];
 		spoof.moneyAvailable = spoof.moneyMax - info.hackAmount;
