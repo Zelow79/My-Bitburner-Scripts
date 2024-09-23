@@ -14,7 +14,7 @@ export async function main(ns) {
 			if (typeof arrrg === "string"
 				&& arrrg.includes(":")
 				&& max[arrrg.split(":")[0]] // if first value is a property on max
-				&& !isNaN(parseInt(arrrg.split(":")[1]))) { // and a number
+				&& !isNaN(parseInt(arrrg.split(":")[1]))) { // and a number is the 2nd value
 				max[arrrg.split(":")[0]] = parseInt(arrrg.split(":")[1]); // set that property to new nummber
 			}
 		}
@@ -43,9 +43,9 @@ export async function main(ns) {
 
 		const check = {
 			node: h.numNodes() >= cutoff,
-			ram: servers.every(s => h.getNodeStats(s).ram >= max.ram),
-			core: servers.every(s => h.getNodeStats(s).cores >= max.cores),
-			cache: servers.every(s => h.getNodeStats(s).cache >= max.cache),
+			ram: servers.every(s => [8192, max.ram].some(option => h.getNodeStats(s).ram >= option)),
+			core: servers.every(s => [128, max.cores].some(option => h.getNodeStats(s).cores >= option)),
+			cache: servers.every(s => [15, max.cache].some(option => h.getNodeStats(s).cache >= option)),
 			level: checkLevels() >= max.levels
 		}
 
