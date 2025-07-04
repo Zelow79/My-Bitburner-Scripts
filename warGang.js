@@ -9,7 +9,7 @@ export async function main(ns) {
 	ns.ui.resizeTail(width, height);
 	await ns.sleep(500); // sleep here to allow first ns.ui.resizeTail() to work properly
 	while (true) {
-		const titles = ["🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 --- ---- -👮🏼‍♂️", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 ----- --- 👮🏼‍♂️🩸", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 - ----- --👮🏼‍♂️🩸"];
+		const titles = ["🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 --- -- -👮🏼‍♂️", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 - --- --👮🏼‍♂️🩸", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 -- --- -👮🏼‍♂️🩸"];
 		ns.ui.setTailTitle(tem(titles[tCount], { "font-family": 'Brush Script MT, cursive' }));
 		tCount++; tCount >= titles.length ? tCount = 0 : null; ns.clearLog();
 		if (g.inGang()) {
