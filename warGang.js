@@ -2,15 +2,15 @@ import { dhms, bar, format, formatPercent, art, names, tem } from "ze-lib";
 const [discountThresh, wantedPenThresh] = [0.8, 0.05]
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog("ALL"); ns.clearLog(); ns.tail();
+	ns.disableLog("ALL"); ns.clearLog(); ns.ui.openTail();
 	const [faction, width, height, g] = ["Slum Snakes", 340, 888, ns.gang],
 		tick = { tw: false, otherGangsInfoPrevCycle: undefined, nextTick: undefined }
 	let tCount = 0;
-	ns.resizeTail(width, height);
-	await ns.sleep(500); // sleep here to allow first ns.resizeTail() to work properly
+	ns.ui.resizeTail(width, height);
+	await ns.sleep(500); // sleep here to allow first ns.ui.resizeTail() to work properly
 	while (true) {
 		const titles = ["🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 --- ---- -👮🏼‍♂️", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 ----- --- 👮🏼‍♂️🩸", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 - ----- --👮🏼‍♂️🩸"];
-		ns.setTitle(tem(titles[tCount], { "font-family": 'Brush Script MT, cursive' }));
+		ns.ui.setTailTitle(tem(titles[tCount], { "font-family": 'Brush Script MT, cursive' }));
 		tCount++; tCount >= titles.length ? tCount = 0 : null; ns.clearLog();
 		if (g.inGang()) {
 			if (ns.args[1] === "metric") metricCheck(ns);
