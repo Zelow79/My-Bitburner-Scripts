@@ -44,7 +44,7 @@ export async function main(ns) {
 		prepCheck = () => ns.getServer(consts.target).hackDifficulty === ns.getServer(consts.target).minDifficulty && ns.getServer(consts.target).moneyAvailable === ns.getServer(consts.target).moneyMax,
 		pids = [];
 	ns.clearLog(); crapIdontWant.forEach(fn => ns.disableLog(fn));
-	if (ns.args.includes("tail")) { ns.tail(); ns.resizeTail(360, 570); }
+	if (ns.args.includes("tail")) { ns.ui.openTail(); ns.ui.resizeTail(360, 570); }
 	if (ns.args.includes("scout") || ns.args.includes("scouter")) {
 		p = ns.exec("scouter.js", "home", 1, consts.target);
 	}
@@ -59,7 +59,7 @@ export async function main(ns) {
 		}));
 		pids.forEach((p) => {
 			ns.kill(p);
-			ns.closeTail(p);
+			ns.ui.closeTail(p);
 		});
 	});
 
@@ -291,7 +291,7 @@ export async function main(ns) {
 			i--;
 		}
 		consts.maxbatches = Math.ceil(consts.weaken_time / ((4 * consts.base_spacer) + consts.batch_spacer))
-		ns.setTitle(React.createElement("span", { style: { color: "rgb(255,255,255)" } }, `Batches in flight: ${batches.length} / ${consts.maxbatches}`))
+		ns.ui.setTailTitle(React.createElement("span", { style: { color: "rgb(255,255,255)" } }, `Batches in flight: ${batches.length} / ${consts.maxbatches}`))
 		return batches.length < consts.maxbatches;
 	}
 
