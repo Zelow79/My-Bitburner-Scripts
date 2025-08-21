@@ -31,8 +31,9 @@ export async function main(ns) {
 		all: ns.args.includes("all") ? true : false, // will attempt from a pool of any augments
 		donate: ns.args.includes("donate") ? true : false, // will donate to a faction when purchasing NFG
 		cheap: ns.args.includes("cheap") ? true : false, // sort augs cheapest first *default is the most expensive first
-		install: ns.args.includes("install") ? true : false // if true will perform install after aug purchases
-	}, theGift = ["Stanek's Gift - Awakening", "Stanek's Gift - Serenity"], nfg = "NeuroFlux Governor", trp = "The Red Pill", augs = getChrome();
+		install: ns.args.find(a => a.startsWith("install")) != undefined ? true : false // if true will perform install after aug purchases
+	}, theGift = ["Stanek's Gift - Awakening", "Stanek's Gift - Serenity"],
+		nfg = "NeuroFlux Governor", trp = "The Red Pill", augs = getChrome();
 
 	if (mode.cheap) {
 		augs.sort((a, b) => a.cost() - b.cost());
@@ -65,6 +66,8 @@ export async function main(ns) {
 							amtDonated += amt;
 						};
 					}
+
+					if (ns.singularity.getFactionRep(o.faction) < o.rep) break;
 
 					if (ns.singularity.purchaseAugmentation(o.faction, o.augment)) {
 						purchased++;
@@ -107,8 +110,13 @@ export async function main(ns) {
 		}
 	}
 
-	if (mode.install) ns.singularity.installAugmentations("ai.js"); // will install augments when true TODO: add callback script when ready
+	if (mode.install) ns.singularity.installAugmentations(argFind("install")); // will install augments when true
 
+	function argFind(thing) {
+		const data = ns.args.find(a => a.startsWith(`${thing}:`))?.split(':');
+		return data?.length === 2 ? data[1] : ""//"ai.js";
+	}
+	
 	function preReqCheck(augname) {
 		const filteredPreReq = ns.singularity.getAugmentationPrereq(augname).filter(n => !ns.singularity.getOwnedAugmentations(true).includes(n));
 		if (filteredPreReq.length > 0) {
