@@ -1,6 +1,6 @@
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.tail(); ns.disableLog('ALL');
+	ns.ui.openTail(); ns.disableLog('ALL');
 	const target = "joesguns",
 		targetDeets = ns.getServer(target);
 
@@ -16,7 +16,7 @@ export async function main(ns) {
 		ns.clearLog(); //clears log to display new information on clear log
 		ns.print("Exp gain rate: " + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineExpGained / ns.getRunningScript(ns.pid).onlineRunningTime)) + " /sec");
 		ns.print("Exp gained:    " + ns.formatNumber(ns.getRunningScript(ns.pid).onlineExpGained));
-		for (const server of getAllServers(ns)) {
+		for (const server of getAllServers()) {
 			const serv = ns.getServer(server),
 				threads = Math.floor((serv.maxRam - serv.ramUsed) / 1.75);
 			if (!serv.hasAdminRights || threads < 1) continue;
@@ -27,7 +27,7 @@ export async function main(ns) {
 			}
 			hgw(target, server).growIt(threads);
 		}
-		await ns.sleep(100);
+		await ns.sleep(0);
 	}
 
 	function getAllServers(homeless = false) {
