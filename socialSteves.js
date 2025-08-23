@@ -1,7 +1,7 @@
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL"); ns.clearLog();
-	if (ns.args.includes("tail")) ns.tail(); ns.resizeTail(450, 720);
+	if (ns.args.includes("tail")) ns.ui.openTail(); ns.ui.resizeTail(450, 720);
 	const steves = [],
 		updateTime = 10000,
 		workScriptTimer = 1000 * 60 * 5,
@@ -134,7 +134,7 @@ export async function main(ns) {
 	}
 
 	function printOut() {
-		ns.setTitle(React.createElement("span", { style: { color: "rgb(255,255,255)" } }, ns.getScriptName())); ns.clearLog();
+		ns.ui.setTailTitle(React.createElement("span", { style: { color: "rgb(255,255,255)" } }, ns.getScriptName())); ns.clearLog();
 		ns.print(`Seconds until next update: ${art(Math.ceil((timeCheck - performance.now()) / 1000), { color: 255, bold: true })}`);
 		const colors = [15, 10, 11, 27, 13, 14, 202, 135]; // colors for sleeve numbers to help distinguish what sleeve went where.
 		for (const steve of steves) {

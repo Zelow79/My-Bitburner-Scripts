@@ -2,7 +2,7 @@ import { MyEmployment } from "Jobs.js";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL"); ns.clearLog();
-	if (ns.args.includes("tail")) ns.tail();
+	if (ns.args.includes("tail")) ns.ui.openTail();
 	for (const invite of ns.singularity.checkFactionInvitations()) {
 		if (ns.singularity.joinFaction(invite)) ns.tprintRaw(`Accepted invite from ${invite}`);
 	}
