@@ -2,7 +2,7 @@ import { numPad, formatGB, format } from "ze-lib.js";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog('sleep'); ns.clearLog();
-	if (ns.args.includes("tail")) ns.tail(); await ns.sleep(50); ns.resizeTail(420, 550);
+	if (ns.args.includes("tail")) ns.ui.openTail(); await ns.sleep(50); ns.ui.resizeTail(420, 550);
 	while (1) {
 		while (ns.getPurchasedServerLimit() > ns.getPurchasedServers().length && ns.getPlayer().money > ns.getPurchasedServerCost(2)) {
 			ns.purchaseServer(`perver-${numPad(ns.getPurchasedServers().length, 2)}`, 2);
