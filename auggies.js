@@ -54,11 +54,11 @@ export async function main(ns) {
 		for (const o of augs) { // iterate the array again and buy up all the nfg I can
 			if (o.augment === nfg) {
 				let i = 0, purchased = 0, amtDonated = 0;
-				while (ns.getPlayer().money > o.cost()) {
+				while (1) {
 					if (i % 100 === 0) await ns.sleep(0);
 					i++;
-					if (mode.donate && ns.singularity.getFactionRep(o.faction) < o.rep) { //if mode.donate is on will donate to boost NFG count
-						const amt = Math.floor(ns.getPlayer().money * 0.01); // 1% of money floored
+					if ((mode.donate || mode.all) && ns.singularity.getFactionRep(o.faction) < o.rep) { //if mode.donate is on will donate to boost NFG count
+						const amt = Math.floor(ns.getPlayer().money * 0.1); // 10% of money floored
 						if (!ns.singularity.donateToFaction(o.faction, amt)) {
 							ns.tprint("failed to doante");
 							break;
@@ -67,12 +67,13 @@ export async function main(ns) {
 						};
 					}
 
-					if (ns.singularity.getFactionRep(o.faction) < o.rep) break;
-
 					if (ns.singularity.purchaseAugmentation(o.faction, o.augment)) {
 						purchased++;
 					}
+
 					o.updaterep();
+
+					if (ns.singularity.getFactionRep(o.faction) < o.rep || ns.getPlayer().money < o.cost()) break;
 				}
 				if (amtDonated > 0) {
 					ns.tprintRaw(React.createElement("span", { style: { color: "rgb(200, 200, 20)" } },
@@ -110,13 +111,21 @@ export async function main(ns) {
 		}
 	}
 
-	if (mode.install) ns.singularity.installAugmentations(argFind("install")); // will install augments when true
+	if (mode.install) {
+		for (const o of augs) { // iterate the array again and find faction with nfg
+			if (o.augment === nfg) {
+				ns.singularity.donateToFaction(o.faction, ns.getPlayer().money); // donate all money
+			}
+		}
+
+		ns.singularity.installAugmentations(argFind("install")); // will install augments when true
+	}
 
 	function argFind(thing) {
 		const data = ns.args.find(a => a.startsWith(`${thing}:`))?.split(':');
 		return data?.length === 2 ? data[1] : ""//"ai.js";
 	}
-	
+
 	function preReqCheck(augname) {
 		const filteredPreReq = ns.singularity.getAugmentationPrereq(augname).filter(n => !ns.singularity.getOwnedAugmentations(true).includes(n));
 		if (filteredPreReq.length > 0) {
