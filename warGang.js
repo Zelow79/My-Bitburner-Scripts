@@ -189,7 +189,7 @@ export async function main(ns) {
 				for (const x of arrayTaskObjects) {
 					if (x.respGain < x.wantGain * 99) continue;
 					g.setMemberTask(name, x.name);
-					ns.print(`${art(namSpa(name), { color: 255 })} task: ${art(x.name, { color: 255 })}`);
+					ns.print(`${art(namSpa(name), { color: 255 })} Task:   ${art(x.name, { color: 255 })}`);
 					printMemberStats(memberInfo);
 					break;
 				}
@@ -207,13 +207,14 @@ export async function main(ns) {
 	}
 
 	function printMemberStats(memberInfo) {
-		ns.print(`┣STR: ${art(format(memberInfo.str).padStart(8, " "), { color: 255 })
-			} ┣DEF: ${art(format(memberInfo.def).padStart(8, " "), { color: 255 })
-			} ┣MON: ${art(format(memberInfo.moneyGain * 5).padStart(8, " "), { color: 255 })
+		const pad = 8;
+		ns.print(`┣STR: ${art(format(memberInfo.str).padStart(pad, " "), { color: 255 })
+			}   ┣DEF: ${art(format(memberInfo.def).padStart(pad, " "), { color: 255 })
+			}  ┣MON: ${art(format(memberInfo.moneyGain * 5).padStart(pad, " "), { color: 255 })
 			}`);
-		ns.print(`┗DEX: ${art(format(memberInfo.dex).padStart(8, " "), { color: 255 })
-			} ┗AGI: ${art(format(memberInfo.agi).padStart(8, " "), { color: 255 })
-			} ┗RES: ${art(format(memberInfo.respectGain * 5).padStart(8, " "), { color: 255 })
+		ns.print(`┗DEX: ${art(format(memberInfo.dex).padStart(pad, " "), { color: 255 })
+			}   ┗AGI: ${art(format(memberInfo.agi).padStart(pad, " "), { color: 255 })
+			}  ┗RES: ${art(format(memberInfo.respectGain * 5).padStart(pad, " "), { color: 255 })
 			}`);
 	}
 
