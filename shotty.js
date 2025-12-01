@@ -1,6 +1,17 @@
 import { progBar } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
+	if (ns.args.includes("help")) {
+		ns.tprintRaw(`Usage: run ${ns.getScriptName()} options`);
+		ns.tprintRaw("Potential Options:");
+		ns.tprintRaw("yeet: allows for longer to finish batches");
+		ns.tprintRaw("yolo: Raises batch limit to 250k from 30k");
+		ns.tprintRaw("no_hud: removes print out");
+		ns.tprintRaw("sound: Enables some sound effects for various things, like prepping, start up and shut down");
+		ns.tprintRaw("advance: WIP, attempts to increase max hacking % limit as you reach the batch limit");
+		ns.tprintRaw("debug: adds some additional information to print out");
+		return;
+	}
 	["exec", "scan", "sleep"].forEach(o => ns.disableLog(o));
 	ns.clearLog(); ns.ui.openTail(); ns.ui.resizeTail(275, 300);
 	const info = {
