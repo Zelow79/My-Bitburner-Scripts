@@ -1,9 +1,10 @@
+import { progBar } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
 	["exec", "scan", "sleep"].forEach(o => ns.disableLog(o));
-	ns.clearLog(); ns.tail(); ns.resizeTail(330, 420);
+	ns.clearLog(); ns.ui.openTail(); ns.ui.resizeTail(275, 300);
 	const info = {
-		title: "SHOTTY!**SHOTTY!**SHOTTY!**SHOTTY!**",
+		title: "SHOTTY!**SHOTTY!**SHOTTY!**",
 		workerName: "pellet.js", // name of the worker 
 		workerWeight: { "hack": 1.7, "grow": 1.75, "weaken": 1.75 }, // weights for worker in different modes
 		target: "n00dles", // mostly just use by the script likely wont stay n00dles
@@ -71,7 +72,7 @@ export async function main(ns) {
 
 		while (info.pids.length > 0) {
 			printInfo();
-			await ns.sleep(500);
+			await ns.sleep(100);
 			info.pids = info.pids.filter(p => ns.isRunning(p)); // update pids
 		}
 	}
@@ -80,12 +81,12 @@ export async function main(ns) {
 		let title = [...info.title];
 		title.push(title.shift(...title[0]));
 		info.title = title.join("");
-		ns.setTitle(React.createElement("span", { style: { color: `rgb(${Math.floor(Math.random() * 155)}, 255, ${Math.floor(Math.random() * 155)})` } }, info.title));
+		ns.ui.setTailTitle(React.createElement("span", { style: { color: `rgb(${Math.floor(Math.random() * 155)}, 255, ${Math.floor(Math.random() * 155)})` } }, info.title));
 		if (!info["print"]) return false;
 		ns.clearLog();
 		const tar = ns.getServer(info.target);
 		if (info.sound) ns.print("***SOUND ENABLED***");
-		ns.print("Runtime:        " + ns.tFormat(performance.now() - startTime));
+		ns.print("Runtime:        " + ns.format.time(performance.now() - startTime));
 		ns.print("Worker Limit:   " + info.maxWorkers);
 		ns.print("Active Workers: " + info.pids.length);
 		if (info.debug) ns.print("Wait Time:      " + info.waitTime);
@@ -93,23 +94,24 @@ export async function main(ns) {
 		ns.print("Server Name:    " + info.target);
 		const secDiff = tar.hackDifficulty - tar.minDifficulty,
 			moneyDiff = tar.moneyAvailable - tar.moneyMax;
-		ns.print(`Security(min):  ${tar.hackDifficulty.toFixed(2)} (${tar.minDifficulty.toFixed(2)}) ${secDiff > 0 ? ns.formatNumber(secDiff, 2) : ""}`);
-		ns.print(`Money(max):     \$${ns.formatNumber(tar.moneyAvailable, 2)} (\$${ns.formatNumber(tar.moneyMax, 2)}) ${moneyDiff < 0 ? ns.formatNumber(moneyDiff) : ""}`);
-		ns.print("Hack %($):      " + ns.formatPercent(info.hack_percent, 0) + " ($" + ns.formatNumber(info.hackAmount, 2) + ")");
+		ns.print(`Security(min):  ${tar.hackDifficulty.toFixed(2)} (${tar.minDifficulty.toFixed(2)}) ${secDiff > 0 ? ns.format.number(secDiff, 2) : ""}`);
+		ns.print(`Money(max):     \$${ns.format.number(tar.moneyAvailable, 2)} (\$${ns.format.number(tar.moneyMax, 2)})`); //${moneyDiff < 0 ? ns.format.number(moneyDiff) : ""}`);
+		ns.printRaw(React.createElement("div", { style: { display: "flex" } }, React.createElement("span", {}, "Percentage:     "), progBar(tar.moneyAvailable / tar.moneyMax, 150, 2)));
+		ns.print("Hack %($):      " + ns.format.percent(info.hack_percent, 0) + " ($" + ns.format.number(info.hackAmount, 2) + ")");
 		ns.print("---Script Earnings---")
-		ns.print("EXP:            " + ns.formatNumber(ns.getRunningScript(ns.pid).onlineExpGained, 2));
-		ns.print("EXP /s(h):      " + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineExpGained / ((performance.now() - startTime) / (1000))), 2)
-			+ " (" + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineExpGained / ((performance.now() - startTime) / (1000 * 60 * 60))), 2) + ")");
-		ns.print("Money:          $" + ns.formatNumber(ns.getRunningScript(ns.pid).onlineMoneyMade, 2));
-		ns.print("Money /s(h):    $" + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineMoneyMade / ((performance.now() - startTime) / (1000))), 2)
-			+ " ($" + ns.formatNumber(Math.floor(ns.getRunningScript(ns.pid).onlineMoneyMade / ((performance.now() - startTime) / (1000 * 60 * 60))), 2) + ")");
+		ns.print("EXP:            " + ns.format.number(ns.getRunningScript(ns.pid).onlineExpGained, 2));
+		ns.print("EXP /s(h):      " + ns.format.number(Math.floor(ns.getRunningScript(ns.pid).onlineExpGained / ((performance.now() - startTime) / (1000))), 2)
+			+ " (" + ns.format.number(Math.floor(ns.getRunningScript(ns.pid).onlineExpGained / ((performance.now() - startTime) / (1000 * 60 * 60))), 2) + ")");
+		ns.print("Money:          $" + ns.format.number(ns.getRunningScript(ns.pid).onlineMoneyMade, 2));
+		ns.print("Money /s(h):    $" + ns.format.number(Math.floor(ns.getRunningScript(ns.pid).onlineMoneyMade / ((performance.now() - startTime) / (1000))), 2)
+			+ " ($" + ns.format.number(Math.floor(ns.getRunningScript(ns.pid).onlineMoneyMade / ((performance.now() - startTime) / (1000 * 60 * 60))), 2) + ")");
 		if (info.debug) {
 			ns.print("---Threads---");
-			ns.print("hack:           " + ns.formatNumber(info.threads["hack"], 0));
+			ns.print("hack:           " + ns.format.number(info.threads["hack"], 0));
 			ns.print("grow:           " + info.threads["grow"][0] + " ~ " + info.threads["grow"][info.threads["grow"].length - 1]);
-			ns.print("weaken:         " + ns.formatNumber(info.threads["weaken"], 0));
+			ns.print("weaken:         " + ns.format.number(info.threads["weaken"], 0));
 			ns.print("---Timings---");
-			Object.entries(info.timings).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${ns.tFormat(value)}`));
+			Object.entries(info.timings).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${ns.format.time(value)}`));
 		}
 	}
 
@@ -218,7 +220,7 @@ export async function main(ns) {
 				info.pids = info.pids.filter(p => ns.isRunning(p));
 				printInfo();
 				ns.print("***PREPPING***");
-				await ns.sleep(500);
+				await ns.sleep(100);
 			}
 		}
 	}
