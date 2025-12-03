@@ -1,6 +1,6 @@
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.clearLog(); ns.disableLog("ALL"); ns.tail();
+	ns.clearLog(); ns.disableLog("ALL"); ns.ui.openTail();
 	const [pids, excludes, servers] = [[], [], getServers()]
 	ns.args.forEach(a => ns.serverExists(a) ? excludes.push(a) : null);
 	servers.forEach(server => {
@@ -19,8 +19,8 @@ export async function main(ns) {
 		pids.forEach(p => ns.getRunningScript(p) === null ? pids.splice(pids.indexOf(p), 1) : null);
 		pids.forEach(p => threadCount += ns.getRunningScript(p).threads);
 		const message = [`Active share scripts: ${pids.length}`];
-		message.push(`Total threads:        ${ns.formatNumber(threadCount)}`);
-		message.push(`Total share power:    ${ns.formatNumber(ns.getSharePower() - 1)}`);
+		message.push(`Total threads:        ${ns.format.number(threadCount)}`);
+		message.push(`Total share power:    ${ns.format.percent(ns.getSharePower())}`);
 		message.push(`Excluded Servers:     ${excludes.join(", ")}`);
 		ns.print(message.join("\n"));
 		await ns.sleep(0);
