@@ -28,6 +28,8 @@ export async function main(ns) {
 		timings: { "hack": 0, "grow": 0, "weaken": 0 }, // timing values stored here
 		minHackChance: 0.9, // min allowed hacking chance
 		waitTime: 400, // time to wait before sleeping when firing workers
+		passiveWaitTime: 200, // time to wait before checking for new batches *also effects prepping and tail refresh rate
+		workersSent: 0, // value for tracking number of works sent
 		minWeakenTime: ns.args.includes("yeet") ? 1000 * 60 * 5 : 1000 * 60, // yeet mode to allow longer batches
 		maxWorkers: ns.args.includes("yolo") ? 2.5e5 : 3e4, // yolo mode to raise batch count upper limit
 		"print": ns.args.includes("no_hud") ? false : true, // no_hud to disable most print screen feedback
@@ -83,7 +85,7 @@ export async function main(ns) {
 
 		while (info.pids.length > 0) {
 			printInfo();
-			await ns.sleep(100);
+			await ns.sleep(info.passiveWaitTime);
 			info.pids = info.pids.filter(p => ns.isRunning(p)); // update pids
 		}
 	}
@@ -98,9 +100,12 @@ export async function main(ns) {
 		const tar = ns.getServer(info.target);
 		if (info.sound) ns.print("***SOUND ENABLED***");
 		ns.print("Runtime:        " + ns.format.time(performance.now() - startTime));
-		ns.print("Worker Limit:   " + info.maxWorkers);
-		ns.print("Active Workers: " + info.pids.length);
-		if (info.debug) ns.print("Wait Time:      " + info.waitTime);
+		ns.print("Worker Limit:   " + ns.format.number(info.maxWorkers));
+		ns.print("Active Workers: " + ns.format.number(info.pids.length));
+		if (info.debug) {
+			ns.print("Workers Sent:   " + ns.format.number(info.workersSent));
+			ns.print("Wait Time:      " + info.waitTime);
+		}
 		ns.print("---Target Info---");
 		ns.print("Server Name:    " + info.target);
 		const secDiff = tar.hackDifficulty - tar.minDifficulty,
@@ -147,6 +152,7 @@ export async function main(ns) {
 				ramOverride: info.workerWeight[instruction[0]],
 				temporary: true
 			}, info.target, instruction[2], instruction[0]));
+			info.workersSent++;
 		}
 
 		return pids;
@@ -231,7 +237,7 @@ export async function main(ns) {
 				info.pids = info.pids.filter(p => ns.isRunning(p));
 				printInfo();
 				ns.print("***PREPPING***");
-				await ns.sleep(100);
+				await ns.sleep(info.passiveWaitTime);
 			}
 		}
 	}
