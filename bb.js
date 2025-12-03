@@ -1,7 +1,7 @@
 import { bar, format, cities, tem } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog('ALL'); ns.clearLog(); ns.tail(); ns.setTitle(tem("💀BladeBurner:Headquarters", { "font-family": 'Brush Script MT, cursive' }));
+	ns.disableLog('ALL'); ns.clearLog(); ns.ui.openTail(); ns.ui.setTailTitle(tem("💀BladeBurner:Headquarters", { "font-family": 'Brush Script MT, cursive' }));
 	const [globalChaLimit, chaosLimit, ass_target, actionLogSize, skillLogSize, width, height, sleepTime, b, s] = [1e6, 50, 1e4, 7, 30, 375, 710, 500, ns.bladeburner, ns.singularity],
 		logs = { skill: [], action: [] }
 	for (let i = 0; i < actionLogSize; i++) logs.action.push(" ");
@@ -84,13 +84,13 @@ export async function main(ns) {
 
 	async function doAction(aSuccessChance = 1) {
 		for (const act of b.getBlackOpNames()) {
-			if (b.getActionCountRemaining("BlackOps", act) < 1) continue;
-			if (b.getActionEstimatedSuccessChance("BlackOps", act)[0] < aSuccessChance || b.getBlackOpRank(act) > b.getRank()) break;
+			if (b.getActionCountRemaining("Black Operations", act) < 1) continue;
+			if (b.getActionEstimatedSuccessChance("Black Operations", act)[0] < aSuccessChance || b.getBlackOpRank(act) > b.getRank()) break;
 			if (b.getCurrentAction()?.name == act) return;
 			if (!s.getOwnedAugmentations().includes("The Blade's Simulacrum")) s.stopAction();
-			if (b.startAction("BlackOps", act)) {
+			if (b.startAction("Black Operations", act)) {
 				addLog("action", `ACT: ${act}`);
-				await ns.sleep(b.getActionTime("BlackOps", act) / (b.getBonusTime() > 1000 ? 5 : 1));
+				await ns.sleep(b.getActionTime("Black Operations", act) / (b.getBonusTime() > 1000 ? 5 : 1));
 				return;
 			}
 		}
@@ -244,7 +244,7 @@ export async function main(ns) {
 	}
 
 	function printLog() {
-		ns.resizeTail(width, height); ns.clearLog();
+		ns.ui.resizeTail(width, height); ns.clearLog();
 		if (logs.action.length > 0) {
 			ns.print(`--action report--`);
 			for (const report of logs.action) {
