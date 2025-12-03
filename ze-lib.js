@@ -203,7 +203,7 @@ export function hmsms(t) { // t is in ms
 }
 
 export function timeFormat(t, v = null) { // t is in ms
-	const cd = 8.64e7, ch = 3.6e6, cm = 6e4, mf = Math.floor, mr = Math.round,
+	let cd = 8.64e7, ch = 3.6e6, cm = 6e4, mf = Math.floor, mr = Math.round,
 		d = mf(t / cd), h = mf((t - d * cd) / ch), m = mf((t - d * cd - h * ch) / cm),
 		s = mf((t - d * cd - h * ch - m * cm) / 1000), ms = mr(t - d * cd - h * ch - m * cm - s * 1000),
 		pad = (n) => n < 10 ? '0' + n : n, msPad = (n) => (n + "").length < 3 ? '0'.repeat(3 - (n + "").length) + n : n;
