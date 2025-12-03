@@ -1,9 +1,10 @@
-import { progBar } from "ze-lib";
+import { progBar, timeFormat } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
 	if (ns.args.includes("help")) {
 		ns.tprintRaw(`Usage: run ${ns.getScriptName()} options`);
-		ns.tprintRaw("Potential Options:");
+		ns.tprintRaw("Options:");
+		ns.tprintRaw("skeet: sets passive wait time to 0ms letting it run as fast as possible *might be resource intensive");
 		ns.tprintRaw("yeet: allows for longer to finish batches");
 		ns.tprintRaw("yolo: Raises batch limit to 250k from 30k");
 		ns.tprintRaw("no_hud: removes print out");
@@ -13,7 +14,7 @@ export async function main(ns) {
 		return;
 	}
 	["exec", "scan", "sleep"].forEach(o => ns.disableLog(o));
-	ns.clearLog(); ns.ui.openTail(); ns.ui.resizeTail(275, 300);
+	ns.clearLog(); ns.ui.openTail();
 	const info = {
 		title: "SHOTTY!**SHOTTY!**SHOTTY!**",
 		workerName: "pellet.js", // name of the worker 
@@ -28,8 +29,8 @@ export async function main(ns) {
 		timings: { "hack": 0, "grow": 0, "weaken": 0 }, // timing values stored here
 		minHackChance: 0.9, // min allowed hacking chance
 		waitTime: 400, // time to wait before sleeping when firing workers
-		passiveWaitTime: 200, // time to wait before checking for new batches *also effects prepping and tail refresh rate
 		workersSent: 0, // value for tracking number of works sent
+		passiveWaitTime: ns.args.includes("skeet") ? 0 : 500, // time to wait before checking for new batches *also effects prepping and tail refresh rate
 		minWeakenTime: ns.args.includes("yeet") ? 1000 * 60 * 5 : 1000 * 60, // yeet mode to allow longer batches
 		maxWorkers: ns.args.includes("yolo") ? 2.5e5 : 3e4, // yolo mode to raise batch count upper limit
 		"print": ns.args.includes("no_hud") ? false : true, // no_hud to disable most print screen feedback
@@ -37,8 +38,18 @@ export async function main(ns) {
 		autoAdvance: ns.args.includes("advance") ? true : false, // WIP goal is for auto hacking percent increase
 		update: ns.args.includes("update") ? true : false, // force worker to update every getRam call default: false
 		debug: ns.args.includes("debug") ? true : false, // debug mode adds some additional info to print out
-		pids: [] // container for worker pids
+		pids: [], // container for worker pids
+		modes: [] // container for enabled modes
 	}, startTime = performance.now();
+
+	if (ns.args.includes("skeet")) info.modes.push("SKEET"); // if skeet is enabled add it to info.modes
+	if (ns.args.includes("yolo")) info.modes.push("YOLO"); // if yolo is enabled add it to info.modes
+	if (info.sound) info.modes.push("SOUND"); // if sound is enabled add it to info.modes
+	if (info.debug) info.modes.push("DEBUG"); // if debug is enabled add it to info.modes
+	let heightSpacer = 0; // default height spacer
+	if (info.modes.length > 0) heightSpacer = 20; // if there is a mode add space for new line
+	ns.ui.resizeTail(275, 270 + heightSpacer); // set tail height with spacer
+	if (info.debug) ns.ui.resizeTail(275, 435 + heightSpacer); // change height for debug stats
 
 	servers().forEach(s => ns.ps(s).forEach(x => x.filename === info.workerName ? ns.kill(x.pid) : null)); // kill any running workers
 	makeWorker(); // make initial workers
@@ -98,8 +109,8 @@ export async function main(ns) {
 		if (!info["print"]) return false;
 		ns.clearLog();
 		const tar = ns.getServer(info.target);
-		if (info.sound) ns.print("***SOUND ENABLED***");
-		ns.print("Runtime:        " + ns.format.time(performance.now() - startTime));
+		if (info.modes.length > 0) ns.print(`*MODES: ${info.modes.join(", ")}`);
+		ns.print("Runtime:        " + timeFormat(performance.now() - startTime, "dhms"));
 		ns.print("Worker Limit:   " + ns.format.number(info.maxWorkers));
 		ns.print("Active Workers: " + ns.format.number(info.pids.length));
 		if (info.debug) {
@@ -127,7 +138,7 @@ export async function main(ns) {
 			ns.print("grow:           " + info.threads["grow"][0] + " ~ " + info.threads["grow"][info.threads["grow"].length - 1]);
 			ns.print("weaken:         " + ns.format.number(info.threads["weaken"], 0));
 			ns.print("---Timings---");
-			Object.entries(info.timings).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${ns.format.time(value)}`));
+			Object.entries(info.timings).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${ns.format.time(value, true)}`));
 		}
 	}
 
