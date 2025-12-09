@@ -56,14 +56,18 @@ export async function main(ns) {
 		while (getBBSkill() !== false && getBBSkill()[0].upgradeCost < b.getSkillPoints()) {
 			const cheapestSkill = getBBSkill()[0];
 			if (b.upgradeSkill(cheapestSkill.name)) addLog("skill", `Got 1 ${cheapestSkill.name} for ${cheapestSkill.upgradeCost} SP`);
-			if (i % 1000 === 0) await ns.sleep(0);
+			if (i % 1000 === 0) {
+				printLog();
+				await ns.sleep(0);
+			}
 			i++;
 		}
 	}
 
 	function skillLimiter(skill) {
-		const comStats = b.getRank() > 4e5 ? Math.max(Math.min(2e4, b.getRank() * 1e-4), 1e3) : 400, // experimental scaling for combat skills post 400k rank
-			opStats = b.getRank() > 4e5 ? Math.max(Math.min(1e4, b.getRank() * 7.5e-5), 1e3) : 200, // same as comStats, but for operation success chance
+		const comStats = b.getRank() > 4e5 ? Math.max(Math.min(2e6, b.getRank() * 1e-4), 1e3) : 400, // experimental scaling for combat skills post 400k rank
+			stamStats = b.getRank() > 4e5 ? Math.max(Math.min(2e4, b.getRank() * 1e-4), 1e3) : 200, 	// same as comStats, but for Cyber's Edge
+			opStats = b.getRank() > 4e5 ? Math.max(Math.min(2e4, b.getRank() * 7.5e-5), 1e3) : 200,   // same as comStats, but for operation success chance
 			skillLimits = [
 				{ name: "Blade's Intuition", limit: opStats }, //Each level of this skill increases your success chance for all Contracts, Operations, and BlackOps by 3%
 				{ name: "Cloak", limit: opStats },             //Each level of this skill increases your success chance in stealth-related Contracts, Operations, and BlackOps by 5.5%
@@ -74,7 +78,7 @@ export async function main(ns) {
 				{ name: "Reaper", limit: comStats },           //Each level of this skill increases your effective combat stats for Bladeburner actions by 2%
 				{ name: "Evasive System", limit: comStats },   //Each level of this skill increases your effective dexterity and agility for Bladeburner actions by 4%
 				{ name: "Datamancer", limit: 80 },             //Each level of this skill increases your effectiveness in synthoid population analysis and investigation by 5%. This affects all actions that can potentially increase the accuracy of your synthoid population/community estimates.
-				{ name: "Cyber's Edge", limit: 50 },           //Each level of this skill increases your max stamina by 2%
+				{ name: "Cyber's Edge", limit: stamStats },    //Each level of this skill increases your max stamina by 2%
 				{ name: "Hands of Midas", limit: 200 },        //Each level of this skill increases the amount of money you receive from Contracts by 10%
 				{ name: "Hyperdrive", limit: 200 }             //Each level of this skill increases the experience earned from Contracts, Operations, and BlackOps by 10%
 			]
@@ -133,7 +137,7 @@ export async function main(ns) {
 				startTime = new Date(),
 				possibleActions = ["Training", "Hyperbolic Regeneration Chamber"];
 			let action = possibleActions[0];
-			while (b.getStamina()[0] / b.getStamina()[1] < 1) {
+			while (b.getStamina()[0] / b.getStamina()[1] < 0.99) {
 				if (startTime + 60000 * 2 <= Date.now() && initStam >= b.getStamina()[0]) action = possibleActions[1];
 				await ns.sleep(20);
 				if (b.getCurrentAction()?.name === action) continue;
