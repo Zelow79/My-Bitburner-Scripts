@@ -1,10 +1,18 @@
 import { art, dhms, bar, format, tem } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog('ALL'); ns.tail(); ns.setTitle(tem("🧍BladeBurner:Sleeves", { "font-family": 'Brush Script MT, cursive' }));
-	const [s, sleeves, cycleLimit, width, height] = [ns.sleeve, [], 3000, 250, 670];
+	ns.disableLog('ALL'); ns.ui.openTail(); ns.ui.setTailTitle(tem("🧍BladeBurner:Sleeves", { "font-family": 'Brush Script MT, cursive' }));
+	const [s, sleeves, cycleLimit, width, height] = [ns.sleeve, [], 3000, 215, 670];
 	let [generatedOps, startTime] = [0, performance.now()];
 	for (let i = 0; i < s.getNumSleeves(); i++) { sleeves.push(i); s.setToIdle(i); }
+
+	if (ns.args.includes("ati")) {
+		for (const steve of sleeves) {
+			s.setToBladeburnerAction(steve, "Infiltrate Synthoids");
+		}
+		return;
+	}
+
 	while (1) {
 		await bonusBuster();
 		printInfo();
@@ -15,22 +23,26 @@ export async function main(ns) {
 		sleeves.sort((a, b) => s.getSleeve(b).storedCycles - s.getSleeve(a).storedCycles);
 		for (const steve of sleeves) {
 			if (s.getSleeve(steve).storedCycles < cycleLimit) continue;
-			const opsCanGen = Math.floor(s.getSleeve(steve).storedCycles / 300) * 0.5;
+			const opsCanGen = Math.floor(s.getSleeve(steve).storedCycles / 300) * 0.5,
+				infStart = performance.now();
 			while (1) {
 				printInfo();
 				if (s.getSleeve(steve)?.storedCycles < 600 && s.getSleeve(steve).storedCycles < 300 - s.getTask(steve).cyclesWorked) break;
 				await ns.sleep(10);
 				if (s.getTask(steve)?.type == "INFILTRATE") continue;
-				s.setToBladeburnerAction(steve, "Infiltrate synthoids");
+				s.setToBladeburnerAction(steve, "Infiltrate Synthoids");
 			}
-			generatedOps += opsCanGen;
+			const infTime = performance.now() - infStart,
+				additionalCyclesEarned = Math.floor(infTime / 200),
+				additionalOps = Math.floor(additionalCyclesEarned / 300) * 0.5;
+			generatedOps += opsCanGen + Math.max(0, additionalOps);
 			s.setToIdle(steve);
 			break;
 		}
 	}
 
 	function printInfo() {
-		ns.resizeTail(width, height); ns.clearLog();  // resizeTail can be removed here if you do not want it sized
+		ns.ui.resizeTail(width, height); ns.clearLog();  // resizeTail can be removed here if you do not want it sized
 		ns.print(`Sleeve Operation Creation`);
 		ns.print(`Total Gained: ${format(round(generatedOps), 3)}`);
 		ns.print(`Time Elapsed: ${dhms(Math.floor((performance.now() - startTime)))}`);
