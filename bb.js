@@ -2,7 +2,8 @@ import { bar, format, cities, tem } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog('ALL'); ns.clearLog(); ns.ui.openTail(); ns.ui.setTailTitle(tem("💀BladeBurner:Headquarters", { "font-family": 'Brush Script MT, cursive' }));
-	const [globalChaLimit, chaosLimit, ass_target, actionLogSize, skillLogSize, width, height, sleepTime, b, s] = [1e6, 50, 1e4, 7, 30, 375, 710, 500, ns.bladeburner, ns.singularity],
+	const doViolence = ns.args.includes("violence");
+	const [globalChaLimit, chaosLimit, ass_target, actionLogSize, skillLogSize, width, height, sleepTime, b, s] = [doViolence ? 1e5 : 1e6, 50, 1e4, 7, 30, 375, 710, 500, ns.bladeburner, ns.singularity],
 		logs = { skill: [], action: [] }
 	for (let i = 0; i < actionLogSize; i++) logs.action.push(" ");
 	for (let i = 0; i < skillLogSize; i++) logs.skill.push(" ");
@@ -176,7 +177,7 @@ export async function main(ns) {
 		const assLevel = () => b.getActionCountRemaining("Operations", "Assassination"),
 			act = "Incite Violence";
 		if (ns.getPlayer().skills.charisma < globalChaLimit) return; //we only wanna act after if we have the charisma to correct it. Testing 1e6.
-		if (assLevel() == 0) {
+		if (assLevel() <= 5) {
 			while (assLevel() < ass_target) {
 				printLog();
 				await ns.sleep(500); //precautionary sleep when it gets caught in 'continue' below
