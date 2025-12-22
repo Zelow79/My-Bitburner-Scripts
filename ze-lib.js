@@ -336,4 +336,4 @@ export function createTable(width, columns, data) { // data is an array of strin
 	}
 }
 
-export const totallyNotImportant = () => playSound("https://soundspunos.com/uploads/files/2022-05/1651865406_1651485572_18775-rickroll354.mp3");
+export const totallyNotImportant = () => playSound("https://www.myinstants.com/media/sounds/epic.mp3");
