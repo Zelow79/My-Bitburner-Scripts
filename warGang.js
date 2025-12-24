@@ -1,16 +1,16 @@
-import { dhms, bar, format, formatPercent, art, names, tem } from "ze-lib";
+import { dhms, bar, format, formatPercent, art, names} from "ze-lib";
 const [discountThresh, wantedPenThresh] = [0.8, 0.05]
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL"); ns.clearLog(); ns.ui.openTail();
-	const [faction, width, height, g] = ["Slum Snakes", 340, 888, ns.gang],
+	const [faction, g] = ["Slum Snakes", ns.gang],
 		tick = { tw: false, otherGangsInfoPrevCycle: undefined, nextTick: undefined }
-	let tCount = 0;
-	ns.ui.resizeTail(width, height);
+	let tCount = 0, sizeState = true, width = 340, height = 888;
 	await ns.sleep(500); // sleep here to allow first ns.ui.resizeTail() to work properly
 	while (true) {
 		const titles = ["🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 --- -- -👮🏼‍♂️", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 - --- --👮🏼‍♂️🩸", "🏴‍☠️💰💰( -_•)╦̵̵̿╤─💥 -- --- -👮🏼‍♂️🩸"];
-		ns.ui.setTailTitle(tem(titles[tCount], { "font-family": 'Brush Script MT, cursive' }));
+		ns.ui.setTailTitle(React.createElement("span", { style: { "font-family": 'Brush Script MT, cursive' }, onClick: setSize }, titles[tCount]));
+		ns.ui.resizeTail(width, height);
 		tCount++; tCount >= titles.length ? tCount = 0 : null; ns.clearLog();
 		if (g.inGang()) {
 			if (ns.args[1] === "metric") metricCheck(ns);
@@ -285,6 +285,16 @@ export async function main(ns) {
 			}
 		}
 		return lowestChance;
+	}
+
+	function setSize() {
+		if (sizeState) {
+			height = 888;
+			sizeState = !sizeState;
+		} else {
+			height = 220;
+			sizeState = !sizeState;
+		}
 	}
 
 	function reportMetrics(data, start = false) { // data is expected to be a single line string
