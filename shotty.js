@@ -4,12 +4,13 @@ export async function main(ns) {
 	if (ns.args.includes("help")) {
 		ns.tprintRaw(`Usage: run ${ns.getScriptName()} options`);
 		ns.tprintRaw("Options:");
-		ns.tprintRaw("skeet: sets passive wait time to 0ms letting it run as fast as possible *might be resource intensive");
-		ns.tprintRaw("yeet: allows for longer to finish batches");
+		ns.tprintRaw("skeet: Sets passive wait time to 0ms letting it run as fast as possible *might be resource intensive");
+		ns.tprintRaw("yeet: Allows for longer to finish batches");
 		ns.tprintRaw("yolo: Raises batch limit to 250k from 30k");
-		ns.tprintRaw("no_hud: removes print out");
+		ns.tprintRaw("no_hud: Removes print out");
 		ns.tprintRaw("sound: Enables some sound effects for various things, like prepping, start up and shut down");
 		ns.tprintRaw("advance: WIP, attempts to increase max hacking % limit as you reach the batch limit");
+		ns.tprintRaw("noHash: Removes hacknet servers from the possible servers for ram");
 		ns.tprintRaw("debug: adds some additional information to print out");
 		return;
 	}
@@ -37,6 +38,7 @@ export async function main(ns) {
 		sound: ns.args.includes("sound") ? true : false, // sound mode adds sounds to some events
 		autoAdvance: ns.args.includes("advance") ? true : false, // WIP goal is for auto hacking percent increase
 		update: ns.args.includes("update") ? true : false, // force worker to update every getRam call default: false
+		noHash: ns.args.includes("noHash") ? true : false, // removes hacknet servers from servers()
 		debug: ns.args.includes("debug") ? true : false, // debug mode adds some additional info to print out
 		pids: [], // container for worker pids
 		modes: [] // container for enabled modes
@@ -44,12 +46,13 @@ export async function main(ns) {
 
 	if (ns.args.includes("skeet")) info.modes.push("SKEET"); // if skeet is enabled add it to info.modes
 	if (ns.args.includes("yolo")) info.modes.push("YOLO"); // if yolo is enabled add it to info.modes
+	if (info.noHash) info.modes.push("nHASH"); // if sound is enabled add it to info.modes
 	if (info.sound) info.modes.push("SOUND"); // if sound is enabled add it to info.modes
 	if (info.debug) info.modes.push("DEBUG"); // if debug is enabled add it to info.modes
 	let heightSpacer = 0; // default height spacer
 	if (info.modes.length > 0) heightSpacer = 20; // if there is a mode add space for new line
 	ns.ui.resizeTail(275, 270 + heightSpacer); // set tail height with spacer
-	if (info.debug) ns.ui.resizeTail(275, 435 + heightSpacer); // change height for debug stats
+	if (info.debug) ns.ui.resizeTail(275, 535 + heightSpacer); // change height for debug stats
 
 	servers().forEach(s => ns.ps(s).forEach(x => x.filename === info.workerName ? ns.kill(x.pid) : null)); // kill any running workers
 	makeWorker(); // make initial workers
@@ -135,8 +138,23 @@ export async function main(ns) {
 		if (info.debug) {
 			ns.print("---Threads---");
 			ns.print("hack:           " + ns.format.number(info.threads["hack"], 0));
-			ns.print("grow:           " + info.threads["grow"][0] + " ~ " + info.threads["grow"][info.threads["grow"].length - 1]);
+			const cores = [];
+			for (const server of servers()) {
+				cores.push(ns.getServer(server).cpuCores);
+			}
+			ns.print("grow:           " + info.threads["grow"][Math.max(...cores) - 1] + " ~ " + info.threads["grow"][0]);
 			ns.print("weaken:         " + ns.format.number(info.threads["weaken"], 0));
+			ns.print("---RAM Cost---");
+			const hackRam = info.workerWeight["hack"] * info.threads["hack"];
+			ns.print("Hack:           " + ns.format.ram(hackRam));
+			const growRamMin = info.workerWeight["grow"] * info.threads["grow"][0],
+				growRamMax = info.workerWeight["grow"] * info.threads["grow"][Math.max(...cores) - 1]
+			ns.print("Grow:           " + ns.format.ram(growRamMax) + " ~ " + ns.format.ram(growRamMin));
+			const weakenRam = info.workerWeight["weaken"] * info.threads["weaken"];
+			ns.print("Weaken:         " + ns.format.ram(weakenRam));
+			const totalRamMin = hackRam + growRamMin + weakenRam,
+				totalRamMax = hackRam + growRamMax + weakenRam;
+			ns.print("Batch:          " + ns.format.ram(totalRamMax) + " ~ " + ns.format.ram(totalRamMin));
 			ns.print("---Timings---");
 			Object.entries(info.timings).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${ns.format.time(value, true)}`));
 		}
@@ -302,6 +320,7 @@ export async function main(ns) {
 		const x = new Set(["home"]);
 		x.forEach(server => ns.scan(server).forEach(connectServer => x.add(connectServer)));
 		x.delete("home");
+		if (info.noHash) return Array.from(x).filter(s => !s.startsWith("hacknet-server-"));
 		return Array.from(x);
 	}
 }
