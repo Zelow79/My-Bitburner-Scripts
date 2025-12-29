@@ -1,27 +1,35 @@
 import { getAllServers } from "ze-lib";
 /** @param {NS} ns */
 export async function main(ns) {
-	ns.disableLog('ALL'); ns.clearLog(); ns.tail(); const worker = "McAfee.js", workerWeight = ns.getScriptRam(worker),
+	ns.disableLog('ALL'); ns.clearLog(); ns.ui.openTail();
+	const worker = "McAfee.js", workerWeight = ns.getScriptRam(worker),
 		availableRam = (server) => ns.getServer(server).maxRam - ns.getServer(server).ramUsed,
-		victims = getAllServers(ns).filter(server => ns.getServer(server).hasAdminRights && ns.getHackTime(server) / 4 < 60 * 1000
+		victims = getAllServers(ns).filter(server => ns.getServer(server).hasAdminRights
 			&& ns.getServer(server).requiredHackingSkill <= ns.getHackingLevel()
-			&& !ns.getServer(server).purchasedByPlayer && !ns.getServer(server).backdoorInstalled),
+			&& !ns.getServer(server).purchasedByPlayer
+			&& !ns.getServer(server).backdoorInstalled),
 		ram = getAllServers(ns).filter(server => ns.getServer(server).hasAdminRights && availableRam(server) > workerWeight),
-		scripts = []; ram.sort((a, b) => availableRam(a) - availableRam(b)); victims.sort((a, b) => ns.getHackTime(b) - ns.getHackTime(a));
+		scripts = [];
+
+	ram.sort((a, b) => availableRam(a) - availableRam(b)); victims.sort((a, b) => ns.getHackTime(b) - ns.getHackTime(a));
+
 	for (const server of victims) {
+		if (ns.getHackTime(server) / 4 > 60 * 1000) continue;
 		for (const ramHost of ram) {
 			if (availableRam(ramHost) < workerWeight) continue;
 			scripts.push(await bdServer(server, ramHost));
-			//ns.tprintRaw(`Backdoor started on ${server}.`);
 			break;
 		}
 	}
+
 	while (scripts.length > 0) {
 		for (let i = 0; i < scripts.length; i++) {
 			if (ns.isRunning(scripts[i])) continue;
 			scripts.splice(i, 1); --i;
 		}
-		ns.clearLog(); ns.print(`Victims: ${victims.join(", ")}.`); ns.print(`Running Workers: ${scripts.join(", ")}`);
+		ns.clearLog();
+		ns.print(`Victims: ${victims.join(", ")}.`);
+		ns.print(`Running Workers: ${scripts.join(", ")}`);
 		await ns.sleep(0);
 	}
 
