@@ -1,20 +1,22 @@
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("sleep");
-	if (ns.args.includes("tail")) ns.tail();
+	if (ns.args.includes("tail")) ns.ui.openTail();
 	const h = ns.hacknet;
 	while (1) {
 		ns.clearLog();
 		const servers = [],
 			serversInfo = [],
 			// default max values if not changed when called in args
-			max = { servers: 10, ram: 8192, cores: 32, cache: 1, levels: 100, unit_level: 20 }
+			max = { servers: 10, ram: 8192, cores: 32, cache: 1, level: 20 }
+
+		for (let i = 0; i < h.numNodes(); i++) servers.push(i);
 
 		for (const arrrg of ns.args) { // check args for new max values
 			if (typeof arrrg === "string"
 				&& arrrg.includes(":")
 				&& max[arrrg.split(":")[0]] // if first value is a property on max
-				&& !isNaN(parseInt(arrrg.split(":")[1]))) { // and a number is the 2nd value
+				&& !isNaN(parseInt(arrrg.split(":")[1]))) { // and a number
 				max[arrrg.split(":")[0]] = parseInt(arrrg.split(":")[1]); // set that property to new nummber
 			}
 		}
@@ -24,29 +26,36 @@ export async function main(ns) {
 
 		if (h.numNodes() < cutoff) h.purchaseNode(); // if server count below cutoff try to buy new server
 
-		for (let i = 0; i < h.numNodes(); i++) { // iterate servers and apply upgrades
-			let stats = h.getNodeStats(i);
-			if (stats.ram < max.ram) h.upgradeRam(i); // upgrade ram
-			if (stats.cores < max.cores) h.upgradeCore(i); // upgrade cores
-			if (stats.cache < max.cache) h.upgradeCache(i);// upgrade cache
-			stats = h.getNodeStats(i); // update stats 
-			servers.push(i);
-			serversInfo.push({ index: i, ...stats });
-		}
+		updateInfo(); // update initial array
 
-		if (checkLevels() < max.levels) { // upgrade level until total is 100
+		// upgrade ram
+		serversInfo.sort((a, b) => a.ram - b.ram);
+		for (const hServer of serversInfo) h.upgradeRam(hServer.index); // upgrade ram
+
+		// upgrade cores
+		serversInfo.sort((a, b) => a.cores - b.cores);
+		for (const hServer of serversInfo) h.upgradeCore(hServer.index); // upgrade cores
+
+		// upgrade cache
+		serversInfo.sort((a, b) => a.cores - b.cores);
+		for (const hServer of serversInfo) h.upgradeCore(hServer.index); // upgrade cores
+
+		if (checkLevels() < max.level * h.numNodes()) { // upgrade level until total is 100
+			serversInfo.sort((a, b) => a.level - b.level);
 			for (const server of serversInfo) {
-				if (checkLevels() >= max.levels) continue; // skip if total max level achieved
-				if (server.level < max.unit_level) h.upgradeLevel(server.index); // skip if individual level achieved
+				if (checkLevels() >= max.level * h.numNodes()) continue; // skip if total max level achieved
+				if (server.level < max.level) h.upgradeLevel(server.index); // skip if individual level achieved
 			}
 		}
 
+		updateInfo(); // update serversInfo
+
 		const check = {
-			node: h.numNodes() >= cutoff,
-			ram: servers.every(s => [8192, max.ram].some(option => h.getNodeStats(s).ram >= option)),
-			core: servers.every(s => [128, max.cores].some(option => h.getNodeStats(s).cores >= option)),
-			cache: servers.every(s => [15, max.cache].some(option => h.getNodeStats(s).cache >= option)),
-			level: checkLevels() >= max.levels
+			servers: h.numNodes() >= cutoff,
+			ram: servers.every(s => h.getNodeStats(s).ram >= max.ram),
+			cores: servers.every(s => h.getNodeStats(s).cores >= max.cores),
+			cache: servers.every(s => h.getNodeStats(s).cache >= max.cache),
+			level: checkLevels() >= max.level * h.numNodes()
 		}
 
 		// max length of server stat values for print padding
@@ -54,27 +63,32 @@ export async function main(ns) {
 		for (const server of serversInfo) {
 			if (maxLen.serverName < server.name.length) maxLen.serverName = server.name.length;
 			if (maxLen.level < server.level.toString().length) maxLen.level = server.level.toString().length;
-			if (maxLen.ram < ns.formatRam(server.ram).length) maxLen.ram = ns.formatRam(server.ram).length;
+			if (maxLen.ram < ns.format.ram(server.ram).length) maxLen.ram = ns.format.ram(server.ram).length;
 			if (maxLen.cores < server.cores.toString().length) maxLen.cores = server.cores.toString().length;
 			if (maxLen.cache < server.cache.toString().length) maxLen.cache = server.cache.toString().length;
 		}
 
 		ns.print("Active servers: " + servers.length + "/" + cutoff);
-		ns.print("Total level:    " + checkLevels())
+		ns.print("Total level:    " + checkLevels() + "/" + max.level * h.numNodes());
 		ns.print("Cap Values:     " + JSON.stringify(max));
 		ns.print("Caps Reached:   " + JSON.stringify(check));
 		for (const server of serversInfo) {
 			ns.print(`-${(server.name + ":").padEnd(maxLen.serverName + 1, " ")
 				} Level: ${server.level.toString().padStart(maxLen.level, " ")
-				} -- Ram: ${ns.formatRam(server.ram).padStart(maxLen.ram, " ")
+				} -- Ram: ${ns.format.ram(server.ram).padStart(maxLen.ram, " ")
 				} -- Cores: ${server.cores.toString().padStart(maxLen.cores, " ")
 				} -- Cache: ${server.cache.toString().padStart(maxLen.cache, " ")}`);
 		}
 
-		if (check.node && check.level && check.ram && check.core && check.cache) {
+		if (check.servers && check.level && check.ram && check.cores && check.cache) {
 			ns.print("Jobs Done"); // kill script if we complete all our goals
 			ns.exit();
 		}
-		await ns.sleep(500);
+		await ns.sleep(0);
+
+		function updateInfo() {
+			serversInfo.length = 0; // empty old array
+			for (let i = 0; i < h.numNodes(); i++) serversInfo.push({ index: i, ...h.getNodeStats(i) }); // populate array
+		}
 	}
 }
