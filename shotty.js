@@ -26,7 +26,7 @@ export async function main(ns) {
 		hack_percent_hardcap: 0.5, // highest hacking percent can go
 		percentIncrease: 0.02, // amount hacking % increases by when autoAdvance is on
 		hackAmount: 0, // this value is modified by the script
-		threads: { "hack": 1, "grow": [1, 1], "weaken": 1 }, // script stores thread values here
+		threads: { "hack": 1, "grow": [], "weaken": 1 }, // script stores thread values here
 		timings: { "hack": 0, "grow": 0, "weaken": 0 }, // timing values stored here
 		minHackChance: 0.9, // min allowed hacking chance
 		waitTime: 400, // time to wait before sleeping when firing workers
@@ -43,6 +43,10 @@ export async function main(ns) {
 		pids: [], // container for worker pids
 		modes: [] // container for enabled modes
 	}, startTime = performance.now();
+
+	for (let i = 1; i < 129; i++) { // populate initial grow threads *prevents error in prep
+		info.threads["grow"].push(1);
+	}
 
 	if (ns.args.includes("skeet")) info.modes.push("SKEET"); // if skeet is enabled add it to info.modes
 	if (ns.args.includes("yolo")) info.modes.push("YOLO"); // if yolo is enabled add it to info.modes
@@ -148,12 +152,12 @@ export async function main(ns) {
 			const hackRam = info.workerWeight["hack"] * info.threads["hack"];
 			ns.print("Hack:           " + ns.format.ram(hackRam));
 			const growRamMin = info.workerWeight["grow"] * info.threads["grow"][0],
-				growRamMax = info.workerWeight["grow"] * info.threads["grow"][Math.max(...cores) - 1]
+				growRamMax = info.workerWeight["grow"] * info.threads["grow"][Math.max(...cores) - 1];
 			ns.print("Grow:           " + ns.format.ram(growRamMax) + " ~ " + ns.format.ram(growRamMin));
 			const weakenRam = info.workerWeight["weaken"] * info.threads["weaken"];
 			ns.print("Weaken:         " + ns.format.ram(weakenRam));
-			const totalRamMin = hackRam + growRamMin + weakenRam,
-				totalRamMax = hackRam + growRamMax + weakenRam;
+			const totalRamMin = hackRam + growRamMin + weakenRam * 2,
+				totalRamMax = hackRam + growRamMax + weakenRam * 2;
 			ns.print("Batch:          " + ns.format.ram(totalRamMax) + " ~ " + ns.format.ram(totalRamMin));
 			ns.print("---Timings---");
 			Object.entries(info.timings).forEach(([key, value]) => ns.print(`${key}:${" ".padStart(15 - key.length)}${ns.format.time(value, true)}`));
