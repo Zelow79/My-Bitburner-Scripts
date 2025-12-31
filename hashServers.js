@@ -30,15 +30,21 @@ export async function main(ns) {
 
 		// upgrade ram
 		serversInfo.sort((a, b) => a.ram - b.ram);
-		for (const hServer of serversInfo) h.upgradeRam(hServer.index); // upgrade ram
+		for (const hServer of serversInfo) {
+			if (hServer.ram < max.ram) h.upgradeRam(hServer.index); // upgrade ram
+		}
 
 		// upgrade cores
 		serversInfo.sort((a, b) => a.cores - b.cores);
-		for (const hServer of serversInfo) h.upgradeCore(hServer.index); // upgrade cores
+		for (const hServer of serversInfo) {
+			if (hServer.cores < max.cores) h.upgradeCore(hServer.index); // upgrade cores
+		}
 
 		// upgrade cache
 		serversInfo.sort((a, b) => a.cache - b.cache);
-		for (const hServer of serversInfo) h.upgradeCache(hServer.index); // upgrade cores
+		for (const hServer of serversInfo) {
+			if (hServer.cache < max.cache) h.upgradeCache(hServer.index); // upgrade cores
+		}
 
 		if (checkLevels() < max.level * h.numNodes()) { // upgrade level until total is 100
 			serversInfo.sort((a, b) => a.level - b.level);
