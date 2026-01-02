@@ -1,0 +1,1 @@
+[{"id":101,"x":0,"y":0,"rotation":0},{"id":101,"x":4,"y":0,"rotation":1},{"id":101,"x":2,"y":4,"rotation":2},{"id":101,"x":0,"y":2,"rotation":3},{"id":21,"x":3,"y":1,"rotation":3},{"id":20,"x":1,"y":1,"rotation":3},{"id":28,"x":2,"y":3,"rotation":0},{"id":12,"x":2,"y":1,"rotation":1}]
