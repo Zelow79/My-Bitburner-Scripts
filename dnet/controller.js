@@ -1,4 +1,9 @@
 import { ports } from "ports.js";
+/**
+ * To do list
+ * refactor section for adding and removing banked passwords from portHandle
+ * 
+ */
 /** @param {NS} ns */
 export async function main(ns) {
   const timeStamps = {},
@@ -30,14 +35,39 @@ export async function main(ns) {
         data.push(newData);
       }
       ns.write("dnet/victims.txt", JSON.stringify(data, null, 1), "w");
+
     }
 
     const portRmPw = ns.getPortHandle(ports["dnetRmPw"]);
     while (portRmPw.peek() != "NULL PORT DATA") { // check rm port for password objects to remove from bank
       const rmData = JSON.parse(portRmPw.read()),
         data = JSON.parse(ns.read("dnet/victims.txt"));
+      // skip process if rmData.name isn't in bank.
+      if (!data.some(d => d.name === rmData.name)) continue;
       // remove server name from bank based on object sent to rm port
       ns.write("dnet/victims.txt", JSON.stringify(data.filter(v => v.name !== rmData.name), null, 1), "w");
+      //ns.tprint(`Server: ${rmData.name} with Pass: ${rmData.password} was removed from password bank`);
+    }
+
+    updateVictimsBank();
+    function updateVictimsBank() { // update all servers with current victims.txt file
+      for (const victim of JSON.parse(ns.read("dnet/victims.txt"))) {
+        if (!ns.serverExists(victim.name)) {
+          ns.getPortHandle(ports["dnetRmPw"]).write(JSON.stringify({
+            name: victim.name,
+            password: victim.password
+          }));
+          //ns.tprint(`Deleted server detected: ${victim.name} sent to rm port for deletion`);
+          continue; // skip deleted servers
+        }
+        const victimStats = ns.dnet.getServerAuthDetails(victim.name);
+        if (!victimStats.isOnline) continue; // skip server is offline
+        if (!victim.hasSession) { // attempt to connect to server
+          ns.dnet.connectToSession(victim.name, victim.password);
+        }
+        if (!victim.hasSession) continue; // check if server is now in session, skip if not
+        ns.scp("dnet/victims.txt", victim.name, "darkweb");
+      }
     }
 
     //await ns.dnet.nextUpdate();
@@ -122,7 +152,7 @@ export function scrape(ns) {
     if (file.includes(".processed")) continue; // skip files we already processed
     const fileContents = ns.read(file);
     if (!fileContents.startsWith("Server:") // We want free passwords
-      || fileContents.split(" ").length !== 4) continue; 
+      || fileContents.split(" ").length !== 4) continue;
     const name = fileContents.split(" ")[1], password = fileContents.split(" ")[3];
     // send found password to add password port
     ns.getPortHandle(ports["dnetAddPw"]).write(JSON.stringify({ name, password }));
