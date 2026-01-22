@@ -50,7 +50,7 @@ export async function main(ns) {
       }
       break;
     case "FreshInstall_1.0":
-      const pws = factoryDefault.filter(e => e.length);
+      const pws = factoryDefault.filter(e => e.length === d.passwordLength);
       for (const pw of pws) {
         result = await ns.dnet.authenticate(target, pw);
         if (result.code === 200) {
@@ -85,12 +85,12 @@ export async function main(ns) {
   }
 
   // finally attempt brute force
-  for (const pw of [...commonPasswords, ...factoryDefault, ...dogNames]) {
+  const pws = [...commonPasswords, ...factoryDefault, ...dogNames].filter(e => e.length === d.passwordLength);
+  for (const pw of pws) {
     result = await ns.dnet.authenticate(target, pw);
     if (result.code === 200) {
       report(target, pw, result);
-      ns.tprint(`Cracked modelId: ${d.modelId} through brute force
- on server: ${target} with pass: ${pw}`);
+      //ns.tprint(`Cracked modelId: ${d.modelId} through brute force on server: ${target} with pass: ${pw}`);
       return;
     }
   }
