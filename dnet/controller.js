@@ -1,9 +1,4 @@
 import { ports } from "ports.js";
-/**
- * To do list
- * refactor section for adding and removing banked passwords from portHandle
- * 
- */
 /** @param {NS} ns */
 export async function main(ns) {
   const timeStamps = {},
@@ -18,10 +13,12 @@ export async function main(ns) {
   while (1) { // main loop
     spread(ns, timeStamps);
 
-    const portAddPw = ns.getPortHandle(ports["dnetAddPw"]);
+    const portAddPw = ns.getPortHandle(ports["dnetAddPw"]),
+      portRmPw = ns.getPortHandle(ports["dnetRmPw"]),
+      oldData = JSON.parse(ns.read("dnet/victims.txt"));
+    let data = JSON.parse(ns.read("dnet/victims.txt"));
     while (portAddPw.peek() != "NULL PORT DATA") { // check add port for new password objects to add to bank
-      const newData = JSON.parse(portAddPw.read()),
-        data = JSON.parse(ns.read("dnet/victims.txt"));
+      const newData = JSON.parse(portAddPw.read());
       let update = false;
 
       for (const e of data) {
@@ -34,30 +31,38 @@ export async function main(ns) {
       if (!update) {
         data.push(newData);
       }
-      ns.write("dnet/victims.txt", JSON.stringify(data, null, 1), "w");
-
     }
 
-    const portRmPw = ns.getPortHandle(ports["dnetRmPw"]);
     while (portRmPw.peek() != "NULL PORT DATA") { // check rm port for password objects to remove from bank
-      const rmData = JSON.parse(portRmPw.read()),
-        data = JSON.parse(ns.read("dnet/victims.txt"));
+      const rmData = JSON.parse(portRmPw.read());
       // skip process if rmData.name isn't in bank.
       if (!data.some(d => d.name === rmData.name)) continue;
-      // remove server name from bank based on object sent to rm port
-      ns.write("dnet/victims.txt", JSON.stringify(data.filter(v => v.name !== rmData.name), null, 1), "w");
-      //ns.tprint(`Server: ${rmData.name} with Pass: ${rmData.password} was removed from password bank`);
+      // remove server password object from bank based on object name sent to rm port
+      data = data.filter(v => v.name !== rmData.name);
     }
 
-    updateVictimsBank();
+    if (data.length !== oldData.length) {
+      ns.write("dnet/victims.txt", JSON.stringify(data, null, 1), "w");
+      updateVictimsBank();
+    } else {
+      for (let i = 0; i < oldData.length; i++) {
+        if (oldData[i].name !== data[i].name
+          || oldData[i].password !== data[i].password) {
+          // if the data is different than old data update and end for loop
+          ns.write("dnet/victims.txt", JSON.stringify(data, null, 1), "w");
+          updateVictimsBank();
+          break;
+        }
+      }
+    }
+
     function updateVictimsBank() { // update all servers with current victims.txt file
       for (const victim of JSON.parse(ns.read("dnet/victims.txt"))) {
-        if (!ns.serverExists(victim.name)) {
+        if (!ns.serverExists(victim.name)) { // if server doesn't exist, remove it from bank
           ns.getPortHandle(ports["dnetRmPw"]).write(JSON.stringify({
             name: victim.name,
             password: victim.password
           }));
-          //ns.tprint(`Deleted server detected: ${victim.name} sent to rm port for deletion`);
           continue; // skip deleted servers
         }
         const victimStats = ns.dnet.getServerAuthDetails(victim.name);
@@ -69,11 +74,8 @@ export async function main(ns) {
         ns.scp("dnet/victims.txt", victim.name, "darkweb");
       }
     }
-
-    //await ns.dnet.nextUpdate();
     await ns.sleep(100);
   }
-
 }
 
 /** @param {NS} ns */
