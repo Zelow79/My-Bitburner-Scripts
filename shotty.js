@@ -29,7 +29,7 @@ export async function main(ns) {
 		threads: { "hack": 1, "grow": [], "weaken": 1 }, // script stores thread values here
 		timings: { "hack": 0, "grow": 0, "weaken": 0 }, // timing values stored here
 		minHackChance: 0.9, // min allowed hacking chance
-		waitTime: 400, // time to wait before sleeping when firing workers
+		waitTime: 800, // time to wait before sleeping when firing workers
 		workersSent: 0, // value for tracking number of works sent
 		passiveWaitTime: ns.args.includes("skeet") ? 0 : 500, // time to wait before checking for new batches *also effects prepping and tail refresh rate
 		minWeakenTime: ns.args.includes("yeet") ? 1000 * 60 * 5 : 1000 * 60, // yeet mode to allow longer batches
@@ -234,9 +234,9 @@ export async function main(ns) {
 		const needMoney = () => ns.getServer(info.target).moneyAvailable < ns.getServer(info.target).moneyMax,
 			badSec = () => ns.getServer(info.target).hackDifficulty > ns.getServer(info.target).minDifficulty,
 			calls = [];
+		for (const ram of getRam()) if (!ns.ls(ram.hostname).includes(info.workerName)) makeWorker(ram.hostname);
 		while (needMoney() || badSec()) {
 			for (const ram of getRam()) {
-				if (!ns.ls(ram.hostname).includes(info.workerName)) makeWorker(ram.hostname);
 				const freeRam = ram.maxRam - ram.ramUsed;
 				if (freeRam < info.workerWeight["grow"]  // skip server if it can't even hold 1 worker
 					|| freeRam < info.workerWeight["weaken"]) continue;
